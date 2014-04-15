@@ -40,7 +40,11 @@ public class Main {
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
-            System.out.println(line);
+            //System.out.println(line);
+            if(msgFromServer.msgType.equals("crash")) {
+                System.out.println(line);
+            }
+
             if (msgFromServer.msgType.equals("carPositions")) {
                 CarPositions carPositions = gson.fromJson(line, CarPositions.class);
 
@@ -49,7 +53,7 @@ public class Main {
                 double speed = getSpeed(gameInit, previousPositions, carPositions);
 
                 if(Math.abs(nextAngle) <= 10) {
-                    currentThrottle = 0.925;
+                    currentThrottle = 0.9;
                 } else {
                     currentThrottle = 0.5;
                 }
@@ -67,9 +71,11 @@ public class Main {
                         currentThrottle = 1;
                 }*/
 
+                double pieceLength = getPieceLength(gameInit, carPositions.data[0].piecePosition);
+
                 previousPositions = carPositions;
 
-                System.out.println(String.format("Throttle: %s, Next angle: %s", currentThrottle, nextAngle));
+                System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Next angle: %s, Throttle: %s, Slip: %s, Speed: %s", carPositions.data[0].piecePosition.pieceIndex, pieceLength, carPositions.data[0].piecePosition.inPieceDistance, nextAngle,currentThrottle, slipAngle, speed));
                 send(new Throttle(currentThrottle));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
@@ -97,14 +103,31 @@ public class Main {
             if(previousPiece.pieceIndex == currentPiece.pieceIndex) {
                 return currentPiece.inPieceDistance - previousPiece.inPieceDistance;
             } else {
-                //TODO: won't work with angle pieces
                 double length = getPieceLength(gameInit, previousPiece);
                 return currentPiece.inPieceDistance + (length - previousPiece.inPieceDistance);
             }
     }
 
-    private double getPieceLength(GameInit gameInit, CarPositions.Data.PiecePosition previousPiece) {
-        return gameInit.data.race.track.pieces[((int) previousPiece.pieceIndex)].length;
+    private double getPieceLength(GameInit gameInit, CarPositions.Data.PiecePosition piecePosition) {
+        GameInit.Data.Race.Track.Piece piece = gameInit.data.race.track.pieces[((int) piecePosition.pieceIndex)];
+
+        if(piece.angle != 0) {
+            return Math.abs(piece.angle) / 360 * 2 * Math.PI * getEffectiveRadius(gameInit.data.race.track.lanes[0], piece);
+        } else {
+            return piece.length;
+        }
+    }
+
+    private double getEffectiveRadius(GameInit.Data.Race.Track.Lane lane, GameInit.Data.Race.Track.Piece piece) {
+        if(isLeftTurn(piece)) {
+            return piece.radius +lane.distanceFromCenter;
+        }
+
+        return piece.radius - lane.distanceFromCenter;
+    }
+
+    private boolean isLeftTurn(GameInit.Data.Race.Track.Piece piece) {
+        return piece.angle < 0;
     }
 
     private double getNextTrackAngle(GameInit gameInit, CarPositions carPositions) {
