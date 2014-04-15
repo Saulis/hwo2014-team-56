@@ -1,14 +1,10 @@
-import java.util.Arrays;
-
-import com.google.gson.Gson;
-
-import noobbot.CarPositions;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import noobbot.GameInit;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import com.google.gson.Gson;
 
 /**
  * Created by Saulis on 15/04/14.
