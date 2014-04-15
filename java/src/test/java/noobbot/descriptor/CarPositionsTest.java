@@ -1,8 +1,6 @@
 package noobbot.descriptor;
 import com.google.gson.Gson;
 
-import noobbot.descriptor.CarPositionsDescriptor;
-
 import org.junit.Before;
 import org.junit.Test;
 

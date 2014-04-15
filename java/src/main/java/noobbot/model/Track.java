@@ -3,9 +3,6 @@ package noobbot.model;
 import noobbot.descriptor.GameInitDescriptor;
 
 public class Track {
-
-	
-	
 	public Track(GameInitDescriptor.Data.Race.Track trackDescriptor) {
 		
 	}

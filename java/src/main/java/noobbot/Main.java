@@ -11,6 +11,7 @@ import noobbot.descriptor.CarPositionsDescriptor;
 import noobbot.descriptor.GameInitDescriptor;
 
 import com.google.gson.Gson;
+import noobbot.model.PlayerPosition;
 
 public class Main {
     public static void main(String... args) throws IOException {
@@ -39,7 +40,7 @@ public class Main {
         send(join);
         double currentThrottle = 0.6;
         GameInitDescriptor gameInit = null;
-        CarPositionsDescriptor previousPositions = null;
+        PlayerPosition previousPositions = null;
         double previousSpeed = 0;
         boolean testFlag = false;
         double targetSpeed = 6;
@@ -53,10 +54,11 @@ public class Main {
 
             if (msgFromServer.msgType.equals("carPositions")) {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
+                PlayerPosition player = new PlayerPosition(carPositions.data[0]);
 
-                double slipAngle = carPositions.getSlipAngle();
-                double nextAngle = getNextTrackAngle(gameInit, carPositions);
-                double speed = getSpeed(gameInit, previousPositions, carPositions);
+                double slipAngle = player.getSlipAngle();
+                double nextAngle = getNextTrackAngle(gameInit, player);
+                double speed = getSpeed(gameInit, previousPositions, player);
                 double acceleration = speed - previousSpeed;
 
                 double speedDiff = targetSpeed - speed;
@@ -76,13 +78,12 @@ public class Main {
                     currentThrottle = 0.5;
                 }
 */
-                double pieceLength = getPieceLength(gameInit, carPositions.data[0].piecePosition);
+                double pieceLength = getPieceLength(gameInit, player.getPiecePosition());
 
-
-                previousPositions = carPositions;
+                previousPositions = player;
                 previousSpeed = speed;
 
-                System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Next angle: %s, Throttle: %s, Slip: %s, Speed: %s, Acc: %s", carPositions.data[0].piecePosition.pieceIndex, pieceLength, carPositions.data[0].piecePosition.inPieceDistance, nextAngle,currentThrottle, slipAngle, speed, acceleration));
+                System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Next angle: %s, Throttle: %s, Slip: %s, Speed: %s, Acc: %s", player.getPiecePosition().pieceIndex, pieceLength, player.getPiecePosition().inPieceDistance, nextAngle,currentThrottle, slipAngle, speed, acceleration));
                 send(new Throttle(currentThrottle));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
@@ -99,13 +100,13 @@ public class Main {
         }
     }
 
-    private double getSpeed(GameInitDescriptor gameInit, CarPositionsDescriptor previousPositions, CarPositionsDescriptor carPositions) {
-        if(previousPositions == null) {
+    private double getSpeed(GameInitDescriptor gameInit, PlayerPosition previousPosition, PlayerPosition carPosition) {
+        if(previousPosition == null) {
             return 0;
         }
 
-        CarPositionsDescriptor.Data.PiecePosition previousPiece = previousPositions.data[0].piecePosition;
-        CarPositionsDescriptor.Data.PiecePosition currentPiece = carPositions.data[0].piecePosition;
+        CarPositionsDescriptor.Data.PiecePosition previousPiece = previousPosition.getPiecePosition();
+        CarPositionsDescriptor.Data.PiecePosition currentPiece = carPosition.getPiecePosition();
 
 
         if(previousPiece.pieceIndex == currentPiece.pieceIndex) {
@@ -138,8 +139,8 @@ public class Main {
         return piece.angle < 0;
     }
 
-    private double getNextTrackAngle(GameInitDescriptor gameInit, CarPositionsDescriptor carPositions) {
-        int pieceIndex = (int) carPositions.data[0].piecePosition.pieceIndex;
+    private double getNextTrackAngle(GameInitDescriptor gameInit, PlayerPosition carPositions) {
+        int pieceIndex = (int) carPositions.getPiecePosition().pieceIndex;
         int nextPieceIndex = 0;
         if(pieceIndex + 1 < gameInit.data.race.track.pieces.length) {
             nextPieceIndex = pieceIndex + 1;
