@@ -7,6 +7,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import noobbot.descriptor.CarPositionsDescriptor;
+import noobbot.descriptor.GameInitDescriptor;
+
 import com.google.gson.Gson;
 
 public class Main {
@@ -35,14 +38,14 @@ public class Main {
 
         send(join);
         double currentThrottle = 0.6;
-        GameInit gameInit = null;
-        CarPositions previousPositions = null;
+        GameInitDescriptor gameInit = null;
+        CarPositionsDescriptor previousPositions = null;
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
             System.out.println(line);
             if (msgFromServer.msgType.equals("carPositions")) {
-                CarPositions carPositions = gson.fromJson(line, CarPositions.class);
+                CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
 
                 double slipAngle = carPositions.getSlipAngle();
                 double nextAngle = getNextTrackAngle(gameInit, carPositions);
@@ -74,7 +77,7 @@ public class Main {
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
-                gameInit = gson.fromJson(line, GameInit.class);
+                gameInit = gson.fromJson(line, GameInitDescriptor.class);
                 System.out.println("Race init");
             } else if (msgFromServer.msgType.equals("gameEnd")) {
                 System.out.println("Race end");
@@ -86,13 +89,13 @@ public class Main {
         }
     }
 
-    private double getSpeed(GameInit gameInit, CarPositions previousPositions, CarPositions carPositions) {
+    private double getSpeed(GameInitDescriptor gameInit, CarPositionsDescriptor previousPositions, CarPositionsDescriptor carPositions) {
         if(previousPositions == null) {
             return 0;
         }
 
-            CarPositions.Data.PiecePosition previousPiece = previousPositions.data[0].piecePosition;
-            CarPositions.Data.PiecePosition currentPiece = carPositions.data[0].piecePosition;
+            CarPositionsDescriptor.Data.PiecePosition previousPiece = previousPositions.data[0].piecePosition;
+            CarPositionsDescriptor.Data.PiecePosition currentPiece = carPositions.data[0].piecePosition;
 
             if(previousPiece.pieceIndex == currentPiece.pieceIndex) {
                 return currentPiece.inPieceDistance - previousPiece.inPieceDistance;
@@ -103,11 +106,11 @@ public class Main {
             }
     }
 
-    private double getPieceLength(GameInit gameInit, CarPositions.Data.PiecePosition previousPiece) {
+    private double getPieceLength(GameInitDescriptor gameInit, CarPositionsDescriptor.Data.PiecePosition previousPiece) {
         return gameInit.data.race.track.pieces[((int) previousPiece.pieceIndex)].length;
     }
 
-    private double getNextTrackAngle(GameInit gameInit, CarPositions carPositions) {
+    private double getNextTrackAngle(GameInitDescriptor gameInit, CarPositionsDescriptor carPositions) {
         int pieceIndex = (int) carPositions.data[0].piecePosition.pieceIndex;
         int nextPieceIndex = 0;
         if(pieceIndex + 1 < gameInit.data.race.track.pieces.length) {

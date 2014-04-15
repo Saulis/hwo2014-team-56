@@ -1,5 +1,8 @@
+package noobbot.descriptor;
 import com.google.gson.Gson;
-import noobbot.CarPositions;
+
+import noobbot.descriptor.CarPositionsDescriptor;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,13 +15,13 @@ import static org.junit.Assert.assertThat;
 public class CarPositionsTest {
 
     Gson gson;
-    CarPositions carPositions;
+    CarPositionsDescriptor carPositions;
 
     @Before
     public void setUp()
     {
         gson = new Gson();
-        carPositions = gson.fromJson("{\"msgType\": \"carPositions\", \"data\":[{\"id\":{\"name\":\"Trolo Rosso\", \"color\":\"red\"}, angle=3.013576824024717E-4, piecePosition={pieceIndex=38.0, inPieceDistance=80.13766432297933, lane={startLaneIndex=0.0, endLaneIndex=0.0}, lap=2.0}}]}", CarPositions.class);
+        carPositions = gson.fromJson("{\"msgType\": \"carPositions\", \"data\":[{\"id\":{\"name\":\"Trolo Rosso\", \"color\":\"red\"}, angle=3.013576824024717E-4, piecePosition={pieceIndex=38.0, inPieceDistance=80.13766432297933, lane={startLaneIndex=0.0, endLaneIndex=0.0}, lap=2.0}}]}", CarPositionsDescriptor.class);
     }
 
     @Test
