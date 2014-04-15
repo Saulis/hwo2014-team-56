@@ -10,12 +10,24 @@ public class GameInit {
                 public double length;
                 public double radius;
                 public double angle;
-                //public boolean ;
+                //public boolean switch;
+            }
+
+            public class Lane {
+                public double distanceFromCenter;
+                public int index;
+            }
+
+            public class StartingPoint {
+                public class Position {
+                    
+                }
             }
 
             public String id;
             public String name;
             public Piece[] pieces;
+            public Lane[] lanes;
         }
 
         public Track track;
