@@ -56,10 +56,17 @@ public class GameInit {
             public Dimensions dimensions;
         }
 
+        public class RaceSession {
+            public int laps;
+            public int maxLapTimeMs;
+            public boolean quickRace;
+        }
+
         public Track track;
         public Car[] cars;
+        public RaceSession raceSession;
     }
-        
+
         public Race race;
     }
 
