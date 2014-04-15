@@ -1,9 +1,9 @@
-package noobbot;
+package noobbot.descriptor;
 
 /**
  * Created by Saulis on 15/04/14.
  */
-public class CarPositions {
+public class CarPositionsDescriptor {
 
     public class Data {
         public class Id {

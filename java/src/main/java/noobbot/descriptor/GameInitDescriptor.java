@@ -1,11 +1,11 @@
-package noobbot;
+package noobbot.descriptor;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by Saulis on 15/04/14.
  */
-public class GameInit {
+public class GameInitDescriptor {
     public class Data {
         public class Race {
         public class Track {
