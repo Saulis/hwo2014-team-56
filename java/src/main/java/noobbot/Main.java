@@ -38,7 +38,7 @@ public class Main {
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
             if (msgFromServer.msgType.equals("carPositions")) {
-                send(new Throttle(0.5));
+                send(new Throttle(0.65684));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
