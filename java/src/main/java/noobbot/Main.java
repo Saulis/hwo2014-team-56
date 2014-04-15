@@ -35,6 +35,8 @@ public class Main {
 
         send(join);
         double currentThrottle = 0.6;
+        GameInit gameInit = null;
+        CarPositions previousPositions = null;
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
@@ -43,6 +45,15 @@ public class Main {
                 CarPositions carPositions = gson.fromJson(line, CarPositions.class);
 
                 double slipAngle = carPositions.getSlipAngle();
+                double nextAngle = getNextTrackAngle(gameInit, carPositions);
+                double speed = getSpeed(gameInit, previousPositions, carPositions);
+
+                if(Math.abs(nextAngle) <= 10) {
+                    currentThrottle = 0.925;
+                } else {
+                    currentThrottle = 0.5;
+                }
+/*
                 if(Math.abs(slipAngle) > 10) {
                     if(currentThrottle >= 0.65) {
                         currentThrottle -= 0.1;
@@ -54,12 +65,16 @@ public class Main {
                         currentThrottle += 0.05;
                     } else
                         currentThrottle = 1;
-                }
+                }*/
 
+                previousPositions = carPositions;
+
+                System.out.println(String.format("Throttle: %s, Next angle: %s", currentThrottle, nextAngle));
                 send(new Throttle(currentThrottle));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
+                gameInit = gson.fromJson(line, GameInit.class);
                 System.out.println("Race init");
             } else if (msgFromServer.msgType.equals("gameEnd")) {
                 System.out.println("Race end");
@@ -69,6 +84,37 @@ public class Main {
                 send(new Ping());
             }
         }
+    }
+
+    private double getSpeed(GameInit gameInit, CarPositions previousPositions, CarPositions carPositions) {
+        if(previousPositions == null) {
+            return 0;
+        }
+
+            CarPositions.Data.PiecePosition previousPiece = previousPositions.data[0].piecePosition;
+            CarPositions.Data.PiecePosition currentPiece = carPositions.data[0].piecePosition;
+
+            if(previousPiece.pieceIndex == currentPiece.pieceIndex) {
+                return currentPiece.inPieceDistance - previousPiece.inPieceDistance;
+            } else {
+                //TODO: won't work with angle pieces
+                double length = getPieceLength(gameInit, previousPiece);
+                return currentPiece.inPieceDistance + (length - previousPiece.inPieceDistance);
+            }
+    }
+
+    private double getPieceLength(GameInit gameInit, CarPositions.Data.PiecePosition previousPiece) {
+        return gameInit.data.race.track.pieces[((int) previousPiece.pieceIndex)].length;
+    }
+
+    private double getNextTrackAngle(GameInit gameInit, CarPositions carPositions) {
+        int pieceIndex = (int) carPositions.data[0].piecePosition.pieceIndex;
+        int nextPieceIndex = 0;
+        if(pieceIndex + 1 < gameInit.data.race.track.pieces.length) {
+            nextPieceIndex = pieceIndex + 1;
+        }
+
+        return gameInit.data.race.track.pieces[nextPieceIndex].angle;
     }
 
     private void send(final SendMsg msg) {
