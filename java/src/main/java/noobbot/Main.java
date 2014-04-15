@@ -34,11 +34,29 @@ public class Main {
         String line = null;
 
         send(join);
+        double currentThrottle = 0.6;
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
+            System.out.println(line);
             if (msgFromServer.msgType.equals("carPositions")) {
-                send(new Throttle(0.5));
+                CarPositions carPositions = gson.fromJson(line, CarPositions.class);
+
+                double slipAngle = carPositions.getSlipAngle();
+                if(Math.abs(slipAngle) > 10) {
+                    if(currentThrottle >= 0.65) {
+                        currentThrottle -= 0.1;
+                    } else {
+                        currentThrottle = 0.6;
+                    }
+                } else {
+                    if(currentThrottle <= 0.65) {
+                        currentThrottle += 0.05;
+                    } else
+                        currentThrottle = 1;
+                }
+
+                send(new Throttle(currentThrottle));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
