@@ -40,6 +40,9 @@ public class Main {
         double currentThrottle = 0.6;
         GameInitDescriptor gameInit = null;
         CarPositionsDescriptor previousPositions = null;
+        double previousSpeed = 0;
+        boolean testFlag = false;
+        double targetSpeed = 6;
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
@@ -54,31 +57,32 @@ public class Main {
                 double slipAngle = carPositions.getSlipAngle();
                 double nextAngle = getNextTrackAngle(gameInit, carPositions);
                 double speed = getSpeed(gameInit, previousPositions, carPositions);
+                double acceleration = speed - previousSpeed;
 
+                double speedDiff = targetSpeed - speed;
+
+                currentThrottle += speedDiff * 0.1;
+                if(currentThrottle > 1) {
+                    currentThrottle = 1;
+                }
+
+                if(currentThrottle < 0) {
+                    currentThrottle = 0;
+                }
+                /*
                 if(Math.abs(nextAngle) <= 10) {
-                    currentThrottle = 0.9;
+                    currentThrottle = 0.5;
                 } else {
                     currentThrottle = 0.5;
                 }
-/*
-                if(Math.abs(slipAngle) > 10) {
-                    if(currentThrottle >= 0.65) {
-                        currentThrottle -= 0.1;
-                    } else {
-                        currentThrottle = 0.6;
-                    }
-                } else {
-                    if(currentThrottle <= 0.65) {
-                        currentThrottle += 0.05;
-                    } else
-                        currentThrottle = 1;
-                }*/
-
+*/
                 double pieceLength = getPieceLength(gameInit, carPositions.data[0].piecePosition);
 
-                previousPositions = carPositions;
 
-                System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Next angle: %s, Throttle: %s, Slip: %s, Speed: %s", carPositions.data[0].piecePosition.pieceIndex, pieceLength, carPositions.data[0].piecePosition.inPieceDistance, nextAngle,currentThrottle, slipAngle, speed));
+                previousPositions = carPositions;
+                previousSpeed = speed;
+
+                System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Next angle: %s, Throttle: %s, Slip: %s, Speed: %s, Acc: %s", carPositions.data[0].piecePosition.pieceIndex, pieceLength, carPositions.data[0].piecePosition.inPieceDistance, nextAngle,currentThrottle, slipAngle, speed, acceleration));
                 send(new Throttle(currentThrottle));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
