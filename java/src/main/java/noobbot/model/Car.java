@@ -1,6 +1,5 @@
 package noobbot.model;
 
-import noobbot.descriptor.CarPositionsDescriptor;
 import noobbot.descriptor.GameInitDescriptor;
 
 /**
@@ -26,19 +25,16 @@ public class Car {
             return 0;
         }
 
-        CarPositionsDescriptor.Data.PiecePosition previousPiece = previousPosition.getPiecePosition();
-        CarPositionsDescriptor.Data.PiecePosition currentPiece = position.getPiecePosition();
-
-        if(previousPiece.pieceIndex == currentPiece.pieceIndex) {
-            return currentPiece.inPieceDistance - previousPiece.inPieceDistance;
+        if(previousPosition.getPieceNumber() == position.getPieceNumber()) {
+            return position.getInPieceDistance() - previousPosition.getInPieceDistance();
         } else {
-            double length = getPieceLength(track, previousPiece);
-            return currentPiece.inPieceDistance + (length - previousPiece.inPieceDistance);
+            double length = getPieceLength(track, previousPosition);
+            return position.getInPieceDistance() + (length - previousPosition.getInPieceDistance());
         }
     }
 
-    private double getPieceLength(GameInitDescriptor.Data.Race.Track track, CarPositionsDescriptor.Data.PiecePosition piecePosition) {
-        GameInitDescriptor.Data.Race.Track.Piece piece = track.pieces[((int) piecePosition.pieceIndex)];
+    private double getPieceLength(GameInitDescriptor.Data.Race.Track track, Position piecePosition) {
+        GameInitDescriptor.Data.Race.Track.Piece piece = track.pieces[((int) piecePosition.getPieceNumber())];
 
         if(piece.angle != 0) {
             return Math.abs(piece.angle) / 360 * 2 * Math.PI * getEffectiveRadius(track.lanes[0], piece);

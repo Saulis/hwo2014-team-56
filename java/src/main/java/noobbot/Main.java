@@ -63,7 +63,7 @@ public class Main {
                 PlayerPosition position = new PlayerPosition(carPositions.data[0]);
                 player.setPosition(position);
 
-                double slipAngle = player.getPosition().getSlipAngle();
+                double slipAngle = position.getSlipAngle();
                 double trackAngle = getTrackAngle(gameInit, player.getPosition());
                 double nextTrackAngle = getNextTrackAngle(gameInit, player.getPosition());
                 double speed = player.getSpeed(gameInit.data.race.track);
@@ -114,8 +114,8 @@ public class Main {
     }
 
 
-    private double getNextTrackAngle(GameInitDescriptor gameInit, Position carPositions) {
-        int pieceIndex = (int) carPositions.getPiecePosition().pieceIndex;
+    private double getNextTrackAngle(GameInitDescriptor gameInit, Position carPosition) {
+        int pieceIndex = (int) carPosition.getPieceNumber();
         int nextPieceIndex = 0;
         if(pieceIndex + 1 < gameInit.data.race.track.pieces.length) {
             nextPieceIndex = pieceIndex + 1;
@@ -125,9 +125,7 @@ public class Main {
     }
 
     private double getTrackAngle(GameInitDescriptor gameInit, Position carPositions) {
-        CarPositionsDescriptor.Data.PiecePosition piecePosition = carPositions.getPiecePosition();
-
-        return gameInit.data.race.track.pieces[((int) piecePosition.pieceIndex)].angle;
+        return gameInit.data.race.track.pieces[((int) carPositions.getPieceNumber())].angle;
     }
 
     private void send(final SendMsg msg) {
