@@ -23,6 +23,10 @@ public class Track {
         return distance;
     }
 
+    public List<Piece> getPieces() {
+        return pieces;
+    }
+
     private Piece getPieceAfter(Piece precedingPiece) {
         int nextPieceIndex = precedingPiece.getNumber() + 1;
         return pieces.get(nextPieceIndex % pieces.size());

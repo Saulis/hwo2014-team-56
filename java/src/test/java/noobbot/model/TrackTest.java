@@ -77,7 +77,12 @@ public class TrackTest {
         Double expectedDistance = distanceBeforeLastPoint + lengthOfMiddlePosition + distanceAfterFirstPoint;
         assertEquals(expectedDistance, result);
     }
-    
+
+    @Test
+    public void allPiecesInATrackCanBeFetched() {
+        assertEquals(pieces, sut.getPieces());
+    }
+
     private Piece createPiece(Double pieceLength) {
         Piece piece = createPiece();
         when(piece.getLength(anyInt())).thenReturn(pieceLength);
