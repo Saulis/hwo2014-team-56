@@ -1,5 +1,8 @@
 package noobbot.model;
 
-public interface Position {
+import noobbot.descriptor.CarPositionsDescriptor;
 
+public interface Position {
+    double getSlipAngle();
+    public CarPositionsDescriptor.Data.PiecePosition getPiecePosition();
 }

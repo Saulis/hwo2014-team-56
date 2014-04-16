@@ -12,6 +12,8 @@ import noobbot.descriptor.GameInitDescriptor;
 
 import com.google.gson.Gson;
 import noobbot.model.PlayerPosition;
+import noobbot.model.Car;
+import noobbot.model.Position;
 
 public class Main {
     public static void main(String... args) throws IOException {
@@ -48,6 +50,8 @@ public class Main {
         double accelerationMagicNumber = 0.98; //This will be measured real time
         double topspeed = 10; //This will be calculated from acceleration magic number
 
+        Car player = new Car();
+
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
             //System.out.println(line);
@@ -57,13 +61,13 @@ public class Main {
 
             if (msgFromServer.msgType.equals("carPositions")) {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
-                PlayerPosition player = new PlayerPosition(carPositions.data[0]);
+                PlayerPosition position = new PlayerPosition(carPositions.data[0]);
+                player.setPosition(position);
 
-                double slipAngle = player.getSlipAngle();
-                double trackAngle = getTrackAngle(gameInit, player);
-                double nextTrackAngle = getNextTrackAngle(gameInit, player);
-                double pieceLength = getPieceLength(gameInit, player.getPiecePosition());
-                double speed = getSpeed(gameInit, previousPositions, player);
+                double slipAngle = player.getPosition().getSlipAngle();
+                double trackAngle = getTrackAngle(gameInit, player.getPosition());
+                double nextTrackAngle = getNextTrackAngle(gameInit, player.getPosition());
+                double speed = player.getSpeed(gameInit.data.race.track);
                 double acceleration = speed - previousSpeed;
 
                 //Trying out setting target speed roughly according to angle.. 45 degrees -> 50% of top speed
@@ -88,11 +92,10 @@ public class Main {
                 //With the braking distance we can then start braking at the last possible moment.
 
 
-                System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s, Speed: %s (%s), Acc: %s (%s)", player.getPiecePosition().pieceIndex, pieceLength, player.getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, previousThrottle, nextThrottle, slipAngle, speed, targetSpeed, acceleration, estimatedAcceleration));
+                //System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s, Speed: %s (%s), Acc: %s (%s)", player.getPosition().getPiecePosition().pieceIndex, pieceLength, player.getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, previousThrottle, nextThrottle, slipAngle, speed, targetSpeed, acceleration, estimatedAcceleration));
 
                 send(new Throttle(nextThrottle));
 
-                previousPositions = player;
                 previousSpeed = speed;
                 previousThrottle = nextThrottle;
 
@@ -111,46 +114,8 @@ public class Main {
         }
     }
 
-    private double getSpeed(GameInitDescriptor gameInit, PlayerPosition previousPosition, PlayerPosition carPosition) {
-        if(previousPosition == null) {
-            return 0;
-        }
 
-        CarPositionsDescriptor.Data.PiecePosition previousPiece = previousPosition.getPiecePosition();
-        CarPositionsDescriptor.Data.PiecePosition currentPiece = carPosition.getPiecePosition();
-
-
-        if(previousPiece.pieceIndex == currentPiece.pieceIndex) {
-                return currentPiece.inPieceDistance - previousPiece.inPieceDistance;
-            } else {
-                double length = getPieceLength(gameInit, previousPiece);
-                return currentPiece.inPieceDistance + (length - previousPiece.inPieceDistance);
-            }
-    }
-
-    private double getPieceLength(GameInitDescriptor gameInit, CarPositionsDescriptor.Data.PiecePosition piecePosition) {
-        GameInitDescriptor.Data.Race.Track.Piece piece = gameInit.data.race.track.pieces[((int) piecePosition.pieceIndex)];
-
-        if(piece.angle != 0) {
-            return Math.abs(piece.angle) / 360 * 2 * Math.PI * getEffectiveRadius(gameInit.data.race.track.lanes[0], piece);
-        } else {
-            return piece.length;
-        }
-    }
-
-    private double getEffectiveRadius(GameInitDescriptor.Data.Race.Track.Lane lane, GameInitDescriptor.Data.Race.Track.Piece piece) {
-        if(isLeftTurn(piece)) {
-            return piece.radius +lane.distanceFromCenter;
-        }
-
-        return piece.radius - lane.distanceFromCenter;
-    }
-
-    private boolean isLeftTurn(GameInitDescriptor.Data.Race.Track.Piece piece) {
-        return piece.angle < 0;
-    }
-
-    private double getNextTrackAngle(GameInitDescriptor gameInit, PlayerPosition carPositions) {
+    private double getNextTrackAngle(GameInitDescriptor gameInit, Position carPositions) {
         int pieceIndex = (int) carPositions.getPiecePosition().pieceIndex;
         int nextPieceIndex = 0;
         if(pieceIndex + 1 < gameInit.data.race.track.pieces.length) {
@@ -160,7 +125,7 @@ public class Main {
         return gameInit.data.race.track.pieces[nextPieceIndex].angle;
     }
 
-    private double getTrackAngle(GameInitDescriptor gameInit, PlayerPosition carPositions) {
+    private double getTrackAngle(GameInitDescriptor gameInit, Position carPositions) {
         CarPositionsDescriptor.Data.PiecePosition piecePosition = carPositions.getPiecePosition();
 
         return gameInit.data.race.track.pieces[((int) piecePosition.pieceIndex)].angle;
