@@ -31,9 +31,4 @@ public class CarPositionsDescriptor {
 
     public String msgType;
     public Data[] data;
-
-    public double getSlipAngle() {
-        //TODO: Fix to find our car.
-        return data[0].angle;
-    }
 }
