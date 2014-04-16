@@ -31,4 +31,40 @@ public class PlayerPositionTests {
 
         assertThat(result, is(expectedAngle));
     }
+    
+    @Test
+    public void laneNumberIsTheStartLaneIndexInData() throws Exception {
+        final int expectedLane = 3;
+        data.piecePosition = data.new PiecePosition();
+        data.piecePosition.lane = data.piecePosition.new Lane();
+        data.piecePosition.lane.startLaneIndex = expectedLane;
+
+        int result = sut.getLaneNumber();
+
+        assertEquals(expectedLane, result);
+    }
+    
+    @Test
+    public void pieceNumberIsPiecePositionNumberInData() throws Exception {
+        final int expectedPieceNumber = 4;
+        data.piecePosition = data.new PiecePosition();
+        data.piecePosition.lane = data.piecePosition.new Lane();
+        data.piecePosition.pieceIndex = expectedPieceNumber;
+
+        int result = sut.getPieceNumber();
+
+        assertEquals(expectedPieceNumber, result);
+    }
+    
+    @Test
+    public void inPieceDistanceIsInPieceDistanceInData() throws Exception {
+        final double expectedInPieceDistance = 12.3;
+        data.piecePosition = data.new PiecePosition();
+        data.piecePosition.lane = data.piecePosition.new Lane();
+        data.piecePosition.inPieceDistance = expectedInPieceDistance;
+
+        double result = sut.getInPieceDistance();
+
+        assertEquals(expectedInPieceDistance, result, 0.0);
+    }
 }
