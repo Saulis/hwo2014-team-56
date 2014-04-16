@@ -19,4 +19,19 @@ public class PlayerPosition implements Position {
     public CarPositionsDescriptor.Data.PiecePosition getPiecePosition() {
         return data.piecePosition;
     }
+
+    @Override
+    public int getLaneNumber() {
+        return (int) data.piecePosition.lane.startLaneIndex;
+    }
+
+    @Override
+    public int getPieceNumber() {
+        return (int) data.piecePosition.pieceIndex;
+    }
+
+    @Override
+    public double getInPieceDistance() {
+        return data.piecePosition.inPieceDistance;
+    }
 }

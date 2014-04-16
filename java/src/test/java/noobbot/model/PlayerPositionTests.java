@@ -1,12 +1,11 @@
 package noobbot.model;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import noobbot.descriptor.CarPositionsDescriptor;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 /**
  * Created by Jere on 15.4.2014.
@@ -31,5 +30,41 @@ public class PlayerPositionTests {
         double result = sut.getSlipAngle();
 
         assertThat(result, is(expectedAngle));
+    }
+    
+    @Test
+    public void laneNumberIsTheStartLaneIndexInData() throws Exception {
+        final int expectedLane = 3;
+        data.piecePosition = data.new PiecePosition();
+        data.piecePosition.lane = data.piecePosition.new Lane();
+        data.piecePosition.lane.startLaneIndex = expectedLane;
+
+        int result = sut.getLaneNumber();
+
+        assertEquals(expectedLane, result);
+    }
+    
+    @Test
+    public void pieceNumberIsPiecePositionNumberInData() throws Exception {
+        final int expectedPieceNumber = 4;
+        data.piecePosition = data.new PiecePosition();
+        data.piecePosition.lane = data.piecePosition.new Lane();
+        data.piecePosition.pieceIndex = expectedPieceNumber;
+
+        int result = sut.getPieceNumber();
+
+        assertEquals(expectedPieceNumber, result);
+    }
+    
+    @Test
+    public void inPieceDistanceIsInPieceDistanceInData() throws Exception {
+        final double expectedInPieceDistance = 12.3;
+        data.piecePosition = data.new PiecePosition();
+        data.piecePosition.lane = data.piecePosition.new Lane();
+        data.piecePosition.inPieceDistance = expectedInPieceDistance;
+
+        double result = sut.getInPieceDistance();
+
+        assertEquals(expectedInPieceDistance, result, 0.0);
     }
 }

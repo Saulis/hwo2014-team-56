@@ -3,6 +3,7 @@ package noobbot.model;
 import noobbot.descriptor.CarPositionsDescriptor;
 
 public interface Position {
-    double getSlipAngle();
-    public CarPositionsDescriptor.Data.PiecePosition getPiecePosition();
+    int getLaneNumber();
+    int getPieceNumber();
+    double getInPieceDistance();
 }

@@ -46,7 +46,6 @@ public class Main {
         double previousSpeed = 0;
         double previousThrottle = 0;
 
-        boolean testFlag = false;
         double accelerationMagicNumber = 0.98; //This will be measured real time
         double topspeed = 10; //This will be calculated from acceleration magic number
 
