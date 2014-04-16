@@ -1,7 +1,5 @@
 package noobbot.model;
 
-import noobbot.descriptor.GameInitDescriptor;
-
 /**
  * Created by jereketonen on 4/16/14.
  */
