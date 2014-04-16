@@ -124,7 +124,9 @@ public class Main {
     }
 
     private List<Piece> getPieces(GameInitDescriptor gameInit) {
-        return Arrays.asList(gameInit.data.race.track.pieces);
+        PieceFactory pieceFactory = new PieceFactory();
+
+        return stream(gameInit.data.race.track.pieces).map(p -> pieceFactory.create(p)).collect(toList());
     }
 
 
