@@ -19,4 +19,9 @@ public class PlayerPosition implements Position {
     public CarPositionsDescriptor.Data.PiecePosition getPiecePosition() {
         return data.piecePosition;
     }
+
+    @Override
+    public int getLaneNumber() {
+        return 0;
+    }
 }
