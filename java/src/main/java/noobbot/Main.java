@@ -15,6 +15,9 @@ import noobbot.descriptor.GameInitDescriptor;
 import com.google.gson.Gson;
 import noobbot.model.*;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+
 public class Main {
     public static void main(String... args) throws IOException {
         String host = args[0];
@@ -66,8 +69,8 @@ public class Main {
                 double slipAngle = position.getSlipAngle();
                 double trackAngle = getTrackAngle(gameInit, player.getPosition());
                 double nextTrackAngle = getNextTrackAngle(gameInit, player.getPosition());
-                List pieces = Arrays.asList(gameInit.data.race.track.pieces);
-                List lanes = Arrays.asList(gameInit.data.race.track.lanes);
+                List<Piece> pieces = getPieces(gameInit);
+                List<Lane> lanes = getLanes(gameInit);
                 Track track = new Track(pieces, lanes);
                 double speed = player.getSpeed(track);
                 double acceleration = speed - previousSpeed;
@@ -114,6 +117,14 @@ public class Main {
                 send(new Ping());
             }
         }
+    }
+
+    private List<Lane> getLanes(GameInitDescriptor gameInit) {
+        return stream(gameInit.data.race.track.lanes).map(l -> new LaneImpl(l.distanceFromCenter)).collect(toList());
+    }
+
+    private List<Piece> getPieces(GameInitDescriptor gameInit) {
+        return Arrays.asList(gameInit.data.race.track.pieces);
     }
 
 
