@@ -3,9 +3,13 @@ package noobbot.model;
 public class AnglePiece extends GenericPiece {
 
     private double cornerLength;
+    private double radius;
+    private double angle;
 
     public AnglePiece(double radius, double angle, int pieceNumber) {
-        super(pieceNumber, angle, radius);
+        super(pieceNumber);
+        this.radius = radius;
+        this.angle = angle;
     }
 
     @Override
@@ -25,4 +29,7 @@ public class AnglePiece extends GenericPiece {
         }
         return cornerLength;
     }
+
+    public double getRadius() { return radius;}
+    public double getAngle() {return angle;}
 }

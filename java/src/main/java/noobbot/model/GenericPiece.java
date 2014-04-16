@@ -6,10 +6,8 @@ public abstract class GenericPiece implements Piece {
     protected double angle;
     protected double radius;
 
-    public GenericPiece(int pieceNumber, double angle, double radius) {
-        this.angle = angle;
+    public GenericPiece(int pieceNumber) {
         this.pieceNumber = pieceNumber;
-        this.radius = radius;
     }
 
     public Double getDistanceTo(Position position) {
@@ -23,6 +21,5 @@ public abstract class GenericPiece implements Piece {
     public int getNumber() {
         return pieceNumber;
     }
-    public double getRadius() { return radius;}
-    public double getAngle() {return angle;}
+
 }

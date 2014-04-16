@@ -5,7 +5,7 @@ public class StraightPiece extends GenericPiece {
     private double length;
 
     public StraightPiece(double length, int pieceNumber) {
-        super(pieceNumber, 0, 0);
+        super(pieceNumber);
         this.length = length;
     }
     
@@ -19,4 +19,9 @@ public class StraightPiece extends GenericPiece {
         return length;
     }
 
+    @Override
+    public double getRadius() {return 0;}
+
+    @Override
+    public double getAngle() {return 0;}
 }
