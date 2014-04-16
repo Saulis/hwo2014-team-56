@@ -6,4 +6,6 @@ public interface Position {
     int getLaneNumber();
     int getPieceNumber();
     double getInPieceDistance();
+    double getSlipAngle();
+    CarPositionsDescriptor.Data.PiecePosition getPiecePosition();
 }
