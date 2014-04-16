@@ -16,11 +16,12 @@ public class TrackTest {
     private Position ignoredPosition = mock(Position.class);
     private double ignoredDistance = 999.0;
 	private List<Piece> pieces = new ArrayList<Piece>();
+    private List<Lane> lanes = new ArrayList<Lane>();
     private int pieceNumber;
 	
 	@Before
 	public void setup() {
-		sut = new Track(pieces);
+		sut = new Track(pieces, lanes);
 	}
     
     @Test
@@ -76,11 +77,6 @@ public class TrackTest {
         
         Double expectedDistance = distanceBeforeLastPoint + lengthOfMiddlePosition + distanceAfterFirstPoint;
         assertEquals(expectedDistance, result);
-    }
-
-    @Test
-    public void allPiecesInATrackCanBeFetched() {
-        assertEquals(pieces, sut.getPieces());
     }
 
     private Piece createPiece(Double pieceLength) {

@@ -6,14 +6,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import noobbot.descriptor.CarPositionsDescriptor;
 import noobbot.descriptor.GameInitDescriptor;
 
 import com.google.gson.Gson;
-import noobbot.model.PlayerPosition;
-import noobbot.model.Car;
-import noobbot.model.Position;
+import noobbot.model.*;
 
 public class Main {
     public static void main(String... args) throws IOException {
@@ -66,7 +67,10 @@ public class Main {
                 double slipAngle = position.getSlipAngle();
                 double trackAngle = getTrackAngle(gameInit, player.getPosition());
                 double nextTrackAngle = getNextTrackAngle(gameInit, player.getPosition());
-                double speed = player.getSpeed(gameInit.data.race.track);
+                List pieces = Arrays.asList(gameInit.data.race.track.pieces);
+                List lanes = Arrays.asList(gameInit.data.race.track.lanes);
+                Track track = new Track(pieces, lanes);
+                double speed = player.getSpeed(track);
                 double acceleration = speed - previousSpeed;
 
                 //Trying out setting target speed roughly according to angle.. 45 degrees -> 50% of top speed

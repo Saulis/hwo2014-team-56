@@ -20,7 +20,7 @@ public class Car {
     }
 
 
-    public double getSpeed(GameInitDescriptor.Data.Race.Track track) {
+    public double getSpeed(Track track) {
         if(previousPosition == null) {
             return 0;
         }
@@ -33,26 +33,26 @@ public class Car {
         }
     }
 
-    private double getPieceLength(GameInitDescriptor.Data.Race.Track track, Position piecePosition) {
-        GameInitDescriptor.Data.Race.Track.Piece piece = track.pieces[((int) piecePosition.getPieceNumber())];
+    private double getPieceLength(Track track, Position piecePosition) {
+        Piece piece = track.getPieces().get(piecePosition.getPieceNumber());
 
-        if(piece.angle != 0) {
-            return Math.abs(piece.angle) / 360 * 2 * Math.PI * getEffectiveRadius(track.lanes[0], piece);
+        if(piece.getAngle() != 0) {
+            return Math.abs(piece.getAngle()) / 360 * 2 * Math.PI * getEffectiveRadius(track.getLanes().get(0), piece); // Hardcoded lane value.
         } else {
-            return piece.length;
+            return piece.getLength(0); //Hardcoded lane value.
         }
     }
 
-    private double getEffectiveRadius(GameInitDescriptor.Data.Race.Track.Lane lane, GameInitDescriptor.Data.Race.Track.Piece piece) {
+    private double getEffectiveRadius(Lane lane, Piece piece) {
         if(isLeftTurn(piece)) {
-            return piece.radius +lane.distanceFromCenter;
+            return piece.getRadius() +lane.getDistanceFromCenter();
         }
 
-        return piece.radius - lane.distanceFromCenter;
+        return piece.getRadius() - lane.getDistanceFromCenter();
     }
 
-    private boolean isLeftTurn(GameInitDescriptor.Data.Race.Track.Piece piece) {
-        return piece.angle < 0;
+    private boolean isLeftTurn(Piece piece) {
+        return piece.getAngle() < 0;
     }
 
 }

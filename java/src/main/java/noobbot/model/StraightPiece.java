@@ -3,10 +3,9 @@ package noobbot.model;
 public class StraightPiece extends GenericPiece {
 
     private double length;
-    int pieceNumber;
 
     public StraightPiece(double length, int pieceNumber) {
-        super(pieceNumber);
+        super(pieceNumber, 0, 0);
         this.length = length;
     }
     

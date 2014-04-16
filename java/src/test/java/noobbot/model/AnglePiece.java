@@ -2,14 +2,10 @@ package noobbot.model;
 
 public class AnglePiece extends GenericPiece {
 
-    private double radius;
-    private double angle;
     private double cornerLength;
 
     public AnglePiece(double radius, double angle, int pieceNumber) {
-        super(pieceNumber);
-        this.radius = radius;
-        this.angle = angle;
+        super(pieceNumber, angle, radius);
     }
 
     @Override

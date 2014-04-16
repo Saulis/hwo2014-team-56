@@ -4,10 +4,12 @@ import java.util.List;
 
 public class Track {
 	private List<Piece> pieces;
+    private List<Lane> lanes;
 
-    public Track(List<Piece> pieces) {
+    public Track(List<Piece> pieces, List<Lane> lanes) {
         this.pieces = pieces;
-	}
+        this.lanes = lanes;
+    }
 
     public Double getDistanceBetween(Position position1, Position position2) {
         Piece startingPiece = getPieceForPosition(position1);
@@ -25,6 +27,10 @@ public class Track {
 
     public List<Piece> getPieces() {
         return pieces;
+    }
+
+    public List<Lane> getLanes() {
+        return lanes;
     }
 
     private Piece getPieceAfter(Piece precedingPiece) {
