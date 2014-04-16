@@ -7,6 +7,11 @@ public class Car {
 
     private Position position;
     private Position previousPosition;
+    private Track track;
+
+    public Car(Track track) {
+        this.track = track;
+    }
 
     public void setPosition(Position newPosition) {
         previousPosition = position;
@@ -18,7 +23,7 @@ public class Car {
     }
 
 
-    public double getSpeed(Track track) {
+    public double getSpeed() {
         if(previousPosition == null) {
             return 0;
         }
@@ -26,12 +31,12 @@ public class Car {
         if(previousPosition.getPieceNumber() == position.getPieceNumber()) {
             return position.getInPieceDistance() - previousPosition.getInPieceDistance();
         } else {
-            double length = getPieceLength(track, previousPosition);
+            double length = getPieceLength(previousPosition);
             return position.getInPieceDistance() + (length - previousPosition.getInPieceDistance());
         }
     }
 
-    private double getPieceLength(Track track, Position piecePosition) {
+    private double getPieceLength(Position piecePosition) {
         Piece piece = track.getPieces().get(piecePosition.getPieceNumber());
 
         if(piece.getAngle() != 0) {

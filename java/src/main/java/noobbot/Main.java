@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.List;
 
 import noobbot.descriptor.CarPositionsDescriptor;
@@ -19,6 +18,8 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
 public class Main {
+    private Track track;
+
     public static void main(String... args) throws IOException {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
@@ -52,7 +53,7 @@ public class Main {
         double accelerationMagicNumber = 0.98; //This will be measured real time
         double topspeed = 10; //This will be calculated from acceleration magic number
 
-        Car player = new Car();
+        Car player = new Car(track);
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
@@ -69,10 +70,7 @@ public class Main {
                 double slipAngle = position.getSlipAngle();
                 double trackAngle = getTrackAngle(gameInit, player.getPosition());
                 double nextTrackAngle = getNextTrackAngle(gameInit, player.getPosition());
-                List<Piece> pieces = getPieces(gameInit);
-                List<Lane> lanes = getLanes(gameInit);
-                Track track = new Track(pieces, lanes);
-                double speed = player.getSpeed(track);
+                double speed = player.getSpeed();
                 double acceleration = speed - previousSpeed;
 
                 //Trying out setting target speed roughly according to angle.. 45 degrees -> 50% of top speed
@@ -108,6 +106,10 @@ public class Main {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
                 gameInit = gson.fromJson(line, GameInitDescriptor.class);
+                List<Piece> pieces = getPieces(gameInit);
+                List<Lane> lanes = getLanes(gameInit);
+                track = new Track(pieces, lanes);
+
                 System.out.println("Race init");
             } else if (msgFromServer.msgType.equals("gameEnd")) {
                 System.out.println("Race end");
