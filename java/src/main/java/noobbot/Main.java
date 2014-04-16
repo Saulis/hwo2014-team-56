@@ -49,7 +49,7 @@ public class Main {
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
-            System.out.println(line);
+            //System.out.println(line);
             if(msgFromServer.msgType.equals("crash")) {
                 System.out.println(line);
             }

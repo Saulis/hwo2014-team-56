@@ -24,7 +24,7 @@ public class AnglePiece extends GenericPiece {
     
     private double getCornerLength() {
         if (cornerLength == 0) {
-            double circleLength = Math.PI * 2 * radius;
+            double circleLength = Math.PI * 2 * radius; //TODO: YOU HAVE TO CONSIDER DISTANCE FROM CENTER
             cornerLength = circleLength * angle / 360;
         }
         return cornerLength;
