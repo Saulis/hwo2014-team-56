@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
  */
 public class CarMetricsTests {
 
+    private double currentThrottle = 1.0;
     private CarMetrics carMetrics;
     private Position firstPosition;
     private Position secondPosition;
@@ -22,6 +23,7 @@ public class CarMetricsTests {
     private Lane onlyLane;
     private Position thirdPosition;
     private Piece piece;
+    private Position startingPosition;
 
     @Before
     public void setup() {
@@ -33,6 +35,7 @@ public class CarMetricsTests {
         piece = mock(Piece.class);
         when(piece.getLength(onlyLane)).thenReturn(100.0);
 
+        startingPosition = createPosition(0, 0);
         firstPosition = createPosition(0, 10.0);
         secondPosition = createPosition(0, 25.0);
         thirdPosition = createPosition(1, 5.0);
@@ -57,33 +60,48 @@ public class CarMetricsTests {
 
     @Test
     public void speedIsZeroOnNoPreviousPosition() {
-        carMetrics.setPosition(firstPosition);
+        carMetrics.update(new Metric(firstPosition, currentThrottle));
 
         assertThat(carMetrics.getCurrentSpeed(), is(0.0));
     }
 
     @Test
     public void speedIsCalculatedOnSamePieces() {
-        carMetrics.setPosition(firstPosition);
-        carMetrics.setPosition(secondPosition);
+        carMetrics.update(new Metric(firstPosition, currentThrottle));
+        carMetrics.update(new Metric(secondPosition, currentThrottle));
 
         assertThat(carMetrics.getCurrentSpeed(), is(15.0));
     }
 
     @Test
     public void speedIsCalculatedOnDifferentPieces() {
-        carMetrics.setPosition(secondPosition);
-        carMetrics.setPosition(thirdPosition);
+        carMetrics.update(new Metric(secondPosition, currentThrottle));
+        carMetrics.update(new Metric(thirdPosition, currentThrottle));
 
         assertThat(carMetrics.getCurrentSpeed(), is(80.0));
     }
 
     @Test
     public void accelerationIsCalculated() {
-        carMetrics.setPosition(firstPosition);
-        carMetrics.setPosition(secondPosition);
-        carMetrics.setPosition(thirdPosition);
+        carMetrics.update(new Metric(firstPosition, currentThrottle));
+        carMetrics.update(new Metric(secondPosition, currentThrottle));
+        carMetrics.update(new Metric(thirdPosition, currentThrottle));
 
         assertThat(carMetrics.getCurrentAcceleration(), is(80.0 - 15.0));
+    }
+
+    @Test
+    public void topSpeedIsCalculated() {
+        update(startingPosition, 1.0);
+        update(firstPosition, 1.0);
+        update(secondPosition, 1.0);
+
+        //Speed: 0, 10-0=10, 25-10=15, Acceleration: 10-0=10, 15-10=5, Ratio: 5/10=0.5
+        //Topspeed: First acc with full throttle / ratio -> 10.0/0.5 = 20
+        assertThat(carMetrics.getTopspeed(), is(20.0));
+    }
+
+    private void update(Position position, double throttle) {
+        carMetrics.update(new Metric(position, throttle));
     }
 }

@@ -23,7 +23,7 @@ public class Car {
     public double setPosition(Position newPosition) {
         position = newPosition;
 
-        carMetrics.setPosition(newPosition);
+        carMetrics.update(new Metric(newPosition, currentThrottle));
 
         double slipAngle = getSlipAngle();
         double slipAcceleration = previousSlipAngle - slipAngle;

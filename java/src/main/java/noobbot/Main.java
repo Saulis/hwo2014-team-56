@@ -33,23 +33,25 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
     }
 
     final Gson gson = new Gson();
     private PrintWriter writer;
 
-    public Main(final BufferedReader reader, final PrintWriter writer, final Join join) throws IOException {
+    public Main(final BufferedReader reader, final PrintWriter writer, final Join join, CreateRace createRace, JoinRace joinRace) throws IOException {
         this.writer = writer;
         String line = null;
 
-        send(join);
+        send(join); //keimola
+        //send(createRace); //germany
+        //send(joinRace); //germany
 
         Car player = null;
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
-            //System.out.println(line);
+            System.out.println(line);
             if(msgFromServer.msgType.equals("crash")) {
                 System.out.println(line);
             }
@@ -120,6 +122,62 @@ class MsgWrapper {
 
     public MsgWrapper(final SendMsg sendMsg) {
         this(sendMsg.msgType(), sendMsg.msgData());
+    }
+}
+
+class CreateRace extends SendMsg {
+
+    class BotId {
+        public String name;
+        public String key;
+
+        public BotId(String name, String key) {
+
+            this.name = name;
+            this.key = key;
+        }
+    }
+
+    public BotId botId;
+    public String trackName;
+    public int carCount = 1;
+
+    CreateRace(String name, String key, String trackName) {
+        this.trackName = trackName;
+        botId = new BotId(name, key);
+    }
+
+    @Override
+    protected String msgType() {
+        return "createRace";
+    }
+}
+
+class JoinRace extends SendMsg {
+
+    class BotId {
+        public String name;
+        public String key;
+
+        public BotId(String name, String key) {
+
+            this.name = name;
+            this.key = key;
+        }
+    }
+
+    public BotId botId;
+    public String trackName;
+    public int carCount = 1;
+
+    JoinRace(String name, String key, String trackName) {
+        this.trackName = trackName;
+        botId = new BotId(name, key);
+    }
+
+    @Override
+    protected String msgType() {
+        return "joinRace";
     }
 }
 

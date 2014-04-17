@@ -1,5 +1,9 @@
 package noobbot.model;
 
+import java.util.ArrayList;
+
+import static java.util.Arrays.stream;
+
 /**
  * Created by jereketonen on 4/16/14.
  */
@@ -8,16 +12,48 @@ public class CarMetrics {
     private Position currentPosition;
     private Position previousPosition;
     private double previousSpeed = 0;
+    private double topspeed = 0;
+    private double currentThrottle;
+    private double previousThrottle;
+    private boolean measuring = false;
+    private double previousAcceleration;
 
     public CarMetrics(Track track) {
         this.track = track;
     }
 
-    public void setPosition(Position newPosition) {
+    public void update(Metric metric) {
+        previousAcceleration = getCurrentAcceleration();
         previousSpeed = getCurrentSpeed();
-        previousPosition = currentPosition;
+        previousPosition = this.currentPosition;
+        previousThrottle = this.currentThrottle;
 
-        currentPosition = newPosition;
+        this.currentThrottle = metric.getThrottle();
+        this.currentPosition = metric.getPosition();
+
+        measureTopspeed();
+    }
+
+    //Ugly but works
+    private void measureTopspeed() {
+
+        //start measuring if we start hitting full throttle from zero
+        if(getCurrentSpeed() == 0 && this.currentThrottle == 1.0) {
+            measuring = true;
+        }
+
+        if(currentThrottle != 1.0) {
+            measuring = false;
+        }
+
+        if(measuring && previousAcceleration > 0) {
+            measuring = false;
+
+            double accelerationRatio = getCurrentAcceleration() / previousAcceleration;
+            topspeed = previousAcceleration / (1 - accelerationRatio);
+
+            System.out.println("Measured top speed at " + topspeed);
+        }
     }
 
     public double getCurrentSpeed() {
@@ -52,5 +88,9 @@ public class CarMetrics {
 
     public double getCurrentAcceleration() {
         return getCurrentSpeed() - previousSpeed;
+    }
+
+    public double getTopspeed() {
+        return topspeed;
     }
 }
