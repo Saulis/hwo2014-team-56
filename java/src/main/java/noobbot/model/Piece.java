@@ -6,7 +6,7 @@ public interface Piece {
 	Double getDistanceFrom(Position position);
     boolean contains(Position position);
     int getNumber();
-    double getLength(int laneNumber);
+    double getLength(Lane lane);
     double getAngle();
     double getRadius();
 }

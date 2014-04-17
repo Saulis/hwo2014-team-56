@@ -2,6 +2,10 @@ package noobbot.model;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
+
 import noobbot.descriptor.CarPositionsDescriptor;
 
 import org.junit.Before;
@@ -12,14 +16,16 @@ import org.junit.Test;
  */
 public class PlayerPositionTests {
 
-    CarPositionsDescriptor.Data data;
-    PlayerPosition sut;
+    private CarPositionsDescriptor.Data data;
+    private PlayerPosition sut;
+    private Track track = mock(Track.class); 
 
     @Before
     public void setUp() {
         CarPositionsDescriptor descriptor = new CarPositionsDescriptor();
         data = descriptor.new Data();
-        sut = new PlayerPosition(data);
+        when(track.getLanes()).thenReturn(new ArrayList<Lane>());
+        sut = new PlayerPosition(track, data);
     }
 
     @Test

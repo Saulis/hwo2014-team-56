@@ -52,7 +52,7 @@ public class CarBrains {
         if(piece.getAngle() != 0) {
             return Math.abs(piece.getAngle()) / 360 * 2 * Math.PI * getEffectiveRadius(track.getLanes().get(0), piece); //TODO: Hardcoded lane value.
         } else {
-            return piece.getLength(0);
+            return piece.getLength(track.getLanes().get(0));
         }
     }
 

@@ -64,7 +64,7 @@ public class CarBrainsTests {
         pieces.add(piece);
         pieces.add(piece);
 
-        when(piece.getLength(0)).thenReturn(100.0);
+        when(piece.getLength(track.getLanes().get(0))).thenReturn(100.0);
 
         when(track.getPieces()).thenReturn(pieces);
 

@@ -15,7 +15,7 @@ public class StraightPiece extends GenericPiece {
     }
 
     @Override
-    public double getLength(int laneNumber) {
+    public double getLength(Lane lane) {
         return length;
     }
 

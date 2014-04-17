@@ -56,7 +56,7 @@ public class Main {
 
             if (msgFromServer.msgType.equals("carPositions")) {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
-                PlayerPosition position = new PlayerPosition(carPositions.data[0]);
+                PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
 
                 double nextThrottle = player.setPosition(position);
 

@@ -10,7 +10,7 @@ public class StraightPieceTest extends GenericPieceTest {
 
     private StraightPiece sut;
     private double pieceLength = 100.0;
-    private int ignoredLaneNumber = 2;
+    private Lane ignoredLane = mock(Lane.class);
     
     @Before
     public void setup() {
@@ -31,7 +31,7 @@ public class StraightPieceTest extends GenericPieceTest {
 
     @Test
     public void pieceLengthIsLengthProvidedInConstructor() throws Exception {
-        assertEquals(pieceLength, sut.getLength(ignoredLaneNumber), 0.0);
+        assertEquals(pieceLength, sut.getLength(ignoredLane), 0.0);
     }
 
     @Override

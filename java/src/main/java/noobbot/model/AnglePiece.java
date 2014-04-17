@@ -14,22 +14,22 @@ public class AnglePiece extends GenericPiece {
 
     @Override
     public Double getDistanceFrom(Position position) {
-        return getCornerLength() - position.getInPieceDistance();
+        double offsetFromCenter = position.getLane().getDistanceFromCenter();
+        return getCornerLength(offsetFromCenter) - position.getInPieceDistance();
     }
 
     @Override
-    public double getLength(int laneNumber) {
-        return getCornerLength();
+    public double getLength(Lane lane) {
+        return getCornerLength(lane.getDistanceFromCenter());
     }
     
-    private double getCornerLength() {
-        if (cornerLength == 0) {
-            double circleLength = Math.PI * 2 * radius; //TODO: YOU HAVE TO CONSIDER DISTANCE FROM CENTER
-            cornerLength = circleLength * angle / 360;
-        }
+    private double getCornerLength(double offsetFromCenter) {
+        double circleLength = Math.PI * 2 * (radius + offsetFromCenter);
+        cornerLength = circleLength * Math.abs(angle) / 360;
         return cornerLength;
     }
 
     public double getRadius() { return radius;}
     public double getAngle() {return angle;}
+
 }

@@ -8,4 +8,5 @@ public interface Position {
     double getInPieceDistance();
     double getSlipAngle();
     CarPositionsDescriptor.Data.PiecePosition getPiecePosition();
+    Lane getLane();
 }

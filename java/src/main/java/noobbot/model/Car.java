@@ -6,7 +6,6 @@ public class Car {
 
     private final CarBrains carBrains;
     private Position position;
-    private Position previousPosition;
     private double previousSpeed = 0;
     private double previousSlipAngle = 0;
     private double currentThrottle = 0;
@@ -24,7 +23,6 @@ public class Car {
     //Under refucktoring...
     public double setPosition(Position newPosition) {
         previousSpeed = carBrains.getCurrentSpeed();
-        previousPosition = position;
         position = newPosition;
 
         carBrains.setPosition(newPosition);
@@ -84,10 +82,6 @@ public class Car {
 
     private double getSlipAngle() {
         return position.getSlipAngle();
-    }
-
-    private double getDistanceToBrakingPoint() {
-        return getPieceLength(position) - position.getInPieceDistance(); // magic number to brake later
     }
 
     private double getBrakingDistance(double estimatedAcceleration, double currentSpeed, double targetSpeed) {
@@ -151,7 +145,7 @@ public class Car {
         if(piece.getAngle() != 0) {
             return Math.abs(piece.getAngle()) / 360 * 2 * Math.PI * getEffectiveRadius(track.getLanes().get(0), piece); //TODO: Hardcoded lane value.
         } else {
-            return piece.getLength(0);
+            return piece.getLength(track.getLanes().get(0));
         }
     }
 

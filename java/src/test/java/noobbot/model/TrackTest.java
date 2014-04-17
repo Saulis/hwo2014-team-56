@@ -78,10 +78,10 @@ public class TrackTest {
         Double expectedDistance = distanceBeforeLastPoint + lengthOfMiddlePosition + distanceAfterFirstPoint;
         assertEquals(expectedDistance, result);
     }
-
+    
     private Piece createPiece(Double pieceLength) {
         Piece piece = createPiece();
-        when(piece.getLength(anyInt())).thenReturn(pieceLength);
+        when(piece.getLength(any(Lane.class))).thenReturn(pieceLength);
         return piece;
     }
 

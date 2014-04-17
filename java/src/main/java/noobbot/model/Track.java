@@ -17,7 +17,7 @@ public class Track {
                 
         Piece nextPiece;
         for (nextPiece = getPieceAfter(startingPiece); ! nextPiece.contains(position2); nextPiece = getPieceAfter(nextPiece)) {
-            distance += nextPiece.getLength(position1.getLaneNumber());
+            distance += nextPiece.getLength(position1.getLane());
         };
         
         distance += nextPiece.getDistanceTo(position2);
@@ -40,5 +40,9 @@ public class Track {
 
     private Piece getPieceForPosition(Position position) {
         return pieces.stream().filter(p -> p.contains(position)).findFirst().get();
+    }
+
+    public Piece getPiece(Position position) {
+        return pieces.get(position.getPieceNumber());
     }
 }

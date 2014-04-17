@@ -11,7 +11,7 @@ public class AnglePieceTest extends GenericPieceTest {
     private AnglePiece sut;
     private double radius = 200.0;
     private double angle = -45;
-    private int ignoredLaneNumber = 3;
+    private Lane ignoredLane = mock(Lane.class);
 
     @Before
     public void setup() {
@@ -22,6 +22,9 @@ public class AnglePieceTest extends GenericPieceTest {
     public void distanceFromPositionIsCornerLengthMinusInPieceDistance() throws Exception {
         double inPiecePosition = 34.5;
         Position position = mock(Position.class);
+        Lane laneInCenter = mock(Lane.class);
+        when(laneInCenter.getDistanceFromCenter()).thenReturn(0.0);
+        when(position.getLane()).thenReturn(laneInCenter );
         when(position.getInPieceDistance()).thenReturn(inPiecePosition);
         
         double result = sut.getDistanceFrom(position);
@@ -34,7 +37,7 @@ public class AnglePieceTest extends GenericPieceTest {
     @Test
     public void pieceLengthIsCornerLength() throws Exception {
         double expectedLength = calculateCornerLength();
-        double result = sut.getLength(ignoredLaneNumber );
+        double result = sut.getLength(ignoredLane);
         assertEquals(expectedLength, result, 0.0);
     }
     
