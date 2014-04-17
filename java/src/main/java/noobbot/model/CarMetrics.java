@@ -3,12 +3,12 @@ package noobbot.model;
 /**
  * Created by jereketonen on 4/16/14.
  */
-public class CarBrains {
+public class CarMetrics {
     private Track track;
     private Position currentPosition;
     private Position previousPosition;
 
-    public CarBrains(Track track) {
+    public CarMetrics(Track track) {
         this.track = track;
     }
 

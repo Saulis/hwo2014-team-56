@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Car {
 
-    private final CarBrains carBrains;
+    private final CarMetrics carBrains;
     private Position position;
     private Position previousPosition;
     private double previousSpeed = 0;
@@ -18,7 +18,7 @@ public class Car {
 
     public Car(Track track) {
         this.track = track;
-        carBrains = new CarBrains(track);
+        carBrains = new CarMetrics(track);
     }
 
     //Under refucktoring...

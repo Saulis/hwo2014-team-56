@@ -14,9 +14,9 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Saulis on 17/04/14.
  */
-public class CarBrainsTests {
+public class CarMetricsTests {
 
-    private CarBrains carBrains;
+    private CarMetrics carMetrics;
     private Position firstPosition;
     private Position secondPosition;
     private Track track;
@@ -24,7 +24,7 @@ public class CarBrainsTests {
     @Before
     public void setup() {
         track = mock(Track.class);
-        carBrains = new CarBrains(track);
+        carMetrics = new CarMetrics(track);
 
         firstPosition = mock(Position.class);
         secondPosition = mock(Position.class);
@@ -32,14 +32,14 @@ public class CarBrainsTests {
 
     @Test
     public void speedIsZeroIsOnNoPreviousPositions() {
-        assertThat(carBrains.getCurrentSpeed(), is(0.0));
+        assertThat(carMetrics.getCurrentSpeed(), is(0.0));
     }
 
     @Test
     public void speedIsZeroOnNoPreviousPosition() {
-        carBrains.setPosition(firstPosition);
+        carMetrics.setPosition(firstPosition);
 
-        assertThat(carBrains.getCurrentSpeed(), is(0.0));
+        assertThat(carMetrics.getCurrentSpeed(), is(0.0));
     }
 
     @Test
@@ -50,10 +50,10 @@ public class CarBrainsTests {
         when(secondPosition.getPieceNumber()).thenReturn(0);
         when(secondPosition.getInPieceDistance()).thenReturn(25.0);
 
-        carBrains.setPosition(firstPosition);
-        carBrains.setPosition(secondPosition);
+        carMetrics.setPosition(firstPosition);
+        carMetrics.setPosition(secondPosition);
 
-        assertThat(carBrains.getCurrentSpeed(), is(15.0));
+        assertThat(carMetrics.getCurrentSpeed(), is(15.0));
     }
 
     @Test
@@ -74,9 +74,9 @@ public class CarBrainsTests {
         when(secondPosition.getPieceNumber()).thenReturn(1);
         when(secondPosition.getInPieceDistance()).thenReturn(10.0);
 
-        carBrains.setPosition(firstPosition);
-        carBrains.setPosition(secondPosition);
+        carMetrics.setPosition(firstPosition);
+        carMetrics.setPosition(secondPosition);
 
-        assertThat(carBrains.getCurrentSpeed(), is(15.0));
+        assertThat(carMetrics.getCurrentSpeed(), is(15.0));
     }
 }
