@@ -1,5 +1,6 @@
 package noobbot.model;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -12,10 +13,14 @@ public class AnglePieceTest extends GenericPieceTest {
     private double radius = 200.0;
     private double angle = 45;
     private Lane ignoredLane = mock(Lane.class);
+    private Lane leftLane;
 
     @Before
     public void setup() {
         sut = new AnglePiece(radius, angle, pieceNumber);
+
+        leftLane = mock(Lane.class);
+        when(leftLane.getDistanceFromCenter()).thenReturn(-20.0);
     }
     
     @Test
@@ -29,14 +34,35 @@ public class AnglePieceTest extends GenericPieceTest {
         
         double result = sut.getDistanceFrom(position);
         
-        double laneLength = calculateCornerLength();
+        double laneLength = calculateCornerLength(radius);
         double expectedDistance = laneLength - inPiecePosition;
         assertEquals(expectedDistance, result, 0.0);
     }
-    
+
+    @Test
+    public void pieceLengthForLeftCorner() {
+        angle = -45;
+        double expectedLength = calculateCornerLength(radius - 20.0);
+
+        double actulLength = sut.getLength(leftLane);
+
+        assertThat(actulLength, is(expectedLength));
+    }
+
+    @Test
+    public void pieceLengthForRightCorner() {
+        angle = 45;
+        double expectedLength = calculateCornerLength(radius + 20.0);
+
+        double actulLength = sut.getLength(leftLane);
+
+        assertThat(actulLength, is(expectedLength));
+    }
+
+
     @Test
     public void pieceLengthIsCornerLength() throws Exception {
-        double expectedLength = calculateCornerLength();
+        double expectedLength = calculateCornerLength(radius);
         double result = sut.getLength(ignoredLane);
         assertEquals(expectedLength, result, 0.0);
     }
@@ -46,7 +72,7 @@ public class AnglePieceTest extends GenericPieceTest {
         return sut;
     }
     
-    private double calculateCornerLength() {
-        return Math.PI * 2 * Math.abs(radius) * angle / 360;
+    private double calculateCornerLength(double radius) {
+        return Math.PI * 2 * radius * Math.abs(angle) / 360;
     }
 }

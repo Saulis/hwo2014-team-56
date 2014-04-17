@@ -47,6 +47,7 @@ public class CarMetrics {
         return piece.getLength(piecePosition.getLane());
     }
 
+
     //TODO: this method would go to AnglePiece
     private boolean isLeftTurn(Piece piece) {
         return piece.getAngle() < 0;

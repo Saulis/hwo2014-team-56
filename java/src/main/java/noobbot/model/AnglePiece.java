@@ -2,7 +2,6 @@ package noobbot.model;
 
 public class AnglePiece extends GenericPiece {
 
-    private double cornerLength;
     private double radius;
     private double angle;
 
@@ -24,9 +23,21 @@ public class AnglePiece extends GenericPiece {
     }
     
     private double getCornerLength(double offsetFromCenter) {
-        double circleLength = Math.PI * 2 * (radius + offsetFromCenter);
-        cornerLength = circleLength * Math.abs(angle) / 360;
-        return cornerLength;
+        double circleLength = Math.PI * 2 * getEffectiveRadius(offsetFromCenter);
+
+        return circleLength * Math.abs(angle) / 360;
+    }
+
+    private double getEffectiveRadius(double offsetFromCenter) {
+        if(isLeftTurn()) {
+            return getRadius() + offsetFromCenter;
+        }
+
+        return getRadius() - offsetFromCenter;
+    }
+
+    private boolean isLeftTurn() {
+        return getAngle() < 0;
     }
 
     public double getRadius() { return radius;}
