@@ -22,7 +22,7 @@ public class CarMetrics {
             return 0;
         }
 
-        if(isPreviousPositionWasOnCurrentPiece()) {
+        if(previousPositionWasOnCurrentPiece()) {
             return currentPosition.getInPieceDistance() - previousPosition.getInPieceDistance();
         } else {
             return currentPosition.getInPieceDistance() + (getPreviousPieceLength() - previousPosition.getInPieceDistance());
@@ -33,7 +33,7 @@ public class CarMetrics {
         return getPieceLength(previousPosition);
     }
 
-    private boolean isPreviousPositionWasOnCurrentPiece() {
+    private boolean previousPositionWasOnCurrentPiece() {
         return previousPosition.getPieceNumber() == currentPosition.getPieceNumber();
     }
 
@@ -43,7 +43,7 @@ public class CarMetrics {
 
     //TODO: these methods would probably go to Track
     private double getPieceLength(Position piecePosition) {
-        Piece piece = track.getPieces().get(piecePosition.getPieceNumber());
+        Piece piece = track.getPiece(piecePosition);
 
         return getPieceLength(piece);
     }

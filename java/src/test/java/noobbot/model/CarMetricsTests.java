@@ -62,15 +62,9 @@ public class CarMetricsTests {
 
     @Test
     public void speedIsCalculatedOnDifferentPieces() {
-        //This test will be refactored after track has nicer methods.
-        List<Piece> pieces = new ArrayList<>();
         Piece piece = mock(Piece.class);
-        pieces.add(piece);
-        pieces.add(piece);
-
         when(piece.getLength(track.getLanes().get(0))).thenReturn(100.0);
-
-        when(track.getPieces()).thenReturn(pieces);
+        when(track.getPiece(firstPosition)).thenReturn(piece);
 
         when(firstPosition.getPieceNumber()).thenReturn(0);
         when(firstPosition.getInPieceDistance()).thenReturn(95.0);
