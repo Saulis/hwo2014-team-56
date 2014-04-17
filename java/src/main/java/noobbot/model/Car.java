@@ -2,11 +2,9 @@ package noobbot.model;
 
 import java.util.List;
 
-/**
- * Created by jereketonen on 4/16/14.
- */
 public class Car {
 
+    private final CarBrains carBrains;
     private Position position;
     private Position previousPosition;
     private double previousSpeed = 0;
@@ -20,19 +18,23 @@ public class Car {
 
     public Car(Track track) {
         this.track = track;
+        carBrains = new CarBrains(track);
     }
 
+    //Under refucktoring...
     public double setPosition(Position newPosition) {
-        previousSpeed = getSpeed();
+        previousSpeed = carBrains.getCurrentSpeed();
         previousPosition = position;
         position = newPosition;
+
+        carBrains.setPosition(newPosition);
 
         double slipAngle = getSlipAngle();
         double slipAcceleration = previousSlipAngle - slipAngle;
         double trackAngle = getTrackAngle();
         double nextTrackAngle = getNextTrackAngle();
-        double acceleration = getAcceleration();
-        double speed = getSpeed();
+        double speed = carBrains.getCurrentSpeed();
+        double acceleration = speed - previousSpeed;
         double currentAngleSpeed = getCurrentAngleSpeed(speed);
 
         double targetSpeed = 10;
@@ -132,23 +134,6 @@ public class Car {
 
     public Position getPosition() {
         return position;
-    }
-
-    public double getSpeed() {
-        if(previousPosition == null) {
-            return 0;
-        }
-
-        if(previousPosition.getPieceNumber() == position.getPieceNumber()) {
-            return position.getInPieceDistance() - previousPosition.getInPieceDistance();
-        } else {
-            double length = getPieceLength(previousPosition);
-            return position.getInPieceDistance() + (length - previousPosition.getInPieceDistance());
-        }
-    }
-
-    public double getAcceleration() {
-        return getSpeed() - previousSpeed;
     }
 
     //TODO: these methods would probably go to Track
