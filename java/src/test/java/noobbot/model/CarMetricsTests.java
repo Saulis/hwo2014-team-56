@@ -3,9 +3,7 @@ package noobbot.model;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,6 +20,8 @@ public class CarMetricsTests {
     private Position secondPosition;
     private Track track;
     private Lane onlyLane;
+    private Position thirdPosition;
+    private Piece piece;
 
     @Before
     public void setup() {
@@ -30,8 +30,12 @@ public class CarMetricsTests {
         when(track.getLanes()).thenReturn(Arrays.asList(onlyLane));
         carMetrics = new CarMetrics(track);
 
-        firstPosition = mock(Position.class);
-        secondPosition = mock(Position.class);
+        piece = mock(Piece.class);
+        when(piece.getLength(onlyLane)).thenReturn(100.0);
+
+        firstPosition = createPosition(0, 10.0);
+        secondPosition = createPosition(0, 25.0);
+        thirdPosition = createPosition(1, 5.0);
     }
 
     @Test
@@ -48,12 +52,6 @@ public class CarMetricsTests {
 
     @Test
     public void speedIsCalculatedOnSamePieces() {
-        when(firstPosition.getPieceNumber()).thenReturn(0);
-        when(firstPosition.getInPieceDistance()).thenReturn(10.0);
-
-        when(secondPosition.getPieceNumber()).thenReturn(0);
-        when(secondPosition.getInPieceDistance()).thenReturn(25.0);
-
         carMetrics.setPosition(firstPosition);
         carMetrics.setPosition(secondPosition);
 
@@ -62,19 +60,21 @@ public class CarMetricsTests {
 
     @Test
     public void speedIsCalculatedOnDifferentPieces() {
-        Piece piece = mock(Piece.class);
-        when(piece.getLength(track.getLanes().get(0))).thenReturn(100.0);
-        when(track.getPiece(firstPosition)).thenReturn(piece);
-
-        when(firstPosition.getPieceNumber()).thenReturn(0);
-        when(firstPosition.getInPieceDistance()).thenReturn(95.0);
-
-        when(secondPosition.getPieceNumber()).thenReturn(1);
-        when(secondPosition.getInPieceDistance()).thenReturn(10.0);
-
-        carMetrics.setPosition(firstPosition);
         carMetrics.setPosition(secondPosition);
+        carMetrics.setPosition(thirdPosition);
 
-        assertThat(carMetrics.getCurrentSpeed(), is(15.0));
+        assertThat(carMetrics.getCurrentSpeed(), is(80.0));
+    }
+
+    private Position createPosition(int pieceNumber, double inDistance) {
+        Position position = mock(Position.class);
+
+        when(position.getLane()).thenReturn(onlyLane);
+        when(position.getPieceNumber()).thenReturn(pieceNumber);
+        when(position.getInPieceDistance()).thenReturn(inDistance);
+
+        when(track.getPiece(position)).thenReturn(piece);
+
+        return position;
     }
 }

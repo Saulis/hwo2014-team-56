@@ -41,19 +41,10 @@ public class CarMetrics {
         return previousPosition != null;
     }
 
-    //TODO: these methods would probably go to Track
     private double getPieceLength(Position piecePosition) {
         Piece piece = track.getPiece(piecePosition);
 
-        return getPieceLength(piece);
-    }
-
-    private double getPieceLength(Piece piece) {
-        if(piece.getAngle() != 0) {
-            return Math.abs(piece.getAngle()) / 360 * 2 * Math.PI * getEffectiveRadius(track.getLanes().get(0), piece); //TODO: Hardcoded lane value.
-        } else {
-            return piece.getLength(track.getLanes().get(0));
-        }
+        return piece.getLength(piecePosition.getLane());
     }
 
     //TODO: this method would go to AnglePiece

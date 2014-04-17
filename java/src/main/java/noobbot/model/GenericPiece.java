@@ -21,5 +21,4 @@ public abstract class GenericPiece implements Piece {
     public int getNumber() {
         return pieceNumber;
     }
-
 }
