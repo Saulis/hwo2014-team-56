@@ -12,7 +12,7 @@ public class Track {
     }
 
     public Double getDistanceBetween(Position position1, Position position2) {
-        Piece startingPiece = getPieceForPosition(position1);
+        Piece startingPiece = getPiece(position1);
         double distance = startingPiece.getDistanceFrom(position1);
                 
         Piece nextPiece;
@@ -36,10 +36,6 @@ public class Track {
     private Piece getPieceAfter(Piece precedingPiece) {
         int nextPieceIndex = precedingPiece.getNumber() + 1;
         return pieces.get(nextPieceIndex % pieces.size());
-    }
-
-    private Piece getPieceForPosition(Position position) {
-        return pieces.stream().filter(p -> p.contains(position)).findFirst().get();
     }
 
     public Piece getPiece(Position position) {
