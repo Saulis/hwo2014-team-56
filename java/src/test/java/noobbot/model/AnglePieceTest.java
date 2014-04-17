@@ -10,7 +10,7 @@ public class AnglePieceTest extends GenericPieceTest {
 
     private AnglePiece sut;
     private double radius = 200.0;
-    private double angle = -45;
+    private double angle = 45;
     private Lane ignoredLane = mock(Lane.class);
 
     @Before
@@ -47,6 +47,6 @@ public class AnglePieceTest extends GenericPieceTest {
     }
     
     private double calculateCornerLength() {
-        return Math.PI * 2 * radius * angle / 360;
+        return Math.PI * 2 * Math.abs(radius) * angle / 360;
     }
 }

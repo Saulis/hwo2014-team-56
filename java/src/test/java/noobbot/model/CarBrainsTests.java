@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -20,10 +21,13 @@ public class CarBrainsTests {
     private Position firstPosition;
     private Position secondPosition;
     private Track track;
+    private Lane onlyLane;
 
     @Before
     public void setup() {
         track = mock(Track.class);
+        onlyLane = mock(Lane.class);
+        when(track.getLanes()).thenReturn(Arrays.asList(onlyLane));
         carBrains = new CarBrains(track);
 
         firstPosition = mock(Position.class);

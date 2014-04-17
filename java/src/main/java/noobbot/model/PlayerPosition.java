@@ -7,11 +7,11 @@ import noobbot.descriptor.CarPositionsDescriptor;
  */
 public class PlayerPosition implements Position {
     private CarPositionsDescriptor.Data data;
-    private Lane lane;
+    private Track track;
 
     public PlayerPosition(Track track, CarPositionsDescriptor.Data data) {
+        this.track = track;
         this.data = data;
-        this.lane = track.getLanes().get(getLaneNumber());
     }
 
     public double getSlipAngle() {
@@ -39,6 +39,6 @@ public class PlayerPosition implements Position {
 
     @Override
     public Lane getLane() {
-        return lane;
+        return track.getLanes().get(getLaneNumber());
     }
 }
