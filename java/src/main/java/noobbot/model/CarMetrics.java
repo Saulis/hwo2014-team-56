@@ -7,13 +7,16 @@ public class CarMetrics {
     private Track track;
     private Position currentPosition;
     private Position previousPosition;
+    private double previousSpeed = 0;
 
     public CarMetrics(Track track) {
         this.track = track;
     }
 
     public void setPosition(Position newPosition) {
+        previousSpeed = getCurrentSpeed();
         previousPosition = currentPosition;
+
         currentPosition = newPosition;
     }
 
@@ -45,5 +48,9 @@ public class CarMetrics {
         Piece piece = track.getPiece(piecePosition);
 
         return piece.getLength(piecePosition.getLane());
+    }
+
+    public double getCurrentAcceleration() {
+        return getCurrentSpeed() - previousSpeed;
     }
 }

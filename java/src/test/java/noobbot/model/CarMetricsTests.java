@@ -38,6 +38,18 @@ public class CarMetricsTests {
         thirdPosition = createPosition(1, 5.0);
     }
 
+    private Position createPosition(int pieceNumber, double inDistance) {
+        Position position = mock(Position.class);
+
+        when(position.getLane()).thenReturn(onlyLane);
+        when(position.getPieceNumber()).thenReturn(pieceNumber);
+        when(position.getInPieceDistance()).thenReturn(inDistance);
+
+        when(track.getPiece(position)).thenReturn(piece);
+
+        return position;
+    }
+
     @Test
     public void speedIsZeroIsOnNoPreviousPositions() {
         assertThat(carMetrics.getCurrentSpeed(), is(0.0));
@@ -66,15 +78,12 @@ public class CarMetricsTests {
         assertThat(carMetrics.getCurrentSpeed(), is(80.0));
     }
 
-    private Position createPosition(int pieceNumber, double inDistance) {
-        Position position = mock(Position.class);
+    @Test
+    public void accelerationIsCalculated() {
+        carMetrics.setPosition(firstPosition);
+        carMetrics.setPosition(secondPosition);
+        carMetrics.setPosition(thirdPosition);
 
-        when(position.getLane()).thenReturn(onlyLane);
-        when(position.getPieceNumber()).thenReturn(pieceNumber);
-        when(position.getInPieceDistance()).thenReturn(inDistance);
-
-        when(track.getPiece(position)).thenReturn(piece);
-
-        return position;
+        assertThat(carMetrics.getCurrentAcceleration(), is(80.0 - 15.0));
     }
 }

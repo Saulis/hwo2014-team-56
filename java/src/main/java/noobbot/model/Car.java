@@ -4,9 +4,8 @@ import java.util.List;
 
 public class Car {
 
-    private final CarMetrics carBrains;
+    private final CarMetrics carMetrics;
     private Position position;
-    private double previousSpeed = 0;
     private double previousSlipAngle = 0;
     private double currentThrottle = 0;
     private Track track;
@@ -17,22 +16,21 @@ public class Car {
 
     public Car(Track track) {
         this.track = track;
-        carBrains = new CarMetrics(track);
+        carMetrics = new CarMetrics(track);
     }
 
     //Under refucktoring...
     public double setPosition(Position newPosition) {
-        previousSpeed = carBrains.getCurrentSpeed();
         position = newPosition;
 
-        carBrains.setPosition(newPosition);
+        carMetrics.setPosition(newPosition);
 
         double slipAngle = getSlipAngle();
         double slipAcceleration = previousSlipAngle - slipAngle;
         double trackAngle = getTrackAngle();
         double nextTrackAngle = getNextTrackAngle();
-        double speed = carBrains.getCurrentSpeed();
-        double acceleration = speed - previousSpeed;
+        double speed = carMetrics.getCurrentSpeed();
+        double acceleration = carMetrics.getCurrentAcceleration();
         double currentAngleSpeed = getCurrentAngleSpeed(speed);
 
         double targetSpeed = 10;
