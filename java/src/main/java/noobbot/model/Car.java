@@ -16,6 +16,7 @@ public class Car {
 
     double accelerationMagicNumber = 0.02; //This will be measured real time
     double topspeed = 10; //This will be calculated from acceleration magic number
+    double targetAngleSpeed = 3.75; //This will be calculated somehow
 
     public Car(Track track) {
         this.track = track;
@@ -31,61 +32,52 @@ public class Car {
         double trackAngle = getTrackAngle();
         double nextTrackAngle = getNextTrackAngle();
         double acceleration = getAcceleration();
-
-
         double speed = getSpeed();
+        double currentAngleSpeed = getCurrentAngleSpeed(speed);
 
-        //double angleAcceleration = (getPieceLength(position) * Math.abs(trackAngle) / 360) / 1.5;
-        //System.out.println("ANGLE: " + angleAcceleration);
-
-        //Trying out setting target speed roughly according to angle.. 45 degrees -> 50% of top speed
         double targetSpeed = 10;
-        //if(nextTrackAngle != 0) {
-            //targetSpeed = (getNextPieceLength() * Math.abs(nextTrackAngle) / 360) / 1.6;
-            targetSpeed = topspeed * ((90 - Math.abs(nextTrackAngle)) / 90) * 1.20; //magic magic + 20% boost
-        //}
-        double speedDiff = targetSpeed - speed;
-
-        //Acceleration estimation testing here...
-        //double estimatedAcceleration = (currentThrottle * topspeed - speed) * (1 - accelerationMagicNumber);
-        double estimatedAcceleration = (currentThrottle * topspeed - speed) * accelerationMagicNumber;
-        double estimatedAcceleration2 = estimatedAcceleration;
-        double estimatedSpeed = speed + estimatedAcceleration;
-        double brakingDistance = getBrakingDistance(estimatedAcceleration, speed, targetSpeed);
-        //breaking ticks
-        int ticks = 1;
-        if(speedDiff < 0) {
-
-            while(estimatedSpeed > targetSpeed) {
-                ticks++;
-                brakingDistance += estimatedSpeed;
-                estimatedAcceleration2 = 0-estimatedSpeed * accelerationMagicNumber;
-                estimatedSpeed = estimatedSpeed + estimatedAcceleration2;
-            }
+        if(nextTrackAngle != 0) {
+            //Targeting next angled piece
+            targetSpeed = getNextPieceLength() / (Math.abs(nextTrackAngle)/ targetAngleSpeed);
+        } else if(Math.abs(currentAngleSpeed) > targetAngleSpeed + 0.105) { //tailhappy magic number
+            //Straight piece is next but making sure we're not slipping too much by hitting full throttle yet.
+            targetSpeed = getPieceLength(position) / (Math.abs(trackAngle)/ targetAngleSpeed);
         }
 
-        double nextThrottle = 0;
+        double speedDiff = targetSpeed - speed;
+        double estimatedAcceleration = (currentThrottle * topspeed - speed) * accelerationMagicNumber;
+        double estimatedSpeed = speed + estimatedAcceleration;
+        double brakingDistance = getBrakingDistance(estimatedAcceleration, speed, targetSpeed);
 
-        if(speedDiff > 1) {
+        //Throttle control
+        double nextThrottle = 0;
+        if(speedDiff > 0.2) {
             nextThrottle = 1;
-        } else if(speedDiff < -1){// && getDistanceToBrakingPoint() <= brakingDistance) {
+        } else if(speedDiff < -0.2){// && getDistanceToBrakingPoint() <= brakingDistance) { //disable
             nextThrottle = 0;
         }
         else {
             nextThrottle = targetSpeed / topspeed;
         }
 
-        //If we can estimate deceleration rate we can then calculate the distance required to decelerate to target speed.
-        //With the braking distance we can then start braking at the last possible moment.
-        //System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s, Speed: %s (%s), Acc: %s (%s)", getPosition().getPiecePosition().pieceIndex, getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, speed, targetSpeed, acceleration, estimatedAcceleration));
         System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPiecePosition().pieceIndex, getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipAcceleration));
-        System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s (%s, %s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed, ticks, brakingDistance));
+        System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s, B: %s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed, brakingDistance));
         System.out.println(String.format("*S: %s, A: %s", estimatedSpeed, estimatedAcceleration));
+        System.out.println("ANGLE: " + currentAngleSpeed);
 
         currentThrottle = nextThrottle;
         previousSlipAngle = slipAngle;
 
         return nextThrottle;
+    }
+
+    private double getCurrentAngleSpeed(double speed) {
+        if(speed <= 0) {
+            return 0;
+        }
+
+        //TODO: Can't use piece.getLength(lane) yet because it doesn't take lane into account...
+        return getCurrentPiece().getAngle() / (getPieceLength(position) / speed);
     }
 
     private double getSlipAngle() {
@@ -105,11 +97,15 @@ public class Car {
                 breakingDistance += estimatedSpeed;
                 estimatedAcceleration = 0-estimatedSpeed * accelerationMagicNumber;
                 estimatedSpeed = estimatedSpeed + estimatedAcceleration;
-                System.out.println(String.format("target: %s, est: %s", targetSpeed, estimatedSpeed));
+                //System.out.println(String.format("target: %s, est: %s", targetSpeed, estimatedSpeed));
             }
         }
 
         return breakingDistance;
+    }
+
+    private Piece getCurrentPiece() {
+        return track.getPieces().get(getPosition().getPieceNumber());
     }
 
     private Piece getNextPiece() {
@@ -155,24 +151,22 @@ public class Car {
         return getSpeed() - previousSpeed;
     }
 
-    //TODO: this method would probably go to Track
+    //TODO: these methods would probably go to Track
     private double getPieceLength(Position piecePosition) {
         Piece piece = track.getPieces().get(piecePosition.getPieceNumber());
 
-        if(piece.getAngle() != 0) {
-            return Math.abs(piece.getAngle()) / 360 * 2 * Math.PI * getEffectiveRadius(track.getLanes().get(0), piece); // Hardcoded lane value.
-        } else {
-            return piece.getLength(0); //Hardcoded lane value.
-        }
+        return getPieceLength(piece);
     }
 
     private double getNextPieceLength() {
-        Piece piece = getNextPiece();
+        return getPieceLength(getNextPiece());
+    }
 
+    private double getPieceLength(Piece piece) {
         if(piece.getAngle() != 0) {
-            return Math.abs(piece.getAngle()) / 360 * 2 * Math.PI * getEffectiveRadius(track.getLanes().get(0), piece); // Hardcoded lane value.
+            return Math.abs(piece.getAngle()) / 360 * 2 * Math.PI * getEffectiveRadius(track.getLanes().get(0), piece); //TODO: Hardcoded lane value.
         } else {
-            return piece.getLength(0); //Hardcoded lane value.
+            return piece.getLength(0);
         }
     }
 
