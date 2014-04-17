@@ -46,20 +46,4 @@ public class CarMetrics {
 
         return piece.getLength(piecePosition.getLane());
     }
-
-
-    //TODO: this method would go to AnglePiece
-    private boolean isLeftTurn(Piece piece) {
-        return piece.getAngle() < 0;
-    }
-
-    //TODO: this method would probably go to Piece?
-    private double getEffectiveRadius(Lane lane, Piece piece) {
-        if(isLeftTurn(piece)) {
-            return piece.getRadius() +lane.getDistanceFromCenter();
-        }
-
-        return piece.getRadius() - lane.getDistanceFromCenter();
-    }
-
 }
