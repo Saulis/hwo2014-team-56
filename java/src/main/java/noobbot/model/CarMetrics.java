@@ -121,4 +121,12 @@ public class CarMetrics {
 
         return maxAccelertionFallbackValue;
     }
+
+    public double getNextAcceleration(double currentSpeed, double currentThrottle) {
+        return (currentThrottle * getTopspeed() - currentSpeed) * getAccelerationRatio();
+    }
+
+    public double getSpeed(double currentSpeed, double acceleration) {
+        return currentSpeed + acceleration;
+    }
 }

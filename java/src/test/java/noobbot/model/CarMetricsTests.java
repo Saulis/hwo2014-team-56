@@ -96,15 +96,19 @@ public class CarMetricsTests {
 
     @Test
     public void accelerationIsMeasuredCalculated() {
-        update(startingPosition, 1.0);
-        update(firstPosition, 1.0);
-        update(secondPosition, 1.0);
+        updateForAccelerationMeasuring();
 
         //Speed: 0, 10-0=10, 25-10=15, Acceleration: 10-0=10, 15-10=5, Ratio: 5/10=0.5
         //Topspeed: First acc with full throttle / ratio -> 10.0/0.5 = 20
         assertThat(carMetrics.getAccelerationRatio(), is(0.5));
         assertThat(carMetrics.getMaxAcceleration(), is(10.0));
         assertThat(carMetrics.getTopspeed(), is(20.0));
+    }
+
+    private void updateForAccelerationMeasuring() {
+        update(startingPosition, 1.0);
+        update(firstPosition, 1.0);
+        update(secondPosition, 1.0);
     }
 
     @Test
@@ -120,5 +124,18 @@ public class CarMetricsTests {
     @Test
     public void maxAccelerationHasFallbackValue() {
         assertThat(carMetrics.getMaxAcceleration(), is(0.2)); //test track max acceleration
+    }
+
+    @Test
+    public void nextAccelerationIsEstimated() {
+        updateForAccelerationMeasuring();
+
+        //Max accel 10, accel ratio 0.5, current speed 2.0, top speed 20.0, hence 20.0 - 2.0 = 18.0, 18.0 * 0.5 = 9.0
+        assertThat(carMetrics.getNextAcceleration(2.0, 1.0), is(9.0));
+    }
+
+    @Test
+    public void nextSpeedIsEstimated() {
+        assertThat(carMetrics.getSpeed(2.0, 9.0), is(11.0));
     }
 }
