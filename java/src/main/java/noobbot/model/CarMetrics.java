@@ -122,11 +122,31 @@ public class CarMetrics {
         return maxAccelertionFallbackValue;
     }
 
-    public double getNextAcceleration(double currentSpeed, double currentThrottle) {
+    public double getAcceleration(double currentSpeed, double currentThrottle) {
         return (currentThrottle * getTopspeed() - currentSpeed) * getAccelerationRatio();
     }
 
     public double getSpeed(double currentSpeed, double acceleration) {
         return currentSpeed + acceleration;
+    }
+
+    public double getBrakingDistance(double currentSpeed, double targetSpeed, double currentThrottle) {
+        double acceleration = getAcceleration(currentSpeed, currentThrottle);
+        double speed = getSpeed(currentSpeed, acceleration);
+
+        if(targetSpeed < currentSpeed) {
+            double breakingDistance = currentSpeed;
+
+            while(speed > targetSpeed) {
+                breakingDistance += speed;
+
+                acceleration = 0-speed * getAccelerationRatio();
+                speed = getSpeed(speed, acceleration);
+            }
+
+            return breakingDistance;
+        }
+
+        return 0;
     }
 }

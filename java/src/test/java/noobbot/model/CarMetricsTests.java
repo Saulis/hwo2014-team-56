@@ -131,11 +131,20 @@ public class CarMetricsTests {
         updateForAccelerationMeasuring();
 
         //Max accel 10, accel ratio 0.5, current speed 2.0, top speed 20.0, hence 20.0 - 2.0 = 18.0, 18.0 * 0.5 = 9.0
-        assertThat(carMetrics.getNextAcceleration(2.0, 1.0), is(9.0));
+        assertThat(carMetrics.getAcceleration(2.0, 1.0), is(9.0));
     }
 
     @Test
     public void nextSpeedIsEstimated() {
         assertThat(carMetrics.getSpeed(2.0, 9.0), is(11.0));
+    }
+
+    @Test
+    public void brakingDistanceIsCalculated() {
+        updateForAccelerationMeasuring();
+
+        //Max accel 10.0, and acceleration & braking has a tick delay, so braking 20->10
+        //will take two ticks with speed of 20.0 -> distance of 40.0
+        assertThat(carMetrics.getBrakingDistance(20.0, 10.0, 1.0), is(40.0));
     }
 }
