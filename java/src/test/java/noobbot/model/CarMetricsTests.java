@@ -53,6 +53,10 @@ public class CarMetricsTests {
         return position;
     }
 
+    private void update(Position position, double throttle) {
+        carMetrics.update(new Metric(position, throttle));
+    }
+
     @Test
     public void speedIsZeroIsOnNoPreviousPositions() {
         assertThat(carMetrics.getCurrentSpeed(), is(0.0));
@@ -60,44 +64,46 @@ public class CarMetricsTests {
 
     @Test
     public void speedIsZeroOnNoPreviousPosition() {
-        carMetrics.update(new Metric(firstPosition, currentThrottle));
+        update(firstPosition, currentThrottle);
 
         assertThat(carMetrics.getCurrentSpeed(), is(0.0));
     }
 
     @Test
     public void speedIsCalculatedOnSamePieces() {
-        carMetrics.update(new Metric(firstPosition, currentThrottle));
-        carMetrics.update(new Metric(secondPosition, currentThrottle));
+        update(firstPosition, currentThrottle);
+        update(secondPosition, currentThrottle);
 
         assertThat(carMetrics.getCurrentSpeed(), is(15.0));
     }
 
     @Test
     public void speedIsCalculatedOnDifferentPieces() {
-        carMetrics.update(new Metric(secondPosition, currentThrottle));
-        carMetrics.update(new Metric(thirdPosition, currentThrottle));
+        update(secondPosition, currentThrottle);
+        update(thirdPosition, currentThrottle);
 
         assertThat(carMetrics.getCurrentSpeed(), is(80.0));
     }
 
     @Test
     public void accelerationIsCalculated() {
-        carMetrics.update(new Metric(firstPosition, currentThrottle));
-        carMetrics.update(new Metric(secondPosition, currentThrottle));
-        carMetrics.update(new Metric(thirdPosition, currentThrottle));
+        update(firstPosition, currentThrottle);
+        update(secondPosition, currentThrottle);
+        update(thirdPosition, currentThrottle);
 
         assertThat(carMetrics.getCurrentAcceleration(), is(80.0 - 15.0));
     }
 
     @Test
-    public void topSpeedIsCalculated() {
+    public void accelerationIsMeasuredCalculated() {
         update(startingPosition, 1.0);
         update(firstPosition, 1.0);
         update(secondPosition, 1.0);
 
         //Speed: 0, 10-0=10, 25-10=15, Acceleration: 10-0=10, 15-10=5, Ratio: 5/10=0.5
         //Topspeed: First acc with full throttle / ratio -> 10.0/0.5 = 20
+        assertThat(carMetrics.getAccelerationRatio(), is(0.5));
+        assertThat(carMetrics.getMaxAcceleration(), is(10.0));
         assertThat(carMetrics.getTopspeed(), is(20.0));
     }
 
@@ -106,7 +112,13 @@ public class CarMetricsTests {
         assertThat(carMetrics.getTopspeed(), is(10.0)); //test track top speed
     }
 
-    private void update(Position position, double throttle) {
-        carMetrics.update(new Metric(position, throttle));
+    @Test
+    public void accelerationRatioHasFallbackValue() {
+        assertThat(carMetrics.getAccelerationRatio(), is(0.02)); //test track acceleration ratio
+    }
+
+    @Test
+    public void maxAccelerationHasFallbackValue() {
+        assertThat(carMetrics.getMaxAcceleration(), is(0.2)); //test track max acceleration
     }
 }

@@ -1,23 +1,26 @@
 package noobbot.model;
 
-import java.util.ArrayList;
-
 import static java.util.Arrays.stream;
 
 /**
  * Created by jereketonen on 4/16/14.
  */
 public class CarMetrics {
+    //using test track values for fallback because they're the closest we've got.
     private final double topSpeedFallbackValue = 10.0;
+    private final double maxAccelertionFallbackValue = 0.2;
+    private final double accelerationRatioFallbackValue = 0.02;
 
     private Track track;
     private Position currentPosition;
     private Position previousPosition;
     private double previousSpeed = 0;
     private double topspeed = 0;
+    private double maxAcceleration = 0;
+    private double accelerationRatio = 0;
     private double currentThrottle;
     private double previousThrottle;
-    private boolean measuring = false;
+    private boolean measuringAcceleration = false;
     private double previousAcceleration;
 
     public CarMetrics(Track track) {
@@ -39,22 +42,25 @@ public class CarMetrics {
     //Ugly but works
     private void measureTopspeed() {
 
-        //start measuring if we start hitting full throttle from zero
+        //start measuringAcceleration if we start hitting full throttle from zero
         if(getCurrentSpeed() == 0 && this.currentThrottle == 1.0) {
-            measuring = true;
+            System.out.println("Metrics: Starting to measure acceleration.");
+            measuringAcceleration = true;
         }
 
         if(currentThrottle != 1.0) {
-            measuring = false;
+            System.out.println("Metrics: Stopping acceleration measuring.");
+            measuringAcceleration = false;
         }
 
-        if(measuring && previousAcceleration > 0) {
-            measuring = false;
+        if(measuringAcceleration && previousAcceleration > 0) {
+            measuringAcceleration = false;
 
-            double accelerationRatio = getCurrentAcceleration() / previousAcceleration;
-            topspeed = previousAcceleration / (1 - accelerationRatio);
+            accelerationRatio = 1 - getCurrentAcceleration() / previousAcceleration;
+            maxAcceleration = previousAcceleration;
+            topspeed = previousAcceleration / accelerationRatio;
 
-            System.out.println("Measured top speed at " + topspeed);
+            System.out.println(String.format("Metrics: Acceleration measured. Acceleration ratio: %s, Max Acceleration: %s, Topspeed: %s", accelerationRatio, maxAcceleration, topspeed));
         }
     }
 
@@ -98,5 +104,21 @@ public class CarMetrics {
         }
 
         return topSpeedFallbackValue;
+    }
+
+    public double getAccelerationRatio() {
+        if(accelerationRatio > 0) {
+            return accelerationRatio;
+        }
+
+        return accelerationRatioFallbackValue;
+    }
+
+    public double getMaxAcceleration() {
+        if(maxAcceleration > 0) {
+            return maxAcceleration;
+        }
+
+        return maxAccelertionFallbackValue;
     }
 }
