@@ -47,14 +47,15 @@ public class Car {
         double speedDiff = targetSpeed - speed;
         double estimatedAcceleration = (currentThrottle * topspeed - speed) * accelerationMagicNumber;
         double estimatedSpeed = speed + estimatedAcceleration;
-        double brakingDistance = getBrakingDistance(estimatedAcceleration, speed, targetSpeed);
 
         double nextThrottle = throttleControl.getThrottle(speed, targetSpeed);
 
         System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPiecePosition().pieceIndex, getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipAcceleration));
-        System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s, B: %s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed, brakingDistance));
+        System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed));
         System.out.println(String.format("*S: %s, A: %s", estimatedSpeed, estimatedAcceleration));
         System.out.println("ANGLE: " + currentAngleSpeed);
+
+        System.out.println(String.format("BRAKING DISTANCE: %s ", carMetrics.getBrakingDistance(speed, targetSpeed, currentThrottle)));
 
         currentThrottle = nextThrottle;
         previousSlipAngle = slipAngle;
@@ -73,22 +74,6 @@ public class Car {
 
     private double getSlipAngle() {
         return position.getSlipAngle();
-    }
-
-    private double getBrakingDistance(double estimatedAcceleration, double currentSpeed, double targetSpeed) {
-        double estimatedSpeed = currentSpeed + estimatedAcceleration;
-        double breakingDistance = currentSpeed;
-
-        if(targetSpeed - currentSpeed < 0) {
-            while(estimatedSpeed > targetSpeed) {
-                breakingDistance += estimatedSpeed;
-                estimatedAcceleration = 0-estimatedSpeed * accelerationMagicNumber;
-                estimatedSpeed = estimatedSpeed + estimatedAcceleration;
-                //System.out.println(String.format("target: %s, est: %s", targetSpeed, estimatedSpeed));
-            }
-        }
-
-        return breakingDistance;
     }
 
     private Piece getCurrentPiece() {

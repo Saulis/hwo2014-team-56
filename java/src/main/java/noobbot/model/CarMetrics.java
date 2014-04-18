@@ -8,8 +8,15 @@ import static java.util.Arrays.stream;
 public class CarMetrics {
     //using test track values for fallback because they're the closest we've got.
     private final double topSpeedFallbackValue = 10.0;
-    private final double maxAccelertionFallbackValue = 0.2;
+    private final double maxAccelerationFallbackValue = 0.2;
     private final double accelerationRatioFallbackValue = 0.02;
+
+    /*
+        Sales Notes:
+            Jos ratio on 0.98 / 0.02, niin nopeudet voi myös laskea näin:
+            kiihtyen nopeus * 1.98, hidastuen nopeus * 0.98
+
+     */
 
     private Track track;
     private Position currentPosition;
@@ -119,7 +126,7 @@ public class CarMetrics {
             return maxAcceleration;
         }
 
-        return maxAccelertionFallbackValue;
+        return maxAccelerationFallbackValue;
     }
 
     public double getAcceleration(double currentSpeed, double currentThrottle) {
@@ -137,11 +144,14 @@ public class CarMetrics {
         if(targetSpeed < currentSpeed) {
             double breakingDistance = currentSpeed;
 
-            while(speed > targetSpeed) {
+            while(speed > targetSpeed + 0.05) {
                 breakingDistance += speed;
 
-                acceleration = 0-speed * getAccelerationRatio();
+                //0.0 is for braking throttle
+                acceleration = getAcceleration(speed, 0.0);
                 speed = getSpeed(speed, acceleration);
+
+                //System.out.println(String.format("DEBUG: s: %s  t: %s ", speed, targetSpeed));
             }
 
             return breakingDistance;
