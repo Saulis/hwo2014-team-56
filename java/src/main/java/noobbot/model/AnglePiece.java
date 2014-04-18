@@ -16,6 +16,8 @@ public class AnglePiece extends GenericPiece {
         double offsetFromCenter = position.getLane().getDistanceFromCenter();
         return getCornerLength(offsetFromCenter) - position.getInPieceDistance();
     }
+    //    private double calculateCornerLength(double radius) {
+   // return Math.PI * 2 * radius * Math.abs(angle) / 360;
 
     @Override
     public double getLength(Lane lane) {

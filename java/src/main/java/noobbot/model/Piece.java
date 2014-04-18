@@ -8,5 +8,4 @@ public interface Piece {
     int getNumber();
     double getLength(Lane lane);
     double getAngle();
-    double getRadius();
 }

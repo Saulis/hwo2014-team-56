@@ -14,13 +14,14 @@ public class AnglePieceTest extends GenericPieceTest {
     private double angle = 45;
     private Lane ignoredLane = mock(Lane.class);
     private Lane leftLane;
+    private final double leftLaneOffset = -20.0;
 
     @Before
     public void setup() {
         sut = new AnglePiece(radius, angle, pieceNumber);
 
         leftLane = mock(Lane.class);
-        when(leftLane.getDistanceFromCenter()).thenReturn(-20.0);
+        when(leftLane.getDistanceFromCenter()).thenReturn(leftLaneOffset);
     }
     
     @Test
@@ -41,12 +42,12 @@ public class AnglePieceTest extends GenericPieceTest {
 
     @Test
     public void pieceLengthForLeftCorner() {
-        angle = -45;
-        double expectedLength = calculateCornerLength(radius - 20.0);
+        AnglePiece sut = new AnglePiece(radius, -45, 1);
+        double expectedLength = calculateCornerLength(radius + leftLaneOffset);
 
-        double actulLength = sut.getLength(leftLane);
+        double actualLength = sut.getLength(leftLane);
 
-        assertThat(actulLength, is(expectedLength));
+        assertThat(actualLength, is(expectedLength));
     }
 
     @Test
@@ -54,9 +55,9 @@ public class AnglePieceTest extends GenericPieceTest {
         angle = 45;
         double expectedLength = calculateCornerLength(radius + 20.0);
 
-        double actulLength = sut.getLength(leftLane);
+        double actualLength = sut.getLength(leftLane);
 
-        assertThat(actulLength, is(expectedLength));
+        assertThat(actualLength, is(expectedLength));
     }
 
 
