@@ -134,18 +134,4 @@ public class Car {
         return getNextPiece().getLength(hardcodedLane);
     }
 
-    //TODO: this method would probably go to Track
-    private double getEffectiveRadius(Lane lane, Piece piece) {
-        if(isLeftTurn(piece)) {
-            return piece.getRadius() +lane.getDistanceFromCenter();
-        }
-
-        return piece.getRadius() - lane.getDistanceFromCenter();
-    }
-
-    //TODO: this method would go to AnglePiece
-    private boolean isLeftTurn(Piece piece) {
-        return piece.getAngle() < 0;
-    }
-
 }
