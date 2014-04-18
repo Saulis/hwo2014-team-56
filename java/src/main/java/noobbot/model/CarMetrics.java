@@ -8,6 +8,8 @@ import static java.util.Arrays.stream;
  * Created by jereketonen on 4/16/14.
  */
 public class CarMetrics {
+    private final double topSpeedFallbackValue = 10.0;
+
     private Track track;
     private Position currentPosition;
     private Position previousPosition;
@@ -91,6 +93,10 @@ public class CarMetrics {
     }
 
     public double getTopspeed() {
-        return topspeed;
+        if(topspeed > 0) {
+            return topspeed;
+        }
+
+        return topSpeedFallbackValue;
     }
 }

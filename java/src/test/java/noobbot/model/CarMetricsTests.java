@@ -101,6 +101,11 @@ public class CarMetricsTests {
         assertThat(carMetrics.getTopspeed(), is(20.0));
     }
 
+    @Test
+    public void topSpeedHasFallbackValue() {
+        assertThat(carMetrics.getTopspeed(), is(10.0)); //test track top speed
+    }
+
     private void update(Position position, double throttle) {
         carMetrics.update(new Metric(position, throttle));
     }

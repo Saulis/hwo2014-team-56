@@ -5,6 +5,7 @@ import java.util.List;
 public class Car {
 
     private final CarMetrics carMetrics;
+    private final ThrottleControl throttleControl;
     private Position position;
     private double previousSlipAngle = 0;
     private double currentThrottle = 0;
@@ -17,6 +18,7 @@ public class Car {
     public Car(Track track) {
         this.track = track;
         carMetrics = new CarMetrics(track);
+        throttleControl = new ThrottleControl(carMetrics);
     }
 
     //Under refucktoring...
@@ -47,16 +49,7 @@ public class Car {
         double estimatedSpeed = speed + estimatedAcceleration;
         double brakingDistance = getBrakingDistance(estimatedAcceleration, speed, targetSpeed);
 
-        //Throttle control
-        double nextThrottle = 0;
-        if(speedDiff > 0.2) {
-            nextThrottle = 1;
-        } else if(speedDiff < -0.2){// && getDistanceToBrakingPoint() <= brakingDistance) { //disable
-            nextThrottle = 0;
-        }
-        else {
-            nextThrottle = targetSpeed / topspeed;
-        }
+        double nextThrottle = throttleControl.getThrottle(speed, targetSpeed);
 
         System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPiecePosition().pieceIndex, getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipAcceleration));
         System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s, B: %s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed, brakingDistance));
