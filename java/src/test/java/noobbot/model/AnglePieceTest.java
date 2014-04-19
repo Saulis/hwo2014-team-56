@@ -15,6 +15,7 @@ public class AnglePieceTest extends GenericPieceTest {
     private Lane ignoredLane = mock(Lane.class);
     private Lane leftLane;
     private final double leftLaneOffset = -20.0;
+    private final double hardcodedAngleSpeed = 3.75;
 
     @Before
     public void setup() {
@@ -43,7 +44,7 @@ public class AnglePieceTest extends GenericPieceTest {
     @Test
     public void pieceLengthForLeftCorner() {
         AnglePiece sut = new AnglePiece(radius, -45, 1);
-        double expectedLength = calculateCornerLength(radius + leftLaneOffset);
+        double expectedLength = calculateCornerLength(radius - leftLaneOffset);
 
         double actualLength = sut.getLength(leftLane);
 
@@ -60,6 +61,14 @@ public class AnglePieceTest extends GenericPieceTest {
         assertThat(actualLength, is(expectedLength));
     }
 
+    @Test
+    public void topSpeedIsLengthDividedByTheAbsoluteValueOfTheAngleDividedByTargetAngleSpeed() {
+        double expectedSpeed = calculateTargetSpeed(radius);
+
+        double actualSpeed = sut.getTargetSpeed(ignoredLane);
+
+        assertThat(actualSpeed, is(expectedSpeed));
+    }
 
     @Test
     public void pieceLengthIsCornerLength() throws Exception {
@@ -72,7 +81,8 @@ public class AnglePieceTest extends GenericPieceTest {
     protected GenericPiece getSut() {
         return sut;
     }
-    
+
+    private double calculateTargetSpeed(double radius) { return calculateCornerLength(radius) / Math.abs(angle) / hardcodedAngleSpeed;}
     private double calculateCornerLength(double radius) {
         return Math.PI * 2 * radius * Math.abs(angle) / 360;
     }

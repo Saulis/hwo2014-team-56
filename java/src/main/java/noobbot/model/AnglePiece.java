@@ -4,6 +4,7 @@ public class AnglePiece extends GenericPiece {
 
     private double radius;
     private double angle;
+    private final double hardcodedAngleSpeed = 3.75;
 
     public AnglePiece(double radius, double angle, int pieceNumber) {
         super(pieceNumber);
@@ -16,14 +17,18 @@ public class AnglePiece extends GenericPiece {
         double offsetFromCenter = position.getLane().getDistanceFromCenter();
         return getCornerLength(offsetFromCenter) - position.getInPieceDistance();
     }
-    //    private double calculateCornerLength(double radius) {
-   // return Math.PI * 2 * radius * Math.abs(angle) / 360;
 
     @Override
     public double getLength(Lane lane) {
         return getCornerLength(lane.getDistanceFromCenter());
     }
-    
+
+    @Override
+    public double getTargetSpeed(Lane lane)
+    {
+        return getLength(lane) / Math.abs(angle) / hardcodedAngleSpeed;
+    }
+
     private double getCornerLength(double offsetFromCenter) {
         double circleLength = Math.PI * 2 * getEffectiveRadius(offsetFromCenter);
 

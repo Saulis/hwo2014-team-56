@@ -2,6 +2,8 @@ package noobbot.model;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +34,11 @@ public class StraightPieceTest extends GenericPieceTest {
     @Test
     public void pieceLengthIsLengthProvidedInConstructor() throws Exception {
         assertEquals(pieceLength, sut.getLength(ignoredLane), 0.0);
+    }
+
+    @Test
+    public void targetSpeedIsTen() {
+        assertThat(sut.getTargetSpeed(ignoredLane), is(10.0));
     }
 
     @Override
