@@ -43,9 +43,9 @@ public class Main {
         this.writer = writer;
         String line = null;
 
-        //send(join); //keimola
-        send(createRace); //germany
-        send(joinRace); //germany
+        send(join); //keimola
+        //send(createRace); //germany
+        //send(joinRace); //germany
 
         Car player = null;
 

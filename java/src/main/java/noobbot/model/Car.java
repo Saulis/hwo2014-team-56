@@ -30,7 +30,7 @@ public class Car {
         carMetrics.update(new Metric(newPosition, currentThrottle));
 
         double slipAngle = getSlipAngle();
-        double slipAcceleration = previousSlipAngle - slipAngle;
+        double slipVelocity = carMetrics.getSlipVelocity();
         double trackAngle = getTrackAngle();
         double nextTrackAngle = getNextTrackAngle();
         double speed = carMetrics.getCurrentSpeed();
@@ -41,7 +41,7 @@ public class Car {
         if(nextTrackAngle != 0) {
             //Targeting next angled piece
             targetSpeed = getNextPieceLength() / (Math.abs(nextTrackAngle)/ targetAngleSpeed);
-        } else if(Math.abs(currentAngleSpeed) > targetAngleSpeed + 0.105) { //tailhappy magic number
+        } else if(Math.abs(currentAngleSpeed) > targetAngleSpeed) { //tailhappy magic number
             //Straight piece is next but making sure we're not slipping too much by hitting full throttle yet.
             targetSpeed = getPieceLength(position) / (Math.abs(trackAngle)/ targetAngleSpeed);
         }
@@ -50,14 +50,14 @@ public class Car {
         double estimatedAcceleration = (currentThrottle * topspeed - speed) * accelerationMagicNumber;
         double estimatedSpeed = speed + estimatedAcceleration;
 
-        double nextThrottle = throttleControl.getThrottle(speed, targetSpeed);
+        double nextThrottle = throttleControl.getThrottle(speed, targetSpeed, slipAngle, slipVelocity);
 
-        System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPiecePosition().pieceIndex, getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipAcceleration));
+        System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s) %s", getPosition().getPiecePosition().pieceIndex, getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipVelocity, carMetrics.getSlipAcceleration()));
         System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed));
         System.out.println(String.format("*S: %s, A: %s", estimatedSpeed, estimatedAcceleration));
-        System.out.println("ANGLE: " + currentAngleSpeed);
+        //System.out.println("ANGLE: " + currentAngleSpeed);
 
-        System.out.println(String.format("BRAKING DISTANCE: %s ", carMetrics.getBrakingDistance(speed, targetSpeed, currentThrottle)));
+        //System.out.println(String.format("BRAKING DISTANCE: %s ", carMetrics.getBrakingDistance(speed, targetSpeed, currentThrottle)));
 
         currentThrottle = nextThrottle;
         previousSlipAngle = slipAngle;

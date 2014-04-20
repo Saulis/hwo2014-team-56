@@ -22,6 +22,8 @@ public class CarMetrics {
     private Position currentPosition;
     private Position previousPosition;
     private double previousSpeed = 0;
+    private double previousSlipAngle = 0;
+    private double previousSlipVelocity = 0;
     private double topspeed = 0;
     private double maxAcceleration = 0;
     private double accelerationRatio = 0;
@@ -37,6 +39,9 @@ public class CarMetrics {
     public void update(Metric metric) {
         previousAcceleration = getCurrentAcceleration();
         previousSpeed = getCurrentSpeed();
+        previousSlipVelocity = getSlipVelocity();
+        previousSlipAngle = getSlipAngle();
+
         previousPosition = this.currentPosition;
         previousThrottle = this.currentThrottle;
 
@@ -44,6 +49,18 @@ public class CarMetrics {
         this.currentPosition = metric.getPosition();
 
         measureTopspeed();
+    }
+
+    public double getSlipAcceleration() {
+        return getSlipVelocity() - previousSlipVelocity;
+    }
+
+    public double getSlipVelocity() {
+        if(!hasPreviousPosition()) {
+            return 0;
+        }
+
+        return getSlipAngle() - previousSlipAngle;
     }
 
     //Ugly but works
@@ -69,6 +86,14 @@ public class CarMetrics {
 
             System.out.println(String.format("Metrics: Acceleration measured. Acceleration ratio: %s, Max Acceleration: %s, Topspeed: %s", accelerationRatio, maxAcceleration, topspeed));
         }
+    }
+
+    public double getSlipAngle() {
+        if(currentPosition == null) {
+            return 0;
+        }
+
+        return currentPosition.getSlipAngle();
     }
 
     public double getCurrentSpeed() {
