@@ -45,7 +45,7 @@ public class Main {
 
         send(join); //keimola
         //send(createRace); //germany
-        //send(joinRace); //germany
+//        send(joinRace); //germany
 
         Car player = null;
 
