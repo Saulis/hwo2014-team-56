@@ -33,7 +33,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
     }
 
     final Gson gson = new Gson();
@@ -43,9 +43,9 @@ public class Main {
         this.writer = writer;
         String line = null;
 
-        send(join); //keimola
-        //send(createRace); //germany
-        //send(joinRace); //germany
+        //send(join); //keimola
+        send(createRace); //germany
+        send(joinRace); //germany
 
         Car player = null;
 
@@ -55,6 +55,11 @@ public class Main {
             if(msgFromServer.msgType.equals("crash")) {
                 System.out.println(line);
             }
+
+            /*if (msgFromServer.msgType.equals("turboAvailable")) {
+                System.out.println("TURBO!!!!!!!!!!!!!!!!!!!!!!!11111111111111");
+                send(new Turbo());
+            }*/
 
             if (msgFromServer.msgType.equals("carPositions")) {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
@@ -219,4 +224,12 @@ class Throttle extends SendMsg {
     protected String msgType() {
         return "throttle";
     }
+}
+
+class Turbo extends SendMsg {
+    @Override
+    protected String msgType() { return "turbo";}
+
+    @Override
+    protected Object msgData() { return "Sierra jättää.";}
 }
