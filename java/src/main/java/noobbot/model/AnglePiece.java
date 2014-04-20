@@ -30,7 +30,7 @@ public class AnglePiece extends GenericPiece {
         return circleLength * Math.abs(angle) / 360;
     }
 
-    private double getEffectiveRadius(double offsetFromCenter) {
+    public double getEffectiveRadius(double offsetFromCenter) {
         if(isLeftTurn()) {
             return getRadius() + offsetFromCenter;
         }
