@@ -13,11 +13,11 @@ public class ThrottleControl {
 
     public double getThrottle(double currentSpeed, double targetSpeed) {
         double diff = targetSpeed - currentSpeed;
-        if(diff > 0.2) {
+        if(diff > 0.05) {
             printDebug(currentSpeed, targetSpeed, diff, "ACCELERATING");
 
             return 1.0;
-        } else if(diff < -0.2){ //making this smaller will make the braking sharper, this will affect our lap time if we still start braking too early
+        } else if(diff < -0.05){ //making this smaller will make the braking sharper, this will affect our lap time if we still start braking too early
             printDebug(currentSpeed, targetSpeed, diff, "BRAKING");
 
             return 0.0;
@@ -30,6 +30,6 @@ public class ThrottleControl {
     }
 
     private void printDebug(double currentSpeed, double targetSpeed, double diff, String status) {
-        System.out.println(String.format("Throttle: %s %s->%s (%s)", status, currentSpeed, targetSpeed, diff));
+        //System.out.println(String.format("Throttle: %s %s->%s (%s)", status, currentSpeed, targetSpeed, diff));
     }
 }

@@ -50,12 +50,12 @@ public class CarMetrics {
     private void measureTopspeed() {
 
         //start measuringAcceleration if we start hitting full throttle from zero
-        if(getCurrentSpeed() == 0 && this.currentThrottle == 1.0) {
+        if(topspeed == 0 && getCurrentSpeed() == 0 && this.currentThrottle == 1.0) {
             System.out.println("Metrics: Starting to measure acceleration.");
             measuringAcceleration = true;
         }
 
-        if(currentThrottle != 1.0) {
+        if(topspeed == 0 && currentThrottle != 1.0) {
             System.out.println("Metrics: Stopping acceleration measuring.");
             measuringAcceleration = false;
         }
