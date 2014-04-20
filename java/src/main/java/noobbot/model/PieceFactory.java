@@ -1,13 +1,12 @@
 package noobbot.model;
 
-import noobbot.descriptor.GameInitDescriptor;
-
 public class PieceFactory {
-    public Piece create(GameInitDescriptor.Data.Race.Track.Piece pieceDescriptor, int index) {
+    public Piece create(noobbot.descriptor.GameInitDescriptor.Data.Race.Track.Piece pieceDescriptor, int index) {
         if(pieceDescriptor.angle != 0) {
-            //TODO: has switch missing...
+            // TODO: switch missing
             return new AnglePiece(pieceDescriptor.radius, pieceDescriptor.angle, index);
         } else {
+            //TODO: piece number missing...
             return new StraightPiece(pieceDescriptor.length, index);
         }
     }

@@ -26,7 +26,7 @@ public class Car {
         hardcodedLane = track.getLanes().get(0);
         carMetrics = new CarMetrics(track);
         throttleControl = new ThrottleControl(carMetrics);
-        tas = new TargetAngleSpeed(track);
+        tas = new TargetAngleSpeed();
     }
 
     //Under refucktoring...
@@ -37,14 +37,15 @@ public class Car {
         carMetrics.update(new Metric(newPosition, currentThrottle));
 
         double slipAngle = getSlipAngle();
-        double slipAcceleration = previousSlipAngle - slipAngle;
+        double slipChange = previousSlipAngle - slipAngle;
         double trackAngle = getTrackAngle();
         double nextTrackAngle = getNextTrackAngle();
         double speed = carMetrics.getCurrentSpeed();
         double acceleration = carMetrics.getCurrentAcceleration();
         double currentAngleSpeed = getCurrentAngleSpeed(speed);
         
-        tas.calibrate(newPosition, getCurrentPiece(), slipAcceleration, slipAngle, currentAngleSpeed, currentThrottle);
+        tas.calibrate(newPosition, getCurrentPiece(), slipChange, slipAngle, currentAngleSpeed, currentThrottle);
+        targetAngleSpeed = tas.getValue();
         
         double targetSpeed = 10;
 
@@ -62,16 +63,17 @@ public class Car {
         if (mustSlowDownNow()) {
             targetSpeed = 0.0;
         }
-        else if (nextPieceSpeed < targetSpeed){
-            targetSpeed = nextPieceSpeed;
-        } else if(Math.abs(currentAngleSpeed) > targetAngleSpeed + 0.105) { //tailhappy magic number
+        else if(Math.abs(currentAngleSpeed) > targetAngleSpeed + 0.105) { //tailhappy magic number
             //Straight piece is next but making sure we're not slipping too much by hitting full throttle yet.
             targetSpeed = getPieceLength(position) / (Math.abs(trackAngle)/ targetAngleSpeed);
         }
 
         double nextThrottle = throttleControl.getThrottle(speed, targetSpeed);
+        if (nextThrottle - currentThrottle > 0.5) {
+            nextThrottle = currentThrottle + 0.3; 
+        }
 
-        System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPiecePosition().pieceIndex, getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipAcceleration));
+        System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPieceNumber(), getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipChange));
         System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed));
         System.out.println(String.format("*S: %s, A: %s", estimatedSpeed, estimatedAcceleration));
         System.out.println(String.format("ANGLE: %s (%s)", currentAngleSpeed, targetAngleSpeed));
@@ -87,7 +89,7 @@ public class Car {
     private boolean mustSlowDownNow() {
         for (int i = 1; i <= 3; i++) {
             if (mustSlowDownNowFor(i)) {
-                System.out.println(String.format("Braking for piece %2.0f", getPiece(getCurrentPiece().getNumber() + i)));
+                System.out.println(String.format("Braking for piece %d", getCurrentPiece().getNumber() + i));
                 return true;
             }
         }
@@ -102,8 +104,9 @@ public class Car {
         
         double currentSpeed = carMetrics.getCurrentSpeed();
         double pieceTargetSpeed = getPieceSpeed(targetPiece.getNumber());
+        
         double brakingDistance = carMetrics.getBrakingDistance(currentSpeed, pieceTargetSpeed, currentThrottle);        
-
+        
         if (distance - brakingDistance < 0) {
             System.out.println(String.format("Distance: %4.0f, brakingDistance: %4.0fs", distance, brakingDistance));
             return true;

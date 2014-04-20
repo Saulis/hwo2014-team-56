@@ -30,6 +30,6 @@ public class ThrottleControl {
     }
 
     private void printDebug(double currentSpeed, double targetSpeed, double diff, String status) {
-        //System.out.println(String.format("Throttle: %s %s->%s (%s)", status, currentSpeed, targetSpeed, diff));
+        System.out.println(String.format("Throttle: %s %s->%s (%s)", status, currentSpeed, targetSpeed, diff));
     }
 }

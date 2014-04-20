@@ -6,10 +6,21 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import noobbot.descriptor.CarPositionsDescriptor;
+import noobbot.descriptor.GameInitDescriptor;
 
 import com.google.gson.Gson;
 
+import noobbot.model.*;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+
 public class Main {
+    private Track track;
+
     public static void main(String... args) throws IOException {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
@@ -23,25 +34,45 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
     }
 
     final Gson gson = new Gson();
     private PrintWriter writer;
 
-    public Main(final BufferedReader reader, final PrintWriter writer, final Join join) throws IOException {
+    public Main(final BufferedReader reader, final PrintWriter writer, final Join join, CreateRace createRace, JoinRace joinRace) throws IOException {
         this.writer = writer;
         String line = null;
 
-        send(join);
+        send(join); //keimola
+        //send(createRace); //germany
+        //send(joinRace); //germany
+
+        Car player = null;
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
+            //System.out.println(line);
+            if(msgFromServer.msgType.equals("crash")) {
+                System.out.println(line);
+            }
+
             if (msgFromServer.msgType.equals("carPositions")) {
-                send(new Throttle(0.65684));
+                CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
+                PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
+
+                double nextThrottle = player.setPosition(position);
+
+                send(new Throttle(nextThrottle));
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
+                GameInitDescriptor gameInit = gson.fromJson(line, GameInitDescriptor.class);
+                List<Piece> pieces = getPieces(gameInit);
+                List<Lane> lanes = getLanes(gameInit);
+                track = new Track(pieces, lanes);
+                player = new Car(track);
+
                 System.out.println("Race init");
             } else if (msgFromServer.msgType.equals("gameEnd")) {
                 System.out.println("Race end");
@@ -51,6 +82,17 @@ public class Main {
                 send(new Ping());
             }
         }
+    }
+
+    private List<Lane> getLanes(GameInitDescriptor gameInit) {
+        return stream(gameInit.data.race.track.lanes).map(l -> new LaneImpl(l.distanceFromCenter)).collect(toList());
+    }
+
+    private List<Piece> getPieces(GameInitDescriptor gameInit) {
+        PieceFactory pieceFactory = new PieceFactory();
+
+        AtomicInteger i = new AtomicInteger(0); 
+        return stream(gameInit.data.race.track.pieces).map(p -> pieceFactory.create(p, i.getAndAdd(1))).collect(toList());
     }
 
     private void send(final SendMsg msg) {
@@ -82,6 +124,62 @@ class MsgWrapper {
 
     public MsgWrapper(final SendMsg sendMsg) {
         this(sendMsg.msgType(), sendMsg.msgData());
+    }
+}
+
+class CreateRace extends SendMsg {
+
+    class BotId {
+        public String name;
+        public String key;
+
+        public BotId(String name, String key) {
+
+            this.name = name;
+            this.key = key;
+        }
+    }
+
+    public BotId botId;
+    public String trackName;
+    public int carCount = 1;
+
+    CreateRace(String name, String key, String trackName) {
+        this.trackName = trackName;
+        botId = new BotId(name, key);
+    }
+
+    @Override
+    protected String msgType() {
+        return "createRace";
+    }
+}
+
+class JoinRace extends SendMsg {
+
+    class BotId {
+        public String name;
+        public String key;
+
+        public BotId(String name, String key) {
+
+            this.name = name;
+            this.key = key;
+        }
+    }
+
+    public BotId botId;
+    public String trackName;
+    public int carCount = 1;
+
+    JoinRace(String name, String key, String trackName) {
+        this.trackName = trackName;
+        botId = new BotId(name, key);
+    }
+
+    @Override
+    protected String msgType() {
+        return "joinRace";
     }
 }
 
