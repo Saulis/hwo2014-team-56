@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import noobbot.descriptor.CarPositionsDescriptor;
 import noobbot.descriptor.GameInitDescriptor;
@@ -90,7 +91,8 @@ public class Main {
     private List<Piece> getPieces(GameInitDescriptor gameInit) {
         PieceFactory pieceFactory = new PieceFactory();
 
-        return stream(gameInit.data.race.track.pieces).map(p -> pieceFactory.create(p)).collect(toList());
+        AtomicInteger index = new AtomicInteger();
+        return stream(gameInit.data.race.track.pieces).map(p -> pieceFactory.create(p, index.getAndIncrement())).collect(toList());
     }
 
     private void send(final SendMsg msg) {
