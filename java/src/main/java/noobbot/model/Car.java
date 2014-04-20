@@ -3,6 +3,8 @@ package noobbot.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import noobbot.descriptor.CarPositionsDescriptor.Data.PiecePosition;
+
 public class Car {
 
     private final CarMetrics carMetrics;
@@ -57,9 +59,8 @@ public class Car {
 
         System.out.println(String.format("1: %4.2f\t 2: %4.2f\\t 3: %4.2f\\t 4: %4.2f\\t", nextPieceSpeed, nextToNextPieceSpeed, thirdNextPieceSpeed, fourthNextPieceSpeed));
         
-        if (nextToNextPieceSpeed < nextPieceSpeed && mustSlowDownNowFor(2)) {
-            System.out.println(String.format("Using %s for second in place of %s for next (diff: %s)", nextToNextPieceSpeed, nextPieceSpeed, (nextPieceSpeed - nextToNextPieceSpeed)));
-            targetSpeed = nextToNextPieceSpeed;
+        if (mustSlowDownNow()) {
+            targetSpeed = 0.0;
         }
         else if (nextPieceSpeed < targetSpeed){
             targetSpeed = nextPieceSpeed;
@@ -83,17 +84,31 @@ public class Car {
         return nextThrottle;
     }
 
+    private boolean mustSlowDownNow() {
+        for (int i = 1; i <= 3; i++) {
+            if (mustSlowDownNowFor(i)) {
+                System.out.println(String.format("Braking for piece %2.0f", getPiece(getCurrentPiece().getNumber() + i)));
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean mustSlowDownNowFor(int pieceFromCurrent) {
-        List <Piece> piecesBetween = new ArrayList<Piece>();
-        for (int i = 1; i < pieceFromCurrent; i++) {
-            piecesBetween.add(getPiece(position.getPieceNumber() + i));
+        Piece targetPiece = getPiece(position.getPieceNumber() + pieceFromCurrent);
+        Position startOfTarget = new TrackPosition(targetPiece, 0, hardcodedLane);
+        
+        double distance = track.getDistanceBetween(position, startOfTarget);
+        
+        double currentSpeed = carMetrics.getCurrentSpeed();
+        double pieceTargetSpeed = getPieceSpeed(targetPiece.getNumber());
+        double brakingDistance = carMetrics.getBrakingDistance(currentSpeed, pieceTargetSpeed, currentThrottle);        
+
+        if (distance - brakingDistance < 0) {
+            System.out.println(String.format("Distance: %4.0f, brakingDistance: %4.0fs", distance, brakingDistance));
+            return true;
         }
         
-        double distance = piecesBetween.stream().map(p -> p.getLength(hardcodedLane)).reduce(0.0, (a, b) -> a + b);
-        
-        
-        
-        getPiece(position.getPieceNumber() + pieceFromCurrent);
         return false;
     }
 
