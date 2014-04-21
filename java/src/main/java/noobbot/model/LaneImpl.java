@@ -2,9 +2,11 @@ package noobbot.model;
 
 public class LaneImpl implements Lane {
 
+    private int index;
     private double distanceFromCenter;
 
-    public LaneImpl(double distanceFromCenter) {
+    public LaneImpl(int index, double distanceFromCenter) {
+        this.index = index;
 
         this.distanceFromCenter = distanceFromCenter;
     }
@@ -12,5 +14,9 @@ public class LaneImpl implements Lane {
     @Override
     public double getDistanceFromCenter() {
         return distanceFromCenter;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

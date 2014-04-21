@@ -33,7 +33,7 @@ public class Track {
         return lanes;
     }
 
-    private Piece getPieceAfter(Piece precedingPiece) {
+    public Piece getPieceAfter(Piece precedingPiece) {
         int nextPieceIndex = precedingPiece.getNumber() + 1;
         return pieces.get(nextPieceIndex % pieces.size());
     }

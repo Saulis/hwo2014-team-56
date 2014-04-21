@@ -3,11 +3,13 @@ package noobbot.model;
 public abstract class GenericPiece implements Piece {
 
     protected int pieceNumber;
+    private boolean hasSwitch;
     protected double angle;
     protected double radius;
 
-    public GenericPiece(int pieceNumber) {
+    public GenericPiece(int pieceNumber, boolean hasSwitch) {
         this.pieceNumber = pieceNumber;
+        this.hasSwitch = hasSwitch;
     }
 
     public Double getDistanceTo(Position position) {
@@ -20,5 +22,9 @@ public abstract class GenericPiece implements Piece {
 
     public int getNumber() {
         return pieceNumber;
+    }
+
+    public boolean hasSwitch() {
+        return hasSwitch;
     }
 }

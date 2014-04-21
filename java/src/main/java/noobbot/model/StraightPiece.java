@@ -4,8 +4,8 @@ public class StraightPiece extends GenericPiece {
 
     private double length;
 
-    public StraightPiece(double length, int pieceNumber) {
-        super(pieceNumber);
+    public StraightPiece(double length, int pieceNumber, boolean hasSwitch) {
+        super(pieceNumber, hasSwitch);
         this.length = length;
     }
     

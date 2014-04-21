@@ -10,15 +10,15 @@ public class Car {
     private double previousSlipAngle = 0;
     private double currentThrottle = 0;
     private Track track;
-    private Lane hardcodedLane;
+    private Navigator navigator;
 
     double accelerationMagicNumber = 0.02; //This will be measured real time
     double topspeed = 10; //This will be calculated from acceleration magic number
     double targetAngleSpeed = 3.75; //This will be calculated somehow
 
-    public Car(Track track) {
+    public Car(Track track, Navigator navigator) {
         this.track = track;
-        hardcodedLane = track.getLanes().get(0);
+        this.navigator = navigator;
         carMetrics = new CarMetrics(track);
         throttleControl = new ThrottleControl(carMetrics);
     }
@@ -111,12 +111,16 @@ public class Car {
     //TODO: these methods would probably go to Track
     private double getPieceLength(Position piecePosition) {
         Piece piece = track.getPieces().get(piecePosition.getPieceNumber());
+        Lane lane = navigator.getLane(piece);
 
-        return piece.getLength(hardcodedLane);
+        return piece.getLength(lane);
     }
 
     private double getNextPieceLength() {
-        return getNextPiece().getLength(hardcodedLane);
+        Piece nextPiece = getNextPiece();
+        Lane lane = navigator.getLane(nextPiece);
+
+        return nextPiece.getLength(lane);
     }
 
 }

@@ -16,7 +16,7 @@ public class StraightPieceTest extends GenericPieceTest {
     
     @Before
     public void setup() {
-        sut = new StraightPiece(pieceLength, pieceNumber);
+        sut = new StraightPiece(pieceLength, pieceNumber, false);
     }
 
     @Test

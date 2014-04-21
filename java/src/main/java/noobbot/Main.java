@@ -19,6 +19,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
 public class Main {
+    private Navigator navigator;
     private Track track;
 
     public static void main(String... args) throws IOException {
@@ -34,7 +35,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
     }
 
     final Gson gson = new Gson();
@@ -66,9 +67,15 @@ public class Main {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
                 PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
 
-                double nextThrottle = player.setPosition(position);
+                if(navigator.switchLanesMaybe(position)) {
+                    System.out.println("Switching lanes.");
+                    send(navigator.setNextLane(position));
+                }
 
-                send(new Throttle(nextThrottle));
+                    double nextThrottle = player.setPosition(position);
+
+                    send(new Throttle(nextThrottle));
+
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
@@ -76,9 +83,11 @@ public class Main {
                 List<Piece> pieces = getPieces(gameInit);
                 List<Lane> lanes = getLanes(gameInit);
                 track = new Track(pieces, lanes);
-                player = new Car(track);
+                navigator = new Navigator(track);
+                player = new Car(track, navigator);
 
                 System.out.println("Race init");
+                System.out.println(line);
             } else if (msgFromServer.msgType.equals("gameEnd")) {
                 System.out.println("Race end");
             } else if (msgFromServer.msgType.equals("gameStart")) {
@@ -89,11 +98,11 @@ public class Main {
         }
     }
 
-    private List<Lane> getLanes(GameInitDescriptor gameInit) {
-        return stream(gameInit.data.race.track.lanes).map(l -> new LaneImpl(l.distanceFromCenter)).collect(toList());
+    public static List<Lane> getLanes(GameInitDescriptor gameInit) {
+        return stream(gameInit.data.race.track.lanes).map(l -> new LaneImpl(l.index, l.distanceFromCenter)).collect(toList());
     }
 
-    private List<Piece> getPieces(GameInitDescriptor gameInit) {
+    public static List<Piece> getPieces(GameInitDescriptor gameInit) {
         PieceFactory pieceFactory = new PieceFactory();
 
         AtomicInteger index = new AtomicInteger();
@@ -235,3 +244,4 @@ class Turbo extends SendMsg {
     @Override
     protected Object msgData() { return "Sierra jättää.";}
 }
+

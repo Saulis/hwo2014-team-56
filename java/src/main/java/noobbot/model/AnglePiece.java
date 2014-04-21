@@ -6,8 +6,8 @@ public class AnglePiece extends GenericPiece {
     private double angle;
     private final double hardcodedAngleSpeed = 3.75;
 
-    public AnglePiece(double radius, double angle, int pieceNumber) {
-        super(pieceNumber);
+    public AnglePiece(double radius, double angle, int pieceNumber, boolean hasSwitch) {
+        super(pieceNumber, hasSwitch);
         this.radius = radius;
         this.angle = angle;
     }
