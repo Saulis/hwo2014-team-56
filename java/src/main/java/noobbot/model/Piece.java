@@ -9,4 +9,5 @@ public interface Piece {
     double getLength(Lane lane);
     double getAngle();
     double getTargetSpeed(Lane lane);
+    double getRadius();
 }

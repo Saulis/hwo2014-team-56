@@ -1,24 +1,21 @@
 package noobbot.model;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import noobbot.descriptor.CarPositionsDescriptor.Data.PiecePosition;
 
 public class Car {
 
     private final CarMetrics carMetrics;
     private final ThrottleControl throttleControl;
     private Position position;
-    private double previousSlipAngle = 0;
     private double currentThrottle = 0;
     private Track track;
     private Lane hardcodedLane;
 
     double accelerationMagicNumber = 0.02; //This will be measured real time
     double topspeed = 10; //This will be calculated from acceleration magic number
-    double targetAngleSpeed = 3; //This will be calculated somehow
-    TargetAngleSpeed tas;
+    double targetAngleSpeed = 3; //Start with this, calibrate to improve
+    private TargetAngleSpeed tas;
+    private SlipAngle slipAngle;
     int localMaxSlipAngle = 0;
     
     public Car(Track track) {
@@ -27,6 +24,7 @@ public class Car {
         carMetrics = new CarMetrics(track);
         throttleControl = new ThrottleControl(carMetrics);
         tas = new TargetAngleSpeed();
+        slipAngle = new SlipAngle(track);
     }
 
     //Under refucktoring...
@@ -36,15 +34,15 @@ public class Car {
 
         carMetrics.update(new Metric(newPosition, currentThrottle));
 
-        double slipAngle = getSlipAngle();
-        double slipChange = previousSlipAngle - slipAngle;
         double trackAngle = getTrackAngle();
         double nextTrackAngle = getNextTrackAngle();
         double speed = carMetrics.getCurrentSpeed();
         double acceleration = carMetrics.getCurrentAcceleration();
         double currentAngleSpeed = getCurrentAngleSpeed(speed);
         
-        tas.calibrate(newPosition, getCurrentPiece(), slipChange, slipAngle, currentAngleSpeed, currentThrottle);
+        slipAngle.update(newPosition);
+        
+        tas.calibrate(newPosition, getCurrentPiece(), slipAngle, currentAngleSpeed, currentThrottle);
         targetAngleSpeed = tas.getValue();
         
         double targetSpeed = 10;
@@ -73,7 +71,7 @@ public class Car {
             nextThrottle = currentThrottle + 0.3; 
         }
 
-        System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPieceNumber(), getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipChange));
+        System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPieceNumber(), getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, -0.0));
         System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed));
         System.out.println(String.format("*S: %s, A: %s", estimatedSpeed, estimatedAcceleration));
         System.out.println(String.format("ANGLE: %s (%s)", currentAngleSpeed, targetAngleSpeed));
@@ -81,7 +79,6 @@ public class Car {
 //        System.out.println(String.format("BRAKING DISTANCE: %s ", carMetrics.getBrakingDistance(speed, targetSpeed, currentThrottle)));
 
         currentThrottle = nextThrottle;
-        previousSlipAngle = slipAngle;
 
         return nextThrottle;
     }
@@ -140,10 +137,6 @@ public class Car {
         return getCurrentPiece().getAngle() / (getPieceLength(position) / speed);
     }
 
-    private double getSlipAngle() {
-        return position.getSlipAngle();
-    }
-
     private Piece getCurrentPiece() {
         return track.getPieces().get(getPosition().getPieceNumber());
     }
@@ -179,9 +172,5 @@ public class Car {
         Piece piece = track.getPieces().get(piecePosition.getPieceNumber());
 
         return piece.getLength(hardcodedLane);
-    }
-
-    private double getNextPieceLength() {
-        return getNextPiece().getLength(hardcodedLane);
     }
 }
