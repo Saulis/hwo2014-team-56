@@ -29,7 +29,7 @@ public class PieceFactoryTests {
         pieceDescriptor.length = 10;
         pieceDescriptor.radius = 20;
 
-        Piece piece = pieceFactory.create(pieceDescriptor);
+        Piece piece = pieceFactory.create(pieceDescriptor, 1);
 
         assertThat(piece, instanceOf(AnglePiece.class));
     }
@@ -39,7 +39,7 @@ public class PieceFactoryTests {
         pieceDescriptor.hasSwitch = true;
         pieceDescriptor.length = 20;
 
-        Piece piece = pieceFactory.create(pieceDescriptor);
+        Piece piece = pieceFactory.create(pieceDescriptor, 2);
 
         assertThat(piece, instanceOf(StraightPiece.class));
     }
