@@ -39,7 +39,7 @@ public class SlipAngle {
         for (int i = 0; i < accelerationWeights.size(); i++) {
             acceleration += accelerationWeights.get(i) * getAcceleration(i);
         }
-        acceleration /= 100;
+        acceleration /= accelerationWeights.stream().reduce(0, (a, b) -> a + b);
         
         return acceleration;
     }

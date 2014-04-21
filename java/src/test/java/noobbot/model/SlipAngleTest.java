@@ -65,10 +65,10 @@ public class SlipAngleTest {
         double firstChange = secondAngle - firstAngle;
         double secondChange = thirdAngle - secondAngle;
         double thirdChange = fourthAngle - thirdAngle;
-        double weighterLatestAcceleration = (thirdChange - secondChange) * latestWeight;
-        double weightedPreviousAcceleration = (secondChange - firstChange) * previousWeight;
+        double weightedLatestAcceleration = (thirdChange - secondChange) * latestWeight / (latestWeight + previousWeight);
+        double weightedPreviousAcceleration = (secondChange - firstChange) * previousWeight / (latestWeight + previousWeight);
         
-        double expectedAcceleration = (weighterLatestAcceleration + weightedPreviousAcceleration) / 100;
+        double expectedAcceleration = (weightedLatestAcceleration + weightedPreviousAcceleration);
         assertEquals(expectedAcceleration, result, 0);
     }
 
