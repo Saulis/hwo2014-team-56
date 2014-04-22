@@ -8,8 +8,8 @@ public interface Piece {
     int getNumber();
     double getLength(Lane lane);
     double getAngle();
-    double getTargetSpeed(Lane lane);
+    double getTargetSpeed(Lane lane, Lane previousDrivingLane);
     boolean hasSwitch();
 
-    double getDrivingTime(Lane lane);
+    double getDrivingTime(Lane lane, Lane previousDrivingLane);
 }

@@ -71,9 +71,10 @@ public class Main {
                 if(navigator.shouldSendSwitchLanes()) {
                     System.out.println("Switching lanes.");
                     send(navigator.setTargetLane());
-                } else if(turboCharger.shouldSendTurbo()) {
-                    turboCharger.setTurboAvailable(false);
-                    send(new Turbo());
+                    player.setPosition(position); /// hack here to avoid jumps in metrics. car metrics need to be updated on every tick.
+                //} else if(turboCharger.shouldSendTurbo()) {
+                  //  turboCharger.setTurboAvailable(false);
+                    //send(new Turbo());
                 } else {
 
                 double nextThrottle = player.setPosition(position);

@@ -12,27 +12,27 @@ public class TrackSegment {
         this.pieces = pieces;
     }
 
-    public double getSegmentLength(Lane lane, boolean switchIsUsed) {
+    public double getSegmentLength(Lane lane, Lane previousDrivingLane) {
         double totalDistanceOfPieces = stream(pieces).mapToDouble(p -> p.getLength(lane)).sum();
 
-        return totalDistanceOfPieces + getDistanceAddedBySwitching(lane, switchIsUsed);
+        return totalDistanceOfPieces + getDistanceAddedBySwitching(lane, previousDrivingLane);
     }
 
-    public double getSegmentDrivingTime(Lane lane, boolean switchIsUsed) {
-        double totalDrivingTimeOfPieces = stream(pieces).mapToDouble(p -> p.getDrivingTime(lane)).sum();
+    public double getSegmentDrivingTime(Lane lane, Lane previousDrivingLane) {
+        double totalDrivingTimeOfPieces = stream(pieces).mapToDouble(p -> p.getDrivingTime(lane, previousDrivingLane)).sum();
 
-        return totalDrivingTimeOfPieces + getDrivingTimeAddedBySwitching(lane, switchIsUsed);
+        return totalDrivingTimeOfPieces + getDrivingTimeAddedBySwitching(lane, previousDrivingLane);
     }
 
-    private double getDrivingTimeAddedBySwitching(Lane lane, boolean switchIsUsed) {
-        double distanceAddedBySwitching = getDistanceAddedBySwitching(lane, switchIsUsed);
+    private double getDrivingTimeAddedBySwitching(Lane lane, Lane previousDrivingLane) {
+        double distanceAddedBySwitching = getDistanceAddedBySwitching(lane, previousDrivingLane);
 
-        return distanceAddedBySwitching / pieces[0].getTargetSpeed(lane);
+        return distanceAddedBySwitching / pieces[0].getTargetSpeed(lane, previousDrivingLane);
     }
 
-    private double getDistanceAddedBySwitching(Lane lane, boolean switchIsUsed) {
+    private double getDistanceAddedBySwitching(Lane lane, Lane previousDrivingLane) {
         //Switch should always be the first piece of a segment.
-        if(switchIsUsed && pieces[0].hasSwitch()) {
+        if(lane != previousDrivingLane) {
             double length = pieces[0].getLength(lane);
             double width = lane.getLaneWidth();
 

@@ -20,7 +20,7 @@ public class StraightPiece extends GenericPiece {
     }
 
     @Override
-    public double getTargetSpeed(Lane lane) {
+    public double getTargetSpeed(Lane lane, Lane previousDrivingLane) {
         return 10;
     }
 

@@ -61,7 +61,7 @@ public class TrackRoute {
 
         if(hasPreviousSegment()) {
             TrackRouteSegment previousTrackSegment = getPreviousTrackSegment();
-            s.setSwitchIsUsed(previousTrackSegment.getDrivingLane() != s.getDrivingLane());
+            s.setPreviousDrivingLane(previousTrackSegment.getDrivingLane());
         }
 
         return new TrackRoute(startLane, endLane, segmentRoutes.toArray(new TrackRouteSegment[segmentRoutes.size()]));
@@ -86,6 +86,12 @@ public class TrackRoute {
         int index = Arrays.asList(segments).indexOf(segment);
 
         return segments[++index % segments.length];
+    }
+
+    public TrackRouteSegment getPreviousSegment(TrackRouteSegment segment) {
+        int index = Arrays.asList(segments).indexOf(segment);
+
+        return segments[Math.abs(index - segments.length) % segments.length];
     }
 
     public boolean isValid() {

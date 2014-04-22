@@ -120,14 +120,14 @@ public class Car {
         Piece currentPiece = getCurrentPiece();
         Lane currentLane = navigator.getCurrentLane();
 
-        return currentPiece.getTargetSpeed(currentLane);
+        return currentPiece.getTargetSpeed(currentLane, navigator.getPreviousDrivingLane());
     }
 
     private double getNextPieceTargetSpeed() {
         Piece nextPiece = getNextPiece();
         Lane lane = navigator.getLane(nextPiece);
         System.out.println("lane: " + lane.getDistanceFromCenter());
-        return nextPiece.getTargetSpeed(lane); //TODO: this will fail if we are not on the driving lane
+        return nextPiece.getTargetSpeed(lane, navigator.getPreviousDrivingLane()); //TODO: this will fail if we are not on the driving lane
     }
 
 }

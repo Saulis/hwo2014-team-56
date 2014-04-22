@@ -28,7 +28,7 @@ public abstract class GenericPiece implements Piece {
         return hasSwitch;
     }
 
-    public double getDrivingTime(Lane lane) {
-        return getLength(lane) / getTargetSpeed(lane);
+    public double getDrivingTime(Lane lane, Lane previousDrivingLane) {
+        return getLength(lane) / getTargetSpeed(lane, previousDrivingLane);
     }
 }

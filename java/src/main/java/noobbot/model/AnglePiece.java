@@ -24,8 +24,15 @@ public class AnglePiece extends GenericPiece {
     }
 
     @Override
-    public double getTargetSpeed(Lane lane)
+    public double getTargetSpeed(Lane lane, Lane previousDrivingLane)
     {
+        if(hasSwitch() && lane != previousDrivingLane) {
+            double diff = Math.abs(lane.getDistanceFromCenter() - previousDrivingLane.getDistanceFromCenter());
+            double diffAngle = Math.atan(diff/getLength(lane));
+
+            return getLength(lane) / ((diffAngle + Math.abs(angle)) / hardcodedAngleSpeed);
+        }
+
         return getLength(lane) / (Math.abs(angle) / hardcodedAngleSpeed);
     }
 

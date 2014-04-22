@@ -38,7 +38,7 @@ public class StraightPieceTest extends GenericPieceTest {
 
     @Test
     public void targetSpeedIsTen() {
-        assertThat(sut.getTargetSpeed(ignoredLane), is(10.0));
+        assertThat(sut.getTargetSpeed(ignoredLane, ignoredLane), is(10.0));
     }
 
     @Override

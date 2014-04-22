@@ -65,7 +65,7 @@ public class AnglePieceTest extends GenericPieceTest {
     public void topSpeedIsLengthDividedByTheAbsoluteValueOfTheAngleDividedByTargetAngleSpeed() {
         double expectedSpeed = calculateTargetSpeed(radius);
 
-        double actualSpeed = sut.getTargetSpeed(ignoredLane);
+        double actualSpeed = sut.getTargetSpeed(ignoredLane, ignoredLane);
 
         assertThat(actualSpeed, is(expectedSpeed));
     }
