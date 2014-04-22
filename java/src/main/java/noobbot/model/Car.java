@@ -37,14 +37,14 @@ public class Car {
         double acceleration = carMetrics.getCurrentAcceleration();
         double currentAngleSpeed = getCurrentAngleSpeed(speed);
 
-        double targetSpeed = 10;
+        double targetSpeed = getCurrentTargetSpeed();
         if(nextTrackAngle != 0) {
             //Targeting next angled piece
             targetSpeed = getNextPieceTargetSpeed();
-        } else if(Math.abs(currentAngleSpeed) > targetAngleSpeed + 0.105) { //tailhappy magic number
+        } /*else if(Math.abs(currentAngleSpeed) > targetAngleSpeed + 0.105) { //tailhappy magic number
             //Straight piece is next but making sure we're not slipping too much by hitting full throttle yet.
             targetSpeed = getCurrentTargetSpeed();
-        }
+        }*/
 
         double speedDiff = targetSpeed - speed;
         double estimatedAcceleration = (currentThrottle * topspeed - speed) * accelerationMagicNumber;

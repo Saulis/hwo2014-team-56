@@ -89,7 +89,7 @@ public class Main {
                 List<Lane> lanes = getLanes(gameInit);
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
-                navigator.useCustomKeimolaRoute();
+                navigator.useFastestRoute();
                 turboCharger = new TurboCharger(navigator);
                 player = new Car(track, navigator);
 

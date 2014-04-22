@@ -29,6 +29,8 @@ public class CarMetrics {
     private double previousThrottle;
     private boolean measuringAcceleration = false;
     private double previousAcceleration;
+    private double previousSlipVelocity;
+    private double previousSlipAngle;
 
     public CarMetrics(Track track) {
         this.track = track;
@@ -37,13 +39,35 @@ public class CarMetrics {
     public void update(Metric metric) {
         previousAcceleration = getCurrentAcceleration();
         previousSpeed = getCurrentSpeed();
+        previousSlipVelocity = getSlipVelocity();
+        previousSlipAngle = getSlipAngle();
         previousPosition = this.currentPosition;
         previousThrottle = this.currentThrottle;
+
 
         this.currentThrottle = metric.getThrottle();
         this.currentPosition = metric.getPosition();
 
         measureTopspeed();
+    }
+
+    public double getSlipAcceleration() {
+        return getSlipVelocity() - previousSlipVelocity;
+    }
+
+    public double getSlipVelocity() {
+        if(!hasPreviousPosition()) {
+            return 0;
+        }
+
+        return getSlipAngle() - previousSlipAngle;
+    }
+
+    public double getSlipAngle() {
+        if(currentPosition == null) {
+            return 0;
+        }
+            return currentPosition.getSlipAngle();
     }
 
     //Ugly but works

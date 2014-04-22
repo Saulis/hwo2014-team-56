@@ -4,11 +4,13 @@ package noobbot.model;
  * Created by Saulis on 18/04/14.
  */
 public class ThrottleControl {
+    private final Booster booster;
     private CarMetrics metrics;
 
     public ThrottleControl(CarMetrics metrics) {
 
         this.metrics = metrics;
+        booster = new Booster();
     }
 
     public double getThrottle(double currentSpeed, double targetSpeed) {
@@ -25,7 +27,7 @@ public class ThrottleControl {
         else {
             printDebug(currentSpeed, targetSpeed, diff, "STABILIZING");
 
-            return targetSpeed / metrics.getTopspeed();
+            return booster.addBoost(targetSpeed / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
         }
     }
 
