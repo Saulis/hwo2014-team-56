@@ -200,7 +200,7 @@ public class Navigator {
         }
     }
 
-    private TrackRouteSegment getCurrentSegment() {
+    public TrackRouteSegment getCurrentSegment() {
         return selectedRoute.getSegmentForPiece(currentPosition.getPieceNumber());
     }
 }

@@ -19,6 +19,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
 public class Main {
+    private TurboCharger turboCharger;
     private Navigator navigator;
     private Track track;
 
@@ -45,9 +46,9 @@ public class Main {
         this.writer = writer;
         String line = null;
 
-        //send(join); //keimola
-        send(createRace); //germany
-        send(joinRace); //germany
+        send(join); //keimola
+        //send(createRace); //germany
+        //send(joinRace); //germany
 
         Car player = null;
 
@@ -58,10 +59,9 @@ public class Main {
                 System.out.println(line);
             }
 
-            /*if (msgFromServer.msgType.equals("turboAvailable")) {
-                System.out.println("TURBO!!!!!!!!!!!!!!!!!!!!!!!11111111111111");
-                send(new Turbo());
-            }*/
+            if (msgFromServer.msgType.equals("turboAvailable")) {
+                turboCharger.setTurboAvailable(true);
+            }
 
             if (msgFromServer.msgType.equals("carPositions")) {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
@@ -71,11 +71,15 @@ public class Main {
                 if(navigator.shouldSendSwitchLanes()) {
                     System.out.println("Switching lanes.");
                     send(navigator.setTargetLane());
+                } else if(turboCharger.shouldSendTurbo()) {
+                    turboCharger.setTurboAvailable(false);
+                    send(new Turbo());
+                } else {
+
+                double nextThrottle = player.setPosition(position);
+
+                send(new Throttle(nextThrottle));
                 }
-
-                    double nextThrottle = player.setPosition(position);
-
-                    send(new Throttle(nextThrottle));
 
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
@@ -85,7 +89,8 @@ public class Main {
                 List<Lane> lanes = getLanes(gameInit);
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
-                navigator.useFastestRoute();
+                navigator.useCustomKeimolaRoute();
+                turboCharger = new TurboCharger(navigator);
                 player = new Car(track, navigator);
 
                 System.out.println("Race init");

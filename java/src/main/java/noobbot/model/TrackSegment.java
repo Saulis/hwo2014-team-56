@@ -51,4 +51,14 @@ public class TrackSegment {
 
         return false;
     }
+
+    public boolean hasCorners() {
+        for(Piece p : pieces) {
+            if(p.getAngle() != 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

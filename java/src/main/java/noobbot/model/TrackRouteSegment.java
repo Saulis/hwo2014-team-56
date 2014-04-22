@@ -33,4 +33,8 @@ public class TrackRouteSegment {
     public void setSwitchIsUsed(boolean switchIsUsed) {
         this.switchIsUsed = switchIsUsed;
     }
+
+    public boolean hasCorners() {
+        return segment.hasCorners();
+    }
 }
