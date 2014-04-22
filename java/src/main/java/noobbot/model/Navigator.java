@@ -14,13 +14,13 @@ import static java.util.Arrays.stream;
 public class Navigator {
     private Track track;
     private List<TrackRoute> routes;
-    private final TrackRoute shortest;
-    private Lane currentLane;
+    private TrackRoute selectedRoute;
+    private PlayerPosition currentPosition;
+    private TrackRouteSegment currentSegment;
 
     public Navigator(Track track) {
 
         this.track = track;
-        currentLane = track.getLanes().get(0); //TODO: check this from game init.
 
         List<TrackSegment> trackSegments = createTrackSegments(track);
         routes = new ArrayList<TrackRoute>();
@@ -51,17 +51,20 @@ public class Navigator {
 
         routes = newRoutes;
 
-        shortest = stream(routes.toArray(new TrackRoute[routes.size()])).sorted(new Comparator<TrackRoute>() {
+        System.out.println(String.format("Navigator: %s possible routes plotted.", routes.size()));
+    }
+
+    public void useShortestRoute() {
+        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).sorted(new Comparator<TrackRoute>() {
             @Override
             public int compare(TrackRoute o1, TrackRoute o2) {
                 return Double.compare(o1.getRouteLength(), o2.getRouteLength());
             }
         }).findFirst().get();
 
-        System.out.println(String.format("Navigator: %s possible routes plotted. Shortest is: %s", routes.size(), shortest.getRouteLength()));
-
-        for(int i=0;i < shortest.getSegments().length;i++) {
-            TrackRouteSegment trackRouteSegment = shortest.getSegments()[i];
+        System.out.println(String.format("Navigator: using shortest route: %s", selectedRoute.getRouteLength()));
+        for(int i=0;i < selectedRoute.getSegments().length;i++) {
+            TrackRouteSegment trackRouteSegment = selectedRoute.getSegments()[i];
             System.out.println(i + ": " + trackRouteSegment.getDrivingLane().getDistanceFromCenter());
         }
     }
@@ -99,41 +102,59 @@ public class Navigator {
         return segments;
     }
 
-    public boolean switchLanesMaybe(PlayerPosition position) {
-        TrackRouteSegment segmentForNextPiece = getTrackSegmentForNextPiece(position);
+    public boolean shouldSendSwitchLanes() {
+        TrackRouteSegment nextSegment = getNextSegment();
+        Lane currentLane = getCurrentLane();
 
-        System.out.println(String.format("Lanes: %s -> %s", currentLane.getDistanceFromCenter(), segmentForNextPiece.getDrivingLane().getDistanceFromCenter()));
+        //System.out.println(String.format("Lanes: %s -> %s", currentLane.getDistanceFromCenter(), currentLane.getDistanceFromCenter()));
 
-        return currentLane != segmentForNextPiece.getDrivingLane();
+        return currentLane != nextSegment.getDrivingLane() && !switchIsPending;
     }
 
-    private TrackRouteSegment getTrackSegmentForNextPiece(PlayerPosition position) {
-        Piece currentPiece = track.getPiece(position);
-        Piece nextPiece = track.getPieceAfter(currentPiece);
+    private boolean switchIsPending = false;
 
-        return shortest.getSegmentForPiece(nextPiece.getNumber());
+    private TrackRouteSegment getNextSegment() {
+        return selectedRoute.getNextSegment(getCurrentSegment());
     }
 
-    public SwitchLane setNextLane(PlayerPosition position) {
-        TrackRouteSegment segmentForNextPiece = getTrackSegmentForNextPiece(position);
+    public SwitchLane setTargetLane() {
+        TrackRouteSegment nextSegment = getNextSegment();
 
-        Lane nextLane = segmentForNextPiece.getDrivingLane();
+        Lane nextLane = nextSegment.getDrivingLane();
         SwitchLane switchLane;
 
-        if(nextLane.getDistanceFromCenter() < currentLane.getDistanceFromCenter()) {
+        if(nextLane.getDistanceFromCenter() < getCurrentLane().getDistanceFromCenter()) {
             switchLane = new LeftSwitchLane();
         } else {
             switchLane = new RightSwitchLane();
         }
 
-        currentLane = nextLane;
+        switchIsPending = true;
 
         return switchLane;
     }
 
     public Lane getLane(Piece piece) {
-        TrackRouteSegment segment = shortest.getSegmentForPiece(piece.getNumber());
+        TrackRouteSegment segment = selectedRoute.getSegmentForPiece(piece.getNumber());
 
         return segment.getDrivingLane();
+    }
+
+    private Lane getCurrentLane() {
+        return currentPosition.getLane();
+    }
+
+    public void setPosition(PlayerPosition position) {
+
+        currentPosition = position;
+
+        if(currentSegment != getCurrentSegment()) {
+            switchIsPending = false;
+            currentSegment = getCurrentSegment();
+        }
+    }
+
+    private TrackRouteSegment getCurrentSegment() {
+        return selectedRoute.getSegmentForPiece(currentPosition.getPieceNumber());
     }
 }

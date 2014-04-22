@@ -6,6 +6,7 @@ package noobbot.model;
 public class TrackRouteSegment {
     private final Lane drivingLane;
     private final TrackSegment segment;
+    private boolean switchIsUsed = false;
 
     public TrackRouteSegment(Lane drivingLane, TrackSegment segment) {
 
@@ -14,7 +15,7 @@ public class TrackRouteSegment {
     }
 
     public double getSegmentLength() {
-        return segment.getSegmentLength(drivingLane);
+        return segment.getSegmentLength(drivingLane, switchIsUsed);
     }
 
     public Lane getDrivingLane() {
@@ -23,5 +24,9 @@ public class TrackRouteSegment {
 
     public boolean containsPiece(int pieceIndex) {
         return segment.containsPiece(pieceIndex);
+    }
+
+    public void setSwitchIsUsed(boolean switchIsUsed) {
+        this.switchIsUsed = switchIsUsed;
     }
 }

@@ -35,7 +35,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
     }
 
     final Gson gson = new Gson();
@@ -45,9 +45,9 @@ public class Main {
         this.writer = writer;
         String line = null;
 
-        //send(join); //keimola
-        send(createRace); //germany
-        send(joinRace); //germany
+        send(join); //keimola
+        //send(createRace); //germany
+        //send(joinRace); //germany
 
         Car player = null;
 
@@ -67,9 +67,10 @@ public class Main {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
                 PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
 
-                if(navigator.switchLanesMaybe(position)) {
+                navigator.setPosition(position);
+                if(navigator.shouldSendSwitchLanes()) {
                     System.out.println("Switching lanes.");
-                    send(navigator.setNextLane(position));
+                    send(navigator.setTargetLane());
                 }
 
                     double nextThrottle = player.setPosition(position);
@@ -84,6 +85,7 @@ public class Main {
                 List<Lane> lanes = getLanes(gameInit);
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
+                navigator.useShortestRoute();
                 player = new Car(track, navigator);
 
                 System.out.println("Race init");
@@ -99,7 +101,18 @@ public class Main {
     }
 
     public static List<Lane> getLanes(GameInitDescriptor gameInit) {
-        return stream(gameInit.data.race.track.lanes).map(l -> new LaneImpl(l.index, l.distanceFromCenter)).collect(toList());
+        GameInitDescriptor.Data.Race.Track.Lane[] lanes = gameInit.data.race.track.lanes;
+
+        double laneWidth = getLaneWidth(lanes);
+
+        return stream(lanes).map(l -> new LaneImpl(l.index, l.distanceFromCenter, laneWidth)).collect(toList());
+    }
+
+    private static double getLaneWidth(GameInitDescriptor.Data.Race.Track.Lane[] lanes) {
+        if(lanes.length >= 2) {
+           return Math.abs(lanes[0].distanceFromCenter - lanes[1].distanceFromCenter);
+        }
+        return 0.0;
     }
 
     public static List<Piece> getPieces(GameInitDescriptor gameInit) {

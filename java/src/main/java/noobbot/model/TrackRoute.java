@@ -36,20 +36,33 @@ public class TrackRoute {
     }
 
     private boolean drivingLanesAreNextToEachOther(TrackRouteSegment s) {
-        if(this.segments.length == 0) {
+        if(!hasPreviousSegment()) {
             return true;
         }
 
-        TrackRouteSegment lastSegment = this.segments[this.segments.length - 1];
-        int laneIndex = lastSegment.getDrivingLane().getIndex();
+        TrackRouteSegment previousSegment = getPreviousTrackSegment();
+        int laneIndex = previousSegment.getDrivingLane().getIndex();
 
         return Math.abs(s.getDrivingLane().getIndex() - laneIndex) <= 1;
+    }
+
+    private boolean hasPreviousSegment() {
+        return this.segments.length > 0;
+    }
+
+    private TrackRouteSegment getPreviousTrackSegment() {
+        return this.segments[this.segments.length - 1];
     }
 
     private TrackRoute createNewRoute(TrackRouteSegment s) {
         List<TrackRouteSegment> segmentRoutes = new ArrayList<>();
         segmentRoutes.addAll(Arrays.asList(this.segments));
         segmentRoutes.add(s);
+
+        if(hasPreviousSegment()) {
+            TrackRouteSegment previousTrackSegment = getPreviousTrackSegment();
+            s.setSwitchIsUsed(previousTrackSegment.getDrivingLane() != s.getDrivingLane());
+        }
 
         return new TrackRoute(startLane, endLane, segmentRoutes.toArray(new TrackRouteSegment[segmentRoutes.size()]));
     }
@@ -69,7 +82,12 @@ public class TrackRoute {
         return null;
     }
 
-    //tänne täytyy lisätä myös että segmentin end ja start lanet ei saa olla yli yhden kaistan päässä
+    public TrackRouteSegment getNextSegment(TrackRouteSegment segment) {
+        int index = Arrays.asList(segments).indexOf(segment);
+
+        return segments[index++ % segments.length];
+    }
+
     public boolean isValid() {
         return this.endLane == segments[segments.length - 1].getDrivingLane();
     }
