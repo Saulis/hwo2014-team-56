@@ -60,7 +60,15 @@ public class CarMetrics {
             return 0;
         }
 
-        return getSlipAngle() - previousSlipAngle;
+
+
+        double velocity = getSlipAngle() - previousSlipAngle;
+
+        if(getSlipAngle() < 0) {
+            return velocity * -1;
+        }
+
+        return velocity;
     }
 
     public double getSlipAngle() {

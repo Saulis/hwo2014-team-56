@@ -8,7 +8,7 @@ public class Booster {
         double slipDiff = 60 - Math.abs(slipAngle);
         double timeUntilCrash = Math.abs(slipDiff / slipVelocity);
 
-        if(slipVelocity < 0) {
+        if(slipVelocity < 0 && slipVelocity > -3.5)  { //if too much yliheittoa, restrict slipVelocity even more
             System.out.println(String.format("DRIFTING MODE: %s->1.0", throttle));
             return 1.0;
         }

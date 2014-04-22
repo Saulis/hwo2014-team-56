@@ -19,7 +19,7 @@ public class ThrottleControl {
             printDebug(currentSpeed, targetSpeed, diff, "ACCELERATING");
 
             return 1.0;
-        } else if(diff < -0.2){ //making this smaller will make the braking sharper, this will affect our lap time if we still start braking too early
+        } else if(diff < -0.1){ //making this smaller will make the braking sharper, this will affect our lap time if we still start braking too early
             printDebug(currentSpeed, targetSpeed, diff, "BRAKING");
 
             return 0.0;
