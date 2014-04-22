@@ -41,7 +41,7 @@ public class Navigator {
             routes = newRoutes;
         }
 
-        List<TrackRoute> newRoutes = new ArrayList<TrackRoute>();
+/*        List<TrackRoute> newRoutes = new ArrayList<TrackRoute>();
 
         for(TrackRoute route : routes) {
             if(route.isValid()) {
@@ -50,7 +50,7 @@ public class Navigator {
         }
 
         routes = newRoutes;
-
+*/
         System.out.println(String.format("Navigator: %s possible routes plotted.", routes.size()));
     }
 
@@ -62,11 +62,57 @@ public class Navigator {
             }
         }).findFirst().get();
 
-        System.out.println(String.format("Navigator: using shortest route: %s", selectedRoute.getRouteLength()));
+        printSelectedRoute("shortest");
+    }
+
+    private void printSelectedRoute(String description) {
+        System.out.println(String.format("Navigator: using %s route: %s", description, selectedRoute.getRouteLength()));
         for(int i=0;i < selectedRoute.getSegments().length;i++) {
             TrackRouteSegment trackRouteSegment = selectedRoute.getSegments()[i];
             System.out.println(i + ": " + trackRouteSegment.getDrivingLane().getDistanceFromCenter());
         }
+    }
+
+    public void useFastestRoute() {
+        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).sorted(new Comparator<TrackRoute>() {
+            @Override
+            public int compare(TrackRoute o1, TrackRoute o2) {
+                return Double.compare(o1.getRouteDrivingTime(), o2.getRouteDrivingTime());
+            }
+        }).findFirst().get();
+
+        printSelectedRoute("fastest");
+    }
+
+    public void useCustomKeimolaRoute() {
+        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> {
+            TrackRouteSegment[] segments = r.getSegments();
+
+            return segments[0].getDrivingLane().getIndex() == 1
+                    && segments[1].getDrivingLane().getIndex() == 1
+                    && segments[2].getDrivingLane().getIndex() == 0
+                    && segments[3].getDrivingLane().getIndex() == 0
+                    && segments[4].getDrivingLane().getIndex() == 1
+                    && segments[5].getDrivingLane().getIndex() == 1
+                    && segments[6].getDrivingLane().getIndex() == 1
+                    && segments[7].getDrivingLane().getIndex() == 1;
+        }).findFirst().get();
+
+        printSelectedRoute("custom");
+    }
+
+    public void useCustomUsaRoute() {
+        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> {
+            TrackRouteSegment[] segments = r.getSegments();
+
+            return segments[0].getDrivingLane().getIndex() == 1
+                    && segments[1].getDrivingLane().getIndex() == 1
+                    && segments[2].getDrivingLane().getIndex() == 1
+                    && segments[3].getDrivingLane().getIndex() == 1
+                    && segments[4].getDrivingLane().getIndex() == 1;
+        }).findFirst().get();
+
+        printSelectedRoute("custom");
     }
 
     private TrackRouteSegment[] getNewSegments(Track track, TrackSegment t) {
@@ -106,7 +152,7 @@ public class Navigator {
         TrackRouteSegment nextSegment = getNextSegment();
         Lane currentLane = getCurrentLane();
 
-        //System.out.println(String.format("Lanes: %s -> %s", currentLane.getDistanceFromCenter(), currentLane.getDistanceFromCenter()));
+        //System.out.println(String.format("Lanes: %s -> %s, %s->%s", currentLane.getDistanceFromCenter(), nextSegment.getDrivingLane().getDistanceFromCenter(), getCurrentSegment().getDrivingLane().getDistanceFromCenter(), nextSegment.getDrivingLane().getDistanceFromCenter()));
 
         return currentLane != nextSegment.getDrivingLane() && !switchIsPending;
     }
@@ -140,7 +186,7 @@ public class Navigator {
         return segment.getDrivingLane();
     }
 
-    private Lane getCurrentLane() {
+    public Lane getCurrentLane() {
         return currentPosition.getLane();
     }
 

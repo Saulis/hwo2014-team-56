@@ -18,6 +18,18 @@ public class TrackSegment {
         return totalDistanceOfPieces + getDistanceAddedBySwitching(lane, switchIsUsed);
     }
 
+    public double getSegmentDrivingTime(Lane lane, boolean switchIsUsed) {
+        double totalDrivingTimeOfPieces = stream(pieces).mapToDouble(p -> p.getDrivingTime(lane)).sum();
+
+        return totalDrivingTimeOfPieces + getDrivingTimeAddedBySwitching(lane, switchIsUsed);
+    }
+
+    private double getDrivingTimeAddedBySwitching(Lane lane, boolean switchIsUsed) {
+        double distanceAddedBySwitching = getDistanceAddedBySwitching(lane, switchIsUsed);
+
+        return distanceAddedBySwitching / pieces[0].getTargetSpeed(lane);
+    }
+
     private double getDistanceAddedBySwitching(Lane lane, boolean switchIsUsed) {
         //Switch should always be the first piece of a segment.
         if(switchIsUsed && pieces[0].hasSwitch()) {

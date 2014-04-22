@@ -85,7 +85,7 @@ public class TrackRoute {
     public TrackRouteSegment getNextSegment(TrackRouteSegment segment) {
         int index = Arrays.asList(segments).indexOf(segment);
 
-        return segments[index++ % segments.length];
+        return segments[++index % segments.length];
     }
 
     public boolean isValid() {
@@ -94,5 +94,9 @@ public class TrackRoute {
 
     public double getRouteLength() {
         return stream(segments).mapToDouble(s -> s.getSegmentLength()).sum();
+    }
+
+    public double getRouteDrivingTime() {
+        return stream(segments).mapToDouble(s -> s.getSegmentDrivingTime()).sum();
     }
 }

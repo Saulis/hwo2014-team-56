@@ -40,10 +40,10 @@ public class Car {
         double targetSpeed = 10;
         if(nextTrackAngle != 0) {
             //Targeting next angled piece
-            targetSpeed = getNextPieceLength() / (Math.abs(nextTrackAngle)/ targetAngleSpeed);
+            targetSpeed = getNextPieceTargetSpeed();
         } else if(Math.abs(currentAngleSpeed) > targetAngleSpeed + 0.105) { //tailhappy magic number
             //Straight piece is next but making sure we're not slipping too much by hitting full throttle yet.
-            targetSpeed = getPieceLength(position) / (Math.abs(trackAngle)/ targetAngleSpeed);
+            targetSpeed = getCurrentTargetSpeed();
         }
 
         double speedDiff = targetSpeed - speed;
@@ -116,11 +116,18 @@ public class Car {
         return piece.getLength(lane);
     }
 
-    private double getNextPieceLength() {
+    private double getCurrentTargetSpeed() {
+        Piece currentPiece = getCurrentPiece();
+        Lane currentLane = navigator.getCurrentLane();
+
+        return currentPiece.getTargetSpeed(currentLane);
+    }
+
+    private double getNextPieceTargetSpeed() {
         Piece nextPiece = getNextPiece();
         Lane lane = navigator.getLane(nextPiece);
-
-        return nextPiece.getLength(lane);
+        System.out.println("lane: " + lane.getDistanceFromCenter());
+        return nextPiece.getTargetSpeed(lane); //TODO: this will fail if we are not on the driving lane
     }
 
 }

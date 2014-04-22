@@ -35,7 +35,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
     }
 
     final Gson gson = new Gson();
@@ -45,9 +45,9 @@ public class Main {
         this.writer = writer;
         String line = null;
 
-        send(join); //keimola
-        //send(createRace); //germany
-        //send(joinRace); //germany
+        //send(join); //keimola
+        send(createRace); //germany
+        send(joinRace); //germany
 
         Car player = null;
 
@@ -85,7 +85,7 @@ public class Main {
                 List<Lane> lanes = getLanes(gameInit);
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
-                navigator.useShortestRoute();
+                navigator.useFastestRoute();
                 player = new Car(track, navigator);
 
                 System.out.println("Race init");

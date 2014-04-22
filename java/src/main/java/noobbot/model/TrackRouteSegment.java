@@ -18,6 +18,10 @@ public class TrackRouteSegment {
         return segment.getSegmentLength(drivingLane, switchIsUsed);
     }
 
+    public double getSegmentDrivingTime() {
+        return segment.getSegmentDrivingTime(drivingLane, switchIsUsed);
+    }
+
     public Lane getDrivingLane() {
         return drivingLane;
     }

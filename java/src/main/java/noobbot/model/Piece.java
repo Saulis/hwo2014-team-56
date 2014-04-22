@@ -10,4 +10,6 @@ public interface Piece {
     double getAngle();
     double getTargetSpeed(Lane lane);
     boolean hasSwitch();
+
+    double getDrivingTime(Lane lane);
 }
