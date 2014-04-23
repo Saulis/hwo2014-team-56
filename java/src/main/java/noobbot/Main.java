@@ -47,8 +47,8 @@ public class Main {
         String line = null;
 
         send(join); //keimola
-        //send(createRace); //germany
-        //send(joinRace); //germany
+        //send(createRace); //custom
+        //send(joinRace); //custom
 
         Car player = null;
 

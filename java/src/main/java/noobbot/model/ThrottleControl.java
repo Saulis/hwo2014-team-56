@@ -29,9 +29,9 @@ public class ThrottleControl {
 
             return 1.0;*/
         } else {
-            printDebug(currentSpeed, currentTargetSpeed, diff, "STABILIZING");
+            printDebug(currentSpeed, currentTargetSpeed - 0.1, diff, "STABILIZING");
 
-            return booster.addBoost(currentTargetSpeed / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
+            return booster.addBoost((currentTargetSpeed - 0.1) / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
         }
     }
 
