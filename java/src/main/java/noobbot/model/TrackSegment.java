@@ -1,5 +1,7 @@
 package noobbot.model;
 
+import java.util.Optional;
+
 import static java.util.Arrays.stream;
 
 /**
@@ -60,5 +62,13 @@ public class TrackSegment {
         }
 
         return false;
+    }
+
+    public Optional<Piece> getPiece(int pieceIndex) {
+        return stream(pieces).filter(p -> p.getNumber() == pieceIndex).findFirst();
+    }
+
+    public Piece getFirstPiece() {
+        return pieces[0];
     }
 }

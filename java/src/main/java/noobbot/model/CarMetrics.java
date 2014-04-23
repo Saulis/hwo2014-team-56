@@ -60,8 +60,6 @@ public class CarMetrics {
             return 0;
         }
 
-
-
         double velocity = getSlipAngle() - previousSlipAngle;
 
         if(getSlipAngle() < 0) {
@@ -87,7 +85,7 @@ public class CarMetrics {
             measuringAcceleration = true;
         }
 
-        if(currentThrottle != 1.0) {
+        if(measuringAcceleration && currentThrottle != 1.0) {
             System.out.println("Metrics: Stopping acceleration measuring.");
             measuringAcceleration = false;
         }

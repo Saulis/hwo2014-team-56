@@ -37,8 +37,8 @@ public class Car {
         double acceleration = carMetrics.getCurrentAcceleration();
         double currentAngleSpeed = getCurrentAngleSpeed(speed);
 
-        double targetSpeed = getCurrentTargetSpeed();
-        if(nextTrackAngle != 0) {
+        //double targetSpeed = getCurrentTargetSpeed();
+        /*if(nextTrackAngle != 0) {
             //Targeting next angled piece
             targetSpeed = getNextPieceTargetSpeed();
         } /*else if(Math.abs(currentAngleSpeed) > targetAngleSpeed + 0.105) { //tailhappy magic number
@@ -46,15 +46,17 @@ public class Car {
             targetSpeed = getCurrentTargetSpeed();
         }*/
 
-        double speedDiff = targetSpeed - speed;
-        double estimatedAcceleration = (currentThrottle * topspeed - speed) * accelerationMagicNumber;
-        double estimatedSpeed = speed + estimatedAcceleration;
+        //double estimatedAcceleration = (currentThrottle * topspeed - speed) * accelerationMagicNumber;
+        //double estimatedSpeed = speed + estimatedAcceleration;
 
+
+        double targetSpeed = getNextTargetSpeed(getCurrentTargetSpeed(), currentThrottle);
+        double speedDiff = targetSpeed - speed;
         double nextThrottle = throttleControl.getThrottle(speed, targetSpeed);
 
         System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPiecePosition().pieceIndex, getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, slipAcceleration));
         System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed));
-        System.out.println(String.format("*S: %s, A: %s", estimatedSpeed, estimatedAcceleration));
+        //System.out.println(String.format("*S: %s, A: %s", estimatedSpeed, estimatedAcceleration));
         System.out.println("ANGLE: " + currentAngleSpeed);
 
         System.out.println(String.format("BRAKING DISTANCE: %s ", carMetrics.getBrakingDistance(speed, targetSpeed, currentThrottle)));
@@ -121,6 +123,40 @@ public class Car {
         Lane currentLane = navigator.getCurrentLane();
 
         return currentPiece.getTargetSpeed(currentLane);
+    }
+
+    private double getNextTargetSpeed(double currentTargetSpeed, double currentThrottle) {
+        Piece currentPiece = getCurrentPiece();
+
+        Piece nextPiece = track.getPieceAfter(currentPiece);
+
+        TrackRoute selectedRoute = navigator.getSelectedRoute();
+
+        TrackRouteSegment segment = selectedRoute.getSegmentForPiece(nextPiece.getNumber());
+        double targetSpeed = nextPiece.getTargetSpeed(segment.getDrivingLane());
+
+        while(targetSpeed == currentTargetSpeed) {
+            nextPiece = track.getPieceAfter(nextPiece);
+            segment = selectedRoute.getSegmentForPiece(nextPiece.getNumber());
+
+            targetSpeed = nextPiece.getTargetSpeed(segment.getDrivingLane());
+        }
+
+        //Piece nextTargetPiece = selectedRoute.getPieceForNextTargetSpeed(currentPiece);
+        //Lane nextTargetLane = navigator.getLane(nextTargetPiece);
+
+        double distanceToTarget = selectedRoute.getDistanceBetween(currentPiece, nextPiece) - position.getInPieceDistance();
+        //double nextTargetSpeed = nextTargetPiece.getTargetSpeed(nextTargetLane);
+
+        System.out.println(String.format("Next Target: i: %s, D: %s, S: %s", nextPiece.getNumber(), distanceToTarget, targetSpeed));
+
+        double brakingDistance = carMetrics.getBrakingDistance(carMetrics.getCurrentSpeed(), targetSpeed, currentThrottle);
+
+        if(distanceToTarget <= brakingDistance && targetSpeed < currentTargetSpeed) {
+            return targetSpeed;
+        }
+
+        return currentTargetSpeed;
     }
 
     private double getNextPieceTargetSpeed() {

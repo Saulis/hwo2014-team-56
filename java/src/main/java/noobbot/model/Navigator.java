@@ -203,4 +203,8 @@ public class Navigator {
     public TrackRouteSegment getCurrentSegment() {
         return selectedRoute.getSegmentForPiece(currentPosition.getPieceNumber());
     }
+
+    public TrackRoute getSelectedRoute() {
+        return selectedRoute;
+    }
 }

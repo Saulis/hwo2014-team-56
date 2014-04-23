@@ -3,6 +3,7 @@ package noobbot.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
@@ -88,15 +89,59 @@ public class TrackRoute {
         return segments[++index % segments.length];
     }
 
-    public boolean isValid() {
-        return this.endLane == segments[segments.length - 1].getDrivingLane();
-    }
-
     public double getRouteLength() {
         return stream(segments).mapToDouble(s -> s.getSegmentLength()).sum();
     }
 
     public double getRouteDrivingTime() {
         return stream(segments).mapToDouble(s -> s.getSegmentDrivingTime()).sum();
+    }
+
+    public Piece getPieceForNextTargetSpeed(Piece piece) {
+        double targetSpeed = getTargetSpeed(piece);
+
+        Piece nextPiece = getNextPiece(piece);
+        while(targetSpeed != getTargetSpeed(nextPiece)) {
+            nextPiece = getNextPiece(nextPiece);
+        }
+
+        return nextPiece;
+    }
+
+    public double getDistanceBetween(Piece piece1, Piece piece2) {
+        double distance = getDrivingLength(piece1);
+        Piece nextPiece = getNextPiece(piece1);
+
+        while(nextPiece != piece2) {
+            distance += getDrivingLength(nextPiece);
+            nextPiece = getNextPiece(nextPiece);
+        }
+
+        return distance;
+    }
+
+    public double getDrivingLength(Piece piece) {
+        TrackRouteSegment segment = getSegmentForPiece(piece.getNumber());
+
+        return piece.getLength(segment.getDrivingLane());
+    }
+
+    private double getTargetSpeed(Piece piece) {
+        TrackRouteSegment segment = getSegmentForPiece(piece.getNumber());
+
+        return piece.getTargetSpeed(segment.getDrivingLane());
+    }
+
+    private Piece getNextPiece(Piece piece) {
+        TrackRouteSegment segment = getSegmentForPiece(piece.getNumber());
+
+        Optional<Piece> nextPiece = segment.getPiece(piece.getNumber() + 1);
+        if(nextPiece.isPresent()) {
+            return nextPiece.get();
+        } else {
+            segment = getNextSegment(segment);
+
+            return segment.getFirstPiece();
+        }
     }
 }

@@ -1,5 +1,7 @@
 package noobbot.model;
 
+import java.util.Optional;
+
 /**
  * Created by Saulis on 21/04/14.
  */
@@ -36,5 +38,13 @@ public class TrackRouteSegment {
 
     public boolean hasCorners() {
         return segment.hasCorners();
+    }
+
+    public Optional<Piece> getPiece(int pieceIndex) {
+        return segment.getPiece(pieceIndex);
+    }
+
+    public Piece getFirstPiece() {
+        return segment.getFirstPiece();
     }
 }

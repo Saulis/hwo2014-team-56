@@ -15,11 +15,11 @@ public class ThrottleControl {
 
     public double getThrottle(double currentSpeed, double targetSpeed) {
         double diff = targetSpeed - currentSpeed;
-        if(diff > 0.2 || targetSpeed >= metrics.getTopspeed()) {
+        if(diff > 0.2 || targetSpeed >= (metrics.getTopspeed() - 0.01)) { //actual measurement may be a little over the real top speed
             printDebug(currentSpeed, targetSpeed, diff, "ACCELERATING");
 
             return 1.0;
-         } else if(diff > -1.0 && booster.weShouldBoost(metrics.getSlipVelocity())) { //drifting
+         } else if(diff > -1.25 && booster.weShouldBoost(metrics.getSlipVelocity())) { //drifting
             printDebug(currentSpeed, targetSpeed, diff, "DRIFTING");
 
             return 1.0;
