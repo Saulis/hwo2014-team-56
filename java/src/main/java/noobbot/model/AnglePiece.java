@@ -26,7 +26,17 @@ public class AnglePiece extends GenericPiece {
     @Override
     public double getTargetSpeed(Lane lane)
     {
-        return getLength(lane) / (Math.abs(angle) / hardcodedAngleSpeed);
+    if(angle == 45) {
+            return 7.15;
+
+     } else if(angle == -45) {
+         return 6.54;
+     }
+
+     else if(angle == 22.5 || angle == -22.5) {
+            return 8.0;
+        } else
+         return getLength(lane) / (Math.abs(angle) / hardcodedAngleSpeed);
     }
 
     private double getCornerLength(double offsetFromCenter) {

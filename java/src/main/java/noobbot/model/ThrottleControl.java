@@ -13,25 +13,25 @@ public class ThrottleControl {
         booster = new Booster();
     }
 
-    public double getThrottle(double currentSpeed, double targetSpeed) {
-        double diff = targetSpeed - currentSpeed;
-        if(diff > 0.2 || targetSpeed >= (metrics.getTopspeed() - 0.01)) { //actual measurement may be a little over the real top speed
-            printDebug(currentSpeed, targetSpeed, diff, "ACCELERATING");
-
-            return 1.0;
-         } else if(diff > -1.25 && booster.weShouldBoost(metrics.getSlipVelocity())) { //drifting
-            printDebug(currentSpeed, targetSpeed, diff, "DRIFTING");
-
-            return 1.0;
-         } else if(diff < -0.05){
-            printDebug(currentSpeed, targetSpeed, diff, "BRAKING");
+    public double getThrottle(double currentTargetSpeed, double trackAngle, double currentSpeed, TargetSpeed targetSpeed) {
+        double diff = targetSpeed.getTargetSpeed() - currentSpeed;
+        if(targetSpeed.getDistanceToTarget() <= targetSpeed.getBrakingDistance()) {
+            printDebug(currentSpeed, targetSpeed.getTargetSpeed(), diff, "BRAKING");
 
             return 0.0;
         }
-        else {
-            printDebug(currentSpeed, targetSpeed, diff, "STABILIZING");
+        else if(trackAngle == 0 || booster.weShouldBoost(metrics.getSlipAngle(), metrics.getSlipVelocity())) { //actual measurement may be a little over the real top speed
+            printDebug(currentSpeed, targetSpeed.getTargetSpeed(), diff, "ACCELERATING");
 
-            return booster.addBoost(targetSpeed / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
+            return 1.0;
+         /*} else if(diff > -1.25 && booster.weShouldBoost(metrics.getSlipVelocity())) { //drifting
+            printDebug(currentSpeed, targetSpeed, diff, "DRIFTING");
+
+            return 1.0;*/
+        } else {
+            printDebug(currentSpeed, currentTargetSpeed, diff, "STABILIZING");
+
+            return booster.addBoost(currentTargetSpeed / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
         }
     }
 

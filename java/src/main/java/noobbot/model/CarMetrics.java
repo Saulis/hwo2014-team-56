@@ -172,7 +172,7 @@ public class CarMetrics {
         double speed = getSpeed(currentSpeed, acceleration);
 
         if(targetSpeed < currentSpeed) {
-            double breakingDistance = currentSpeed;
+            double breakingDistance = currentSpeed * 2;
 
             while(speed > targetSpeed + 0.05) {
                 breakingDistance += speed;
