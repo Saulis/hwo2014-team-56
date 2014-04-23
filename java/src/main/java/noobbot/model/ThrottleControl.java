@@ -15,11 +15,15 @@ public class ThrottleControl {
 
     public double getThrottle(double currentSpeed, double targetSpeed) {
         double diff = targetSpeed - currentSpeed;
-        if(diff > 0.2) {
+        if(diff > 0.2 || targetSpeed >= metrics.getTopspeed()) {
             printDebug(currentSpeed, targetSpeed, diff, "ACCELERATING");
 
             return 1.0;
-        } else if(diff < -0.1){ //making this smaller will make the braking sharper, this will affect our lap time if we still start braking too early
+         } else if(diff > -1.0 && booster.weShouldBoost(metrics.getSlipVelocity())) { //drifting
+            printDebug(currentSpeed, targetSpeed, diff, "DRIFTING");
+
+            return 1.0;
+         } else if(diff < -0.05){
             printDebug(currentSpeed, targetSpeed, diff, "BRAKING");
 
             return 0.0;
