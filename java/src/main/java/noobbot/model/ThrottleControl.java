@@ -13,25 +13,21 @@ public class ThrottleControl {
         booster = new Booster();
     }
 
-    public double getThrottle(double currentTargetSpeed, double trackAngle, double currentSpeed, TargetSpeed targetSpeed) {
-        double diff = targetSpeed.getTargetSpeed() - currentSpeed;
+    public double getThrottle(double currentTargetSpeed, TargetSpeed targetSpeed) {
+        double diff = targetSpeed.getTargetSpeed() - metrics.getCurrentSpeed();
         if(targetSpeed.getDistanceToTarget() <= targetSpeed.getBrakingDistance()) {
-            printDebug(currentSpeed, targetSpeed.getTargetSpeed(), diff, "BRAKING");
+            printDebug(metrics.getCurrentSpeed(), targetSpeed.getTargetSpeed(), diff, "BRAKING");
 
             return 0.0;
         }
-        else if(trackAngle == 0 || booster.weShouldBoost(metrics.getSlipAngle(), metrics.getSlipVelocity())) { //actual measurement may be a little over the real top speed
-            printDebug(currentSpeed, targetSpeed.getTargetSpeed(), diff, "ACCELERATING");
+        else if(metrics.getCurrentPiece().getAngle() == 0 || booster.weShouldBoost(metrics.getSlipAngle(), metrics.getSlipVelocity())) { //actual measurement may be a little over the real top speed
+            printDebug(metrics.getCurrentSpeed(), targetSpeed.getTargetSpeed(), diff, "ACCELERATING");
 
             return 1.0;
-         /*} else if(diff > -1.25 && booster.weShouldBoost(metrics.getSlipVelocity())) { //drifting
-            printDebug(currentSpeed, targetSpeed, diff, "DRIFTING");
-
-            return 1.0;*/
         } else {
-            printDebug(currentSpeed, currentTargetSpeed - 0.1, diff, "STABILIZING");
+            printDebug(metrics.getCurrentSpeed(), currentTargetSpeed, diff, "STABILIZING");
 
-            return booster.addBoost((currentTargetSpeed - 0.1) / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
+            return booster.addBoost((currentTargetSpeed) / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
         }
     }
 

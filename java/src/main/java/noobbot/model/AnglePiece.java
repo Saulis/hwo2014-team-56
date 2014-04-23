@@ -27,7 +27,7 @@ public class AnglePiece extends GenericPiece {
     public double getTargetSpeed(Lane lane)
     {
         return getLength(lane) / (Math.abs(angle) / hardcodedAngleSpeed);
-        /*
+/*
     if(angle == 45 && lane.getDistanceFromCenter() < 0) {
             return 7.15;
 

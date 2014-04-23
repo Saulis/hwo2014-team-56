@@ -8,7 +8,7 @@ public class Booster {
         double slipDiff = 60 - Math.abs(slipAngle);
         double timeUntilCrash = Math.abs(slipDiff / slipVelocity);
 
-        if(weShouldBoost(slipAngle, slipVelocity))  { //if too much yliheittoa, restrict slipVelocity even more
+        if(weShouldBoost(slipAngle, slipVelocity))  {
             System.out.println(String.format("DRIFTING MODE: %s->1.0", throttle));
             return 1.0;
         }
@@ -17,6 +17,6 @@ public class Booster {
     }
 
     public boolean weShouldBoost(double slipAngle, double slipVelocity) {
-     return slipAngle == 0 || (slipVelocity < 0 && slipVelocity > -2.5);
+     return slipAngle == 0 || (slipVelocity < 0 && slipVelocity > -2.5); //if too much yliheittoa, restrict slipVelocity even more
     }
 }

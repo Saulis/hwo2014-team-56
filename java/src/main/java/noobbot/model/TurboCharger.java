@@ -17,10 +17,8 @@ public class TurboCharger {
     }
 
     public boolean shouldSendTurbo() {
-        TrackRouteSegment currentSegment = navigator.getCurrentSegment();
+        Piece nextCorner = navigator.getNextCorner();
 
-        //System.out.println(String.format("Turbo: %s, corners: %s", turboAvailable, currentSegment.hasCorners()));
-
-        return turboAvailable && !currentSegment.hasCorners();
+        return turboAvailable && navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 300.0;
     }
 }

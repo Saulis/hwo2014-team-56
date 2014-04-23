@@ -28,14 +28,14 @@ public class ThrottleControlTests {
     public void throttleAccelerates() {
         when(targetSpeed.getTargetSpeed()).thenReturn(4.0);
 
-        assertThat(throttleControl.getThrottle(0.666, 0.0, 2, targetSpeed), is(1.0));
+        assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(1.0));
     }
 
     @Test
     public void throttleBrakes() {
         when(targetSpeed.getTargetSpeed()).thenReturn(2.0);
 
-        assertThat(throttleControl.getThrottle(0.666, 0.0, 4, targetSpeed), is(0.0));
+        assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(0.0));
     }
 
     @Test
@@ -44,6 +44,6 @@ public class ThrottleControlTests {
         when(targetSpeed.getTargetSpeed()).thenReturn(2.5);
 
         //2.5 / 10.0 = 0.25 (targetspeed/topspeed)
-        assertThat(throttleControl.getThrottle(0.666, 0.0, 2.4, targetSpeed), is(0.25));
+        assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(0.25));
     }
 }

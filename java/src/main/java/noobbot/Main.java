@@ -36,7 +36,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
     }
 
     final Gson gson = new Gson();
@@ -69,17 +69,17 @@ public class Main {
 
                 navigator.setPosition(position);
                 if(navigator.shouldSendSwitchLanes()) {
-                    System.out.println("Switching lanes.");
                     send(navigator.setTargetLane());
                 } else if(turboCharger.shouldSendTurbo()) {
                     turboCharger.setTurboAvailable(false);
                     send(new Turbo());
                 } else {
-
                 double nextThrottle = player.setPosition(position);
 
                 send(new Throttle(nextThrottle));
-                }
+
+                System.out.println("");
+            }
 
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
@@ -89,9 +89,10 @@ public class Main {
                 List<Lane> lanes = getLanes(gameInit);
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
-                navigator.useCustomKeimolaRoute();
+                CarMetrics carMetrics = new CarMetrics(track);
+                navigator.useShortestRoute();
                 turboCharger = new TurboCharger(navigator);
-                player = new Car(track, navigator);
+                player = new Car(carMetrics, navigator);
 
                 System.out.println("Race init");
                 System.out.println(line);

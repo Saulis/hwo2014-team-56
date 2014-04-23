@@ -180,13 +180,15 @@ public class CarMetrics {
                 //0.0 is for braking throttle
                 acceleration = getAcceleration(speed, 0.0);
                 speed = getSpeed(speed, acceleration);
-
-                //System.out.println(String.format("DEBUG: s: %s  t: %s ", speed, targetSpeed));
             }
 
             return breakingDistance;
         }
 
         return 0;
+    }
+
+    public Piece getCurrentPiece() {
+        return track.getPiece(currentPosition);
     }
 }

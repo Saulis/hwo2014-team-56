@@ -101,6 +101,22 @@ public class Navigator {
         printSelectedRoute("custom");
     }
 
+    public void useCustomFranceRoute() {
+        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> {
+            TrackRouteSegment[] segments = r.getSegments();
+
+            return segments[0].getDrivingLane().getIndex() == 0
+                    && segments[1].getDrivingLane().getIndex() == 0
+                    && segments[2].getDrivingLane().getIndex() == 0
+                    && segments[3].getDrivingLane().getIndex() == 0
+                    && segments[4].getDrivingLane().getIndex() == 0
+                    && segments[5].getDrivingLane().getIndex() == 0
+                    && segments[6].getDrivingLane().getIndex() == 0;
+        }).findFirst().get();
+
+        printSelectedRoute("custom");
+    }
+
     public void useCustomUsaRoute() {
         selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> {
             TrackRouteSegment[] segments = r.getSegments();
@@ -206,5 +222,36 @@ public class Navigator {
 
     public TrackRoute getSelectedRoute() {
         return selectedRoute;
+    }
+
+    public Piece getNextCorner() {
+        TrackRoute selectedRoute = getSelectedRoute();
+        Piece currentPiece = getCurrentPiece();
+        double currentTargetSpeed = currentPiece.getTargetSpeed(getCurrentLane());
+        boolean currentCornerHasEnded = false;
+
+        Piece nextPiece = track.getPieceAfter(currentPiece);
+        TrackRouteSegment segment = selectedRoute.getSegmentForPiece(nextPiece.getNumber());
+        double targetSpeed = nextPiece.getTargetSpeed(segment.getDrivingLane());
+
+        while((targetSpeed == currentTargetSpeed && !currentCornerHasEnded) || nextPiece.getAngle() == 0) {
+            if(nextPiece.getAngle() == 0) {
+                currentCornerHasEnded = true;
+            }
+
+            nextPiece = track.getPieceAfter(nextPiece);
+            segment = selectedRoute.getSegmentForPiece(nextPiece.getNumber());
+            targetSpeed = nextPiece.getTargetSpeed(segment.getDrivingLane());
+        }
+
+        return nextPiece;
+    }
+
+    public Piece getCurrentPiece() {
+        return track.getPieces().get(currentPosition.getPieceNumber());
+    }
+
+    public double getDistanceToTarget(Piece targetPiece) {
+        return selectedRoute.getDistanceBetween(getCurrentPiece(), targetPiece) - currentPosition.getInPieceDistance();
     }
 }
