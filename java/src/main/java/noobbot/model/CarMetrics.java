@@ -49,6 +49,8 @@ public class CarMetrics {
         this.currentPosition = metric.getPosition();
 
         measureTopspeed();
+
+        System.out.println(String.format("Metrics - Speed: %s, Slip: %s, S.Velocity %s", getCurrentSpeed(), getSlipAngle(), getSlipVelocity()));
     }
 
     public double getSlipAcceleration() {
@@ -80,7 +82,7 @@ public class CarMetrics {
     private void measureTopspeed() {
 
         //start measuringAcceleration if we start hitting full throttle from zero
-        if(getCurrentSpeed() == 0 && this.currentThrottle == 1.0) {
+        if(getCurrentSpeed() == 0 && this.currentThrottle == 1.0 && topspeed == 0) {
             System.out.println("Metrics: Starting to measure acceleration.");
             measuringAcceleration = true;
         }

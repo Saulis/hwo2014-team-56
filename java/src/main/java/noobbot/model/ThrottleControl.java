@@ -5,17 +5,19 @@ package noobbot.model;
  */
 public class ThrottleControl {
     private final Booster booster;
+    private final AntiLockBrakes brakes;
     private CarMetrics metrics;
 
     public ThrottleControl(CarMetrics metrics) {
 
         this.metrics = metrics;
         booster = new Booster();
+        brakes = new AntiLockBrakes(metrics);
     }
 
     public double getThrottle(double currentTargetSpeed, TargetSpeed targetSpeed) {
         double diff = targetSpeed.getTargetSpeed() - metrics.getCurrentSpeed();
-        if(targetSpeed.getDistanceToTarget() <= targetSpeed.getBrakingDistance()) {
+        if(brakes.shouldBrake(targetSpeed)) {
             printDebug(metrics.getCurrentSpeed(), targetSpeed.getTargetSpeed(), diff, "BRAKING");
 
             return 0.0;
@@ -27,7 +29,7 @@ public class ThrottleControl {
         } else {
             printDebug(metrics.getCurrentSpeed(), currentTargetSpeed, diff, "STABILIZING");
 
-            return booster.addBoost((currentTargetSpeed) / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
+            return currentTargetSpeed / metrics.getTopspeed();
         }
     }
 

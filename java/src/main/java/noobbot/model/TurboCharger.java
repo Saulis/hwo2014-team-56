@@ -5,20 +5,24 @@ package noobbot.model;
  */
 public class TurboCharger {
     private Navigator navigator;
-    private boolean turboAvailable;
+    private int availableTurbos = 0;
 
     public TurboCharger(Navigator navigator) {
         this.navigator = navigator;
 
     }
 
-    public void setTurboAvailable(boolean turboAvailable) {
-        this.turboAvailable = turboAvailable;
+    public void addTurbo() {
+        availableTurbos++;
+    }
+
+    public void useTurbo() {
+        availableTurbos--;
     }
 
     public boolean shouldSendTurbo() {
         Piece nextCorner = navigator.getNextCorner();
 
-        return turboAvailable && navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 300.0;
+        return availableTurbos > 0 && navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 300.0;
     }
 }

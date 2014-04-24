@@ -60,7 +60,7 @@ public class Main {
             }
 
             if (msgFromServer.msgType.equals("turboAvailable")) {
-                turboCharger.setTurboAvailable(true);
+                turboCharger.addTurbo();
             }
 
             if (msgFromServer.msgType.equals("carPositions")) {
@@ -71,14 +71,14 @@ public class Main {
                 if(navigator.shouldSendSwitchLanes()) {
                     send(navigator.setTargetLane());
                 } else if(turboCharger.shouldSendTurbo()) {
-                    turboCharger.setTurboAvailable(false);
+                    turboCharger.useTurbo();
                     send(new Turbo());
                 } else {
                 double nextThrottle = player.setPosition(position);
 
                 send(new Throttle(nextThrottle));
 
-                System.out.println("");
+                //System.out.println("");
             }
 
             } else if (msgFromServer.msgType.equals("join")) {
@@ -90,7 +90,7 @@ public class Main {
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
                 CarMetrics carMetrics = new CarMetrics(track);
-                navigator.useShortestRoute();
+                navigator.useCustomKeimolaRoute();
                 turboCharger = new TurboCharger(navigator);
                 player = new Car(carMetrics, navigator);
 

@@ -24,7 +24,7 @@ public class PlayerPosition implements Position {
 
     @Override
     public int getLaneNumber() {
-        return (int) data.piecePosition.lane.startLaneIndex;
+        return (int) data.piecePosition.lane.endLaneIndex;
     }
 
     @Override
