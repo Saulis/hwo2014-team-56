@@ -77,8 +77,6 @@ public class Main {
                 double nextThrottle = player.setPosition(position);
 
                 send(new Throttle(nextThrottle));
-
-                System.out.println("");
             }
 
             } else if (msgFromServer.msgType.equals("join")) {

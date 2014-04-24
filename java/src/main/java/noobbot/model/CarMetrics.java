@@ -1,6 +1,5 @@
 package noobbot.model;
 
-import static java.util.Arrays.stream;
 
 /**
  * Created by jereketonen on 4/16/14.
@@ -26,7 +25,6 @@ public class CarMetrics {
     private double maxAcceleration = 0;
     private double accelerationRatio = 0;
     private double currentThrottle;
-    private double previousThrottle;
     private boolean measuringAcceleration = false;
     private double previousAcceleration;
     private double previousSlipVelocity;
@@ -42,8 +40,6 @@ public class CarMetrics {
         previousSlipVelocity = getSlipVelocity();
         previousSlipAngle = getSlipAngle();
         previousPosition = this.currentPosition;
-        previousThrottle = this.currentThrottle;
-
 
         this.currentThrottle = metric.getThrottle();
         this.currentPosition = metric.getPosition();

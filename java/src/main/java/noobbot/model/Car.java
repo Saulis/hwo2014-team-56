@@ -1,6 +1,5 @@
 package noobbot.model;
 
-import java.util.List;
 
 public class Car {
 

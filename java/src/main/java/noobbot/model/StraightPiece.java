@@ -26,4 +26,9 @@ public class StraightPiece extends GenericPiece {
 
     @Override
     public double getAngle() {return 0;}
+
+    @Override
+    public double getRadius() {
+        return 0;
+    }
 }
