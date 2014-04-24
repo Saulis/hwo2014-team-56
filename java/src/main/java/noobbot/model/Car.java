@@ -71,6 +71,8 @@ public class Car {
             nextThrottle = currentThrottle + 0.3; 
         }
 
+        System.out.println(String.format("P: %4s \tS: %6.4f \t\tA: %5s \t\tr: %5s \t\tSlip: %6.4f \t\t%6.4f \t\t%6.4f", getPosition().getPiecePosition().pieceIndex, speed, trackAngle, getCurrentPiece().getAngle(), slipAngle.getValue(), slipAngle.getAcceleration(), currentAngleSpeed));
+
         System.out.println(String.format("Piece: %s, Length: %s, Position: %s,  Angle: %s->%s, Throttle: %s->%s, Slip: %s (%s)", getPosition().getPieceNumber(), getPieceLength(position), getPosition().getPiecePosition().inPieceDistance, trackAngle, nextTrackAngle, currentThrottle, nextThrottle, slipAngle, -0.0));
         System.out.println(String.format(" S: %s, A: %s, T: %s->%s  %s/%s)", speed, acceleration, currentThrottle, nextThrottle, speedDiff, targetSpeed));
         System.out.println(String.format("*S: %s, A: %s", estimatedSpeed, estimatedAcceleration));

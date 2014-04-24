@@ -51,12 +51,12 @@ public class CarMetrics {
 
         //start measuringAcceleration if we start hitting full throttle from zero
         if(topspeed == 0 && getCurrentSpeed() == 0 && this.currentThrottle == 1.0) {
-            System.out.println("Metrics: Starting to measure acceleration.");
+//            System.out.println("Metrics: Starting to measure acceleration.");
             measuringAcceleration = true;
         }
 
         if(topspeed == 0 && currentThrottle != 1.0) {
-            System.out.println("Metrics: Stopping acceleration measuring.");
+//            System.out.println("Metrics: Stopping acceleration measuring.");
             measuringAcceleration = false;
         }
 
@@ -67,7 +67,7 @@ public class CarMetrics {
             maxAcceleration = previousAcceleration;
             topspeed = previousAcceleration / accelerationRatio;
 
-            System.out.println(String.format("Metrics: Acceleration measured. Acceleration ratio: %s, Max Acceleration: %s, Topspeed: %s", accelerationRatio, maxAcceleration, topspeed));
+//            System.out.println(String.format("Metrics: Acceleration measured. Acceleration ratio: %s, Max Acceleration: %s, Topspeed: %s", accelerationRatio, maxAcceleration, topspeed));
         }
     }
 

@@ -17,7 +17,7 @@ public class SlipAngle {
     private double angleRadius;
     private List<Double> angleHistory = new ArrayList<Double>();
 
-    private List<Integer> values;
+    private List<Double> values = new ArrayList<Double>();
     
     public SlipAngle(Track track) {
         this.track = track;
@@ -55,7 +55,7 @@ public class SlipAngle {
         return angleHistory.get(angleHistory.size()-1) - angleHistory.get(angleHistory.size()-2);
     }
 
-    public int getValue() {
+    public double getValue() {
         if (values.isEmpty()) {
             return 0;
         }
