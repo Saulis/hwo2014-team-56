@@ -24,13 +24,15 @@ public class CarMetricsTests {
     private Position thirdPosition;
     private Piece piece;
     private Position startingPosition;
+    private TargetAngleSpeed targetAngleSpeed;
 
     @Before
     public void setup() {
         track = mock(Track.class);
         onlyLane = mock(Lane.class);
+        targetAngleSpeed = mock(TargetAngleSpeed.class);
         when(track.getLanes()).thenReturn(Arrays.asList(onlyLane));
-        carMetrics = new CarMetrics(track);
+        carMetrics = new CarMetrics(track, targetAngleSpeed);
 
         piece = mock(Piece.class);
         when(piece.getLength(onlyLane)).thenReturn(100.0);

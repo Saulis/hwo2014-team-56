@@ -18,6 +18,8 @@ public class CarMetrics {
      */
 
     private Track track;
+    private SlipAngle slipAngle;
+    private TargetAngleSpeed targetAngleSpeed;
     private Position currentPosition;
     private Position previousPosition;
     private double previousSpeed = 0;
@@ -30,20 +32,25 @@ public class CarMetrics {
     private double previousSlipVelocity;
     private double previousSlipAngle;
 
-    public CarMetrics(Track track) {
+    public CarMetrics(Track track, TargetAngleSpeed tas) {
         this.track = track;
+        this.targetAngleSpeed = tas;
+        this.slipAngle = new SlipAngle(track);
     }
 
     public void update(Metric metric) {
+        slipAngle.update(metric.getPosition());
         previousAcceleration = getCurrentAcceleration();
         previousSpeed = getCurrentSpeed();
         previousSlipVelocity = getSlipVelocity();
-        previousSlipAngle = getSlipAngle();
+        previousSlipAngle = slipAngle.getValue();
         previousPosition = this.currentPosition;
 
         this.currentThrottle = metric.getThrottle();
         this.currentPosition = metric.getPosition();
 
+        this.targetAngleSpeed.calibrate(metric.getPosition(), getCurrentPiece(), slipAngle, getCurrentSpeed(), currentThrottle);
+        
         measureTopspeed();
     }
 

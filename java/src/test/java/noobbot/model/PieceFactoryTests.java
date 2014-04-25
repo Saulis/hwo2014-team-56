@@ -15,10 +15,12 @@ public class PieceFactoryTests {
 
     private PieceFactory pieceFactory;
     private GameInitDescriptor.Data.Race.Track.Piece pieceDescriptor;
+    private TargetAngleSpeed targetAngleSpeed;
 
     @Before
     public void setup() {
-        pieceFactory = new PieceFactory();
+        targetAngleSpeed = mock(TargetAngleSpeed.class);
+        pieceFactory = new PieceFactory(targetAngleSpeed);
         pieceDescriptor = mock(GameInitDescriptor.Data.Race.Track.Piece.class);
     }
 

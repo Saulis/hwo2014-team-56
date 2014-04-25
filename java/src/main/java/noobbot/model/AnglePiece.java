@@ -4,12 +4,13 @@ public class AnglePiece extends GenericPiece {
 
     private double radius;
     private double angle;
-    private final double hardcodedAngleSpeed = 3.75;
+    private TargetAngleSpeed tas;
 
-    public AnglePiece(double radius, double angle, int pieceNumber, boolean hasSwitch) {
+    public AnglePiece(double radius, double angle, int pieceNumber, boolean hasSwitch, TargetAngleSpeed tas) {
         super(pieceNumber, hasSwitch);
         this.radius = radius;
         this.angle = angle;
+        this.tas = tas;
     }
 
     @Override
@@ -26,22 +27,7 @@ public class AnglePiece extends GenericPiece {
     @Override
     public double getTargetSpeed(Lane lane)
     {
-        return getLength(lane) / (Math.abs(angle) / hardcodedAngleSpeed);
-/*
-    if(angle == 45 && lane.getDistanceFromCenter() < 0) {
-            return 7.15;
-
-     } else if(angle == -45 && lane.getDistanceFromCenter() < 0) {
-         return 6.54;
-     } else if(angle == 45 && lane.getDistanceFromCenter() > 0) {
-        return 6.5;
-    } else if(angle == -45 && lane.getDistanceFromCenter() > 0) {
-        return 7.15;
-    }
-     else if(angle == 22.5 || angle == -22.5) {
-            return 8.0;
-        } else
-         return getLength(lane) / (Math.abs(angle) / hardcodedAngleSpeed);*/
+        return getLength(lane) / Math.abs(angle) / tas.getValue();
     }
 
     private double getCornerLength(double offsetFromCenter) {
@@ -51,15 +37,7 @@ public class AnglePiece extends GenericPiece {
     }
 
     private double getEffectiveRadius(double offsetFromCenter) {
-        if(isLeftTurn()) {
-            return getRadius() + offsetFromCenter;
-        }
-
-        return getRadius() - offsetFromCenter;
-    }
-
-    private boolean isLeftTurn() {
-        return getAngle() < 0;
+        return getRadius() + offsetFromCenter;
     }
 
     public double getRadius() { return radius;}

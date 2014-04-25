@@ -13,8 +13,8 @@ import noobbot.descriptor.CarPositionsDescriptor;
 import noobbot.descriptor.GameInitDescriptor;
 
 import com.google.gson.Gson;
-import noobbot.model.*;
 
+import noobbot.model.*;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
@@ -52,10 +52,10 @@ public class Main {
 
         Car player = null;
 
-        while((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
-            //System.out.println(line);
-            if(msgFromServer.msgType.equals("crash")) {
+//            System.out.println(line);
+            if (msgFromServer.msgType.equals("crash")) {
                 System.out.println(line);
             }
 
@@ -68,26 +68,26 @@ public class Main {
                 PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
 
                 navigator.setPosition(position);
-                if(navigator.shouldSendSwitchLanes()) {
+                if (navigator.shouldSendSwitchLanes()) {
                     send(navigator.setTargetLane());
-                } else if(turboCharger.shouldSendTurbo()) {
-                    turboCharger.setTurboAvailable(false);
-                    send(new Turbo());
+                // } else if (turboCharger.shouldSendTurbo()) {
+                    // turboCharger.setTurboAvailable(false);
+                    // send(new Turbo());
                 } else {
-                double nextThrottle = player.setPosition(position);
-
-                send(new Throttle(nextThrottle));
-            }
+                    double nextThrottle = player.setPosition(position);
+                    send(new Throttle(nextThrottle));
+                }
 
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
                 GameInitDescriptor gameInit = gson.fromJson(line, GameInitDescriptor.class);
-                List<Piece> pieces = getPieces(gameInit);
+                TargetAngleSpeed tas = new TargetAngleSpeed();
+                List<Piece> pieces = getPieces(gameInit, tas);
                 List<Lane> lanes = getLanes(gameInit);
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
-                CarMetrics carMetrics = new CarMetrics(track);
+                CarMetrics carMetrics = new CarMetrics(track, tas);
                 navigator.useShortestRoute();
                 turboCharger = new TurboCharger(navigator);
                 player = new Car(carMetrics, navigator);
@@ -113,14 +113,14 @@ public class Main {
     }
 
     private static double getLaneWidth(GameInitDescriptor.Data.Race.Track.Lane[] lanes) {
-        if(lanes.length >= 2) {
-           return Math.abs(lanes[0].distanceFromCenter - lanes[1].distanceFromCenter);
+        if (lanes.length >= 2) {
+            return Math.abs(lanes[0].distanceFromCenter - lanes[1].distanceFromCenter);
         }
         return 0.0;
     }
 
-    public static List<Piece> getPieces(GameInitDescriptor gameInit) {
-        PieceFactory pieceFactory = new PieceFactory();
+    public static List<Piece> getPieces(GameInitDescriptor gameInit, TargetAngleSpeed tas) {
+        PieceFactory pieceFactory = new PieceFactory(tas);
 
         AtomicInteger index = new AtomicInteger();
         return stream(gameInit.data.race.track.pieces).map(p -> pieceFactory.create(p, index.getAndIncrement())).collect(toList());
@@ -256,9 +256,12 @@ class Throttle extends SendMsg {
 
 class Turbo extends SendMsg {
     @Override
-    protected String msgType() { return "turbo";}
+    protected String msgType() {
+        return "turbo";
+    }
 
     @Override
-    protected Object msgData() { return "Sierra jättää.";}
+    protected Object msgData() {
+        return "Sierra jättää.";
+    }
 }
-

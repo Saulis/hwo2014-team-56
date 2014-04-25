@@ -9,15 +9,13 @@ public class SlipAngle {
 
     // Configuration
     // Balance acceleration fluctuations with coefficients for latest change, the one before, etc.
-    private List<Integer> accelerationWeights = Arrays.asList(60, 40);
+    private List<Integer> accelerationWeights = Arrays.asList(100);
     private int historySize = 60;
     
     // Status
     private boolean isLeftAngle;
     private double angleRadius;
     private List<Double> angleHistory = new ArrayList<Double>();
-
-    private List<Double> values = new ArrayList<Double>();
     
     public SlipAngle(Track track) {
         this.track = track;
@@ -56,10 +54,10 @@ public class SlipAngle {
     }
 
     public double getValue() {
-        if (values.isEmpty()) {
+        if (angleHistory.isEmpty()) {
             return 0;
         }
-        return values.get(values.size()-1);
+        return angleHistory.get(angleHistory.size()-1);
     }
     
     public void setAccelerationWeights(List<Integer> accelerationWeights) {
@@ -121,6 +119,5 @@ public class SlipAngle {
         isLeftAngle = isAngleLeft(newPosition);
         angleRadius = getAngleRadius(newPosition);
         angleHistory.clear();
-        values.clear();
     }
 }
