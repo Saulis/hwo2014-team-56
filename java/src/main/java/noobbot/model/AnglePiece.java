@@ -37,7 +37,15 @@ public class AnglePiece extends GenericPiece {
     }
 
     private double getEffectiveRadius(double offsetFromCenter) {
-        return getRadius() + offsetFromCenter;
+        if(isLeftTurn()) {
+            return getRadius() + offsetFromCenter;
+        }
+
+        return getRadius() - offsetFromCenter;
+    }
+
+    private boolean isLeftTurn() {
+        return getAngle() < 0;
     }
 
     public double getRadius() { return radius;}

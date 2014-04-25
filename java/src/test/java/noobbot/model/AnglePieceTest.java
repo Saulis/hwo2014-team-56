@@ -55,7 +55,7 @@ public class AnglePieceTest extends GenericPieceTest {
     @Test
     public void pieceLengthForRightCorner() {
         AnglePiece sut = new AnglePiece(radius, 45, 1, false, targetAngleSpeed);
-        double expectedLength = calculateCornerLength(radius + rightLaneOffset);
+        double expectedLength = calculateCornerLength(radius - rightLaneOffset);
 
         double actualLength = sut.getLength(rightLane);
 
