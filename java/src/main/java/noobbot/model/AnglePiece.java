@@ -27,7 +27,7 @@ public class AnglePiece extends GenericPiece {
     @Override
     public double getTargetSpeed(Lane lane)
     {
-        return getLength(lane) / Math.abs(angle) / tas.getValue();
+        return getLength(lane) / (Math.abs(angle) / tas.getValue());
     }
 
     private double getCornerLength(double offsetFromCenter) {

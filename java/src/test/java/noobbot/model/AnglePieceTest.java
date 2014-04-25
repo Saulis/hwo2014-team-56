@@ -85,7 +85,7 @@ public class AnglePieceTest extends GenericPieceTest {
         return sut;
     }
 
-    private double calculateTargetSpeed(double angleSpeed, double radius) { return calculateCornerLength(radius) / Math.abs(angle) / angleSpeed;}
+    private double calculateTargetSpeed(double angleSpeed, double radius) { return calculateCornerLength(radius) / (Math.abs(angle) / angleSpeed);}
     private double calculateCornerLength(double radius) {
         return Math.PI * 2 * radius * Math.abs(angle) / 360;
     }
