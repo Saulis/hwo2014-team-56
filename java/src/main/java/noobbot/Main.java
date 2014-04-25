@@ -37,7 +37,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
     }
 
     final Gson gson = new Gson();
@@ -48,9 +48,9 @@ public class Main {
         this.writer = writer;
         String line = null;
 
-        send(join); //keimola
-        //send(createRace); //custom
-        //send(joinRace); //custom
+        //send(join); //keimola
+        send(createRace); //custom
+        send(joinRace); //custom
 
         Car player = null;
 
@@ -92,7 +92,8 @@ public class Main {
                 CarMetrics carMetrics = new CarMetrics(track, tas);
 
                 navigator = new Navigator(track);
-                navigator.useShortestRoute();
+                CarMetrics carMetrics = new CarMetrics(track);
+                navigator.useHighestRankingRoute();
                 turboCharger = new TurboCharger(navigator);
                 throttleControl = new ThrottleControl(carMetrics);
                 
