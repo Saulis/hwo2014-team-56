@@ -23,6 +23,6 @@ public class TurboCharger {
     public boolean shouldSendTurbo() {
         Piece nextCorner = navigator.getNextCorner();
 
-        return availableTurbos > 0 && navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 300.0;
+        return availableTurbos > 0 && navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 400.0;
     }
 }
