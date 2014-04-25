@@ -74,11 +74,26 @@ public class Navigator {
         printSelectedRoute("fastest");
     }
 
+    public void useHighestRankingRoute() {
+        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).sorted(new Comparator<TrackRoute>() {
+            @Override
+            public int compare(TrackRoute o1, TrackRoute o2) {
+                return Double.compare(o2.getRanking(), o1.getRanking());
+            }
+        }).findFirst().get();
+
+        printSelectedRoute("highest ranked ");
+        System.out.println("Ranking: " + selectedRoute.getRanking());
+        for(int i =0;i < selectedRoute.getSegments().length - 1;i++) {
+            System.out.println(selectedRoute.rankSegments(selectedRoute.getSegments()[i], selectedRoute.getSegments()[i+1]));
+        }
+    }
+
     public void useCustomKeimolaRoute() {
         selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> {
             TrackRouteSegment[] segments = r.getSegments();
 
-            return segments[0].getDrivingLane().getIndex() == 1
+            return segments[0].getDrivingLane().getIndex() == 0
                     && segments[1].getDrivingLane().getIndex() == 1
                     && segments[2].getDrivingLane().getIndex() == 0
                     && segments[3].getDrivingLane().getIndex() == 0
@@ -89,6 +104,11 @@ public class Navigator {
         }).findFirst().get();
 
         printSelectedRoute("custom");
+        System.out.println("Ranking: " + selectedRoute.getRanking());
+        for(int i =0;i < selectedRoute.getSegments().length - 1;i++) {
+            System.out.println(selectedRoute.rankSegments(selectedRoute.getSegments()[i], selectedRoute.getSegments()[i+1]));
+        }
+
     }
 
     public void useCustomFranceRoute() {

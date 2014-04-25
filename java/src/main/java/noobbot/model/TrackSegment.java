@@ -71,4 +71,12 @@ public class TrackSegment {
     public Piece getFirstPiece() {
         return pieces[0];
     }
+
+    public Piece[] getPieces() {
+        return pieces;
+    }
+
+    public Piece getLastPiece() {
+        return pieces[pieces.length - 1];
+    }
 }
