@@ -208,6 +208,10 @@ public class Navigator {
 
     public void setPosition(PlayerPosition position) {
 
+        if (currentPosition != null && currentPosition.getPieceNumber() != position.getPieceNumber()) {
+            getCurrentPiece().complete();
+        }
+        
         currentPosition = position;
         turboTimeLeft -= 1;
         
@@ -215,6 +219,8 @@ public class Navigator {
             switchIsPending = false;
             currentSegment = getCurrentSegment();
         }
+        
+        getCurrentPiece().calibrate(currentPosition.getSlipAngle());
     }
 
     public TrackRouteSegment getCurrentSegment() {

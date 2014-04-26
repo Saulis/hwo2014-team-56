@@ -31,4 +31,12 @@ public class StraightPiece extends GenericPiece {
     public double getRadius() {
         return 0;
     }
+
+    @Override
+    public void complete() {
+    }
+
+    @Override
+    public void calibrate(double slipAngle) {
+    }
 }

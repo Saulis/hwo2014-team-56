@@ -5,6 +5,8 @@ public class AnglePiece extends GenericPiece {
     private double radius;
     private double angle;
     private TargetAngleSpeed tas;
+    private double maxSlipAngle;
+    private double speedModifier;
 
     public AnglePiece(double radius, double angle, int pieceNumber, boolean hasSwitch, TargetAngleSpeed tas) {
         super(pieceNumber, hasSwitch);
@@ -27,7 +29,7 @@ public class AnglePiece extends GenericPiece {
     @Override
     public double getTargetSpeed(Lane lane)
     {
-        return getLength(lane) / (Math.abs(angle) / tas.getValue());
+        return getLength(lane) / (Math.abs(angle) / (tas.getValue() + speedModifier));
     }
 
     private double getCornerLength(double offsetFromCenter) {
@@ -51,4 +53,18 @@ public class AnglePiece extends GenericPiece {
     public double getRadius() { return radius;}
     public double getAngle() {return angle;}
 
+    @Override
+    public void complete() {
+        if (tas.isCalibrating()) {
+            return;
+        }
+        if (maxSlipAngle < 55) {
+            speedModifier += 0.01;
+        }
+    }
+
+    @Override
+    public void calibrate(double slipAngle) {
+        maxSlipAngle = Math.max(maxSlipAngle, slipAngle);
+    }
 }

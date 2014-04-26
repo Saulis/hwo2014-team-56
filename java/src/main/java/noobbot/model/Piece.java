@@ -13,4 +13,6 @@ public interface Piece {
 
     double getDrivingTime(Lane lane);
     double getRadius();
+    void complete();
+    void calibrate(double slipAngle);
 }

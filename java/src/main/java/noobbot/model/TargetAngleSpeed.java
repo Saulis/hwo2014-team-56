@@ -36,4 +36,8 @@ public class TargetAngleSpeed {
     public double getValue() {
         return targetAngleSpeed;
     }
+
+    public boolean isCalibrating() {
+        return inCalibration;
+    }
 }
