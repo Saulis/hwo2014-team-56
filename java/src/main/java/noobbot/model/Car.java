@@ -9,10 +9,10 @@ public class Car {
     private double currentThrottle = 0;
     private Navigator navigator;
 
-    public Car(CarMetrics carMetrics, Navigator navigator) {
+    public Car(CarMetrics carMetrics, Navigator navigator, ThrottleControl throttleControl) {
         this.navigator = navigator;
         this.carMetrics = carMetrics;
-        throttleControl = new ThrottleControl(carMetrics);
+        this.throttleControl = throttleControl;
     }
 
     public double setPosition(Position newPosition) {

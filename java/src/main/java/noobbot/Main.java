@@ -42,6 +42,7 @@ public class Main {
 
     final Gson gson = new Gson();
     private PrintWriter writer;
+    private ThrottleControl throttleControl;
 
     public Main(final BufferedReader reader, final PrintWriter writer, final Join join, CreateRace createRace, JoinRace joinRace) throws IOException {
         this.writer = writer;
@@ -72,9 +73,9 @@ public class Main {
                 navigator.setPosition(position);
                 if (navigator.shouldSendSwitchLanes()) {
                     send(navigator.setTargetLane());
-                // } else if (turboCharger.shouldSendTurbo()) {
-                    // turboCharger.setTurboAvailable(false);
-                    // send(new Turbo());
+                 } else if (turboCharger.shouldSendTurbo()) {
+                     turboCharger.useTurbo();
+                     send(new TurboMsg());
                 } else {
                     double nextThrottle = player.setPosition(position);
                     send(new ThrottleMsg(nextThrottle));
@@ -94,8 +95,9 @@ public class Main {
                 navigator = new Navigator(track);
                 navigator.useShortestRoute();
                 turboCharger = new TurboCharger(navigator);
+                throttleControl = new ThrottleControl(carMetrics);
                 
-                player = new Car(carMetrics, navigator);
+                player = new Car(carMetrics, navigator, throttleControl);
 
                 System.out.println("Race init");
                 System.out.println(line);

@@ -24,4 +24,14 @@ public class TurboCharger {
 
         return ! availableTurbos.isEmpty() && navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 300.0;
     }
+
+    public Turbo useTurbo() {
+        if (availableTurbos.isEmpty()) {
+            return null;
+        }
+            
+        Turbo turbo = availableTurbos.get(0);
+        availableTurbos.remove(turbo);
+        return turbo;
+    }
 }
