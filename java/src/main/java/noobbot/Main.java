@@ -36,7 +36,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "france"), new JoinRace(botName, botKey, "france"));
     }
 
     final Gson gson = new Gson();
@@ -68,13 +68,14 @@ public class Main {
                 PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
 
                 navigator.setPosition(position);
+                double nextThrottle = player.setPosition(position);
                 if(navigator.shouldSendSwitchLanes()) {
                     send(navigator.setTargetLane());
                 } else if(turboCharger.shouldSendTurbo()) {
                     turboCharger.useTurbo();
                     send(new Turbo());
                 } else {
-                double nextThrottle = player.setPosition(position);
+
 
                 send(new Throttle(nextThrottle));
 
@@ -90,7 +91,7 @@ public class Main {
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
                 CarMetrics carMetrics = new CarMetrics(track);
-                navigator.useHighestRankingRoute();
+                navigator.useCustomFranceRoute();
                 turboCharger = new TurboCharger(navigator);
                 player = new Car(carMetrics, navigator);
 

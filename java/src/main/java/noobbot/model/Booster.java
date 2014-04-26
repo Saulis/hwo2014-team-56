@@ -17,6 +17,6 @@ public class Booster {
     }
 
     public boolean weShouldBoost(double slipAngle, double slipVelocity) {
-     return slipAngle == 0 || (slipVelocity < 0.1 && slipVelocity > -2.5); //if too much yliheittoa, restrict slipVelocity even more
+     return slipAngle == 0 || (slipVelocity < 0 && slipVelocity > -2.5); //if too much yliheittoa, restrict slipVelocity even more
     }
 }

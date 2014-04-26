@@ -26,7 +26,11 @@ public class AnglePiece extends GenericPiece {
     @Override
     public double getTargetSpeed(Lane lane)
     {
-        return getLength(lane) / (Math.abs(angle) / hardcodedAngleSpeed) * 1.2;
+        double radius = getEffectiveRadius(lane);
+
+        return Math.sqrt(radius * CarMetrics.getAngleAcceleration());
+
+        //return getLength(lane) / (Math.abs(angle) / hardcodedAngleSpeed) * 1.2;
 /*
     if(angle == 45 && lane.getDistanceFromCenter() < 0) {
             return 7.15;
@@ -48,6 +52,10 @@ public class AnglePiece extends GenericPiece {
         double circleLength = Math.PI * 2 * getEffectiveRadius(offsetFromCenter);
 
         return circleLength * Math.abs(angle) / 360;
+    }
+
+    public double getEffectiveRadius(Lane lane) {
+        return getEffectiveRadius(lane.getDistanceFromCenter());
     }
 
     private double getEffectiveRadius(double offsetFromCenter) {
