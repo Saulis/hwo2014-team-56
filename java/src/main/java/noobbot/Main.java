@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import noobbot.descriptor.CarPositionsDescriptor;
 import noobbot.descriptor.GameInitDescriptor;
+import noobbot.descriptor.TurboAvailableDescriptor;
 
 import com.google.gson.Gson;
 
@@ -60,7 +61,8 @@ public class Main {
             }
 
             if (msgFromServer.msgType.equals("turboAvailable")) {
-                turboCharger.setTurboAvailable(true);
+                TurboAvailableDescriptor descriptor = gson.fromJson(line, TurboAvailableDescriptor.class);
+                turboCharger.setTurboAvailable(new Turbo(descriptor));
             }
 
             if (msgFromServer.msgType.equals("carPositions")) {
@@ -75,7 +77,7 @@ public class Main {
                     // send(new Turbo());
                 } else {
                     double nextThrottle = player.setPosition(position);
-                    send(new Throttle(nextThrottle));
+                    send(new ThrottleMsg(nextThrottle));
                 }
 
             } else if (msgFromServer.msgType.equals("join")) {
@@ -83,13 +85,16 @@ public class Main {
             } else if (msgFromServer.msgType.equals("gameInit")) {
                 GameInitDescriptor gameInit = gson.fromJson(line, GameInitDescriptor.class);
                 TargetAngleSpeed tas = new TargetAngleSpeed();
+                
                 List<Piece> pieces = getPieces(gameInit, tas);
                 List<Lane> lanes = getLanes(gameInit);
                 track = new Track(pieces, lanes);
-                navigator = new Navigator(track);
                 CarMetrics carMetrics = new CarMetrics(track, tas);
+
+                navigator = new Navigator(track);
                 navigator.useShortestRoute();
                 turboCharger = new TurboCharger(navigator);
+                
                 player = new Car(carMetrics, navigator);
 
                 System.out.println("Race init");
@@ -236,10 +241,10 @@ class Ping extends SendMsg {
     }
 }
 
-class Throttle extends SendMsg {
+class ThrottleMsg extends SendMsg {
     private double value;
 
-    public Throttle(double value) {
+    public ThrottleMsg(double value) {
         this.value = value;
     }
 
@@ -254,7 +259,7 @@ class Throttle extends SendMsg {
     }
 }
 
-class Turbo extends SendMsg {
+class TurboMsg extends SendMsg {
     @Override
     protected String msgType() {
         return "turbo";
