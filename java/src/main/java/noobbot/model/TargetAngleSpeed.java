@@ -17,7 +17,7 @@ public class TargetAngleSpeed {
         }
 
         double currentAngleSpeed =  currentPiece.getAngle() / (currentPiece.getLength(newPosition.getLane()) / currentSpeed);
-        System.out.println(String.format("P: %2s\tAngle: %4s\tA: %8.6f\tC: %8.6f\tSA: %5.2f\tAS: %5.2f\tTAS: %5.2f\t", currentPiece.getNumber(), currentPiece.getAngle(), slipAngle.getAcceleration(), slipAngle.getChange(), slipAngle.getValue(), currentAngleSpeed, targetAngleSpeed));
+        System.out.println(String.format("P: %2s\tAngle: %4s\tRadius: %4s\tA: %8.6f\tC: %8.6f\tSA: %5.2f\tAS: %5.2f\tTAS: %5.2f\t", currentPiece.getNumber(), currentPiece.getAngle(), currentPiece.getRadius(), slipAngle.getAcceleration(), slipAngle.getChange(), slipAngle.getValue(), currentAngleSpeed, targetAngleSpeed));
         if (Math.abs(currentAngleSpeed) > 0 && currentThrottle != 1) {
             if (inCalibration && currentPiece.getAngle() != 0) {
                 if (Math.abs(slipAngle.getValue()) > 40) {
