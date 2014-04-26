@@ -38,6 +38,10 @@ public class AnglePiece extends GenericPiece {
         return circleLength * Math.abs(angle) / 360;
     }
 
+    public double getEffectiveRadius(Lane lane) {
+        return getEffectiveRadius(lane.getDistanceFromCenter());
+    }
+
     private double getEffectiveRadius(double offsetFromCenter) {
         if(isLeftTurn()) {
             return getRadius() + offsetFromCenter;

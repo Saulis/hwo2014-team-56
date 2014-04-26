@@ -37,7 +37,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "germany"), new JoinRace(botName, botKey, "germany"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "france"), new JoinRace(botName, botKey, "france"));
     }
 
     final Gson gson = new Gson();
@@ -71,15 +71,20 @@ public class Main {
                 PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
 
                 navigator.setPosition(position);
-                if (navigator.shouldSendSwitchLanes()) {
+                double nextThrottle = player.setPosition(position);
+                if(navigator.shouldSendSwitchLanes()) {
                     send(navigator.setTargetLane());
                  } else if (turboCharger.shouldSendTurbo()) {
                      navigator.useTurbo(turboCharger.useTurbo());
                      send(new TurboMsg());
                 } else {
-                    double nextThrottle = player.setPosition(position);
-                    send(new ThrottleMsg(nextThrottle));
-                }
+
+
+                send(new Throttle(nextThrottle));
+
+                //System.out.println("");
+            }
+
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {

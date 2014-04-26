@@ -118,10 +118,10 @@ public class Navigator {
             TrackRouteSegment[] segments = r.getSegments();
 
             return segments[0].getDrivingLane().getIndex() == 0
-                    && segments[1].getDrivingLane().getIndex() == 0
+                    && segments[1].getDrivingLane().getIndex() == 1
                     && segments[2].getDrivingLane().getIndex() == 0
-                    && segments[3].getDrivingLane().getIndex() == 0
-                    && segments[4].getDrivingLane().getIndex() == 0
+                    && segments[3].getDrivingLane().getIndex() == 1
+                    && segments[4].getDrivingLane().getIndex() == 1
                     && segments[5].getDrivingLane().getIndex() == 0
                     && segments[6].getDrivingLane().getIndex() == 0;
         }).findFirst().get();
