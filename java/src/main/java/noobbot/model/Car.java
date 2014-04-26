@@ -16,7 +16,7 @@ public class Car {
 
     public double setPosition(Position newPosition) {
         position = newPosition;
-
+        
         carMetrics.update(new Metric(newPosition, currentThrottle));
 
         double currentTargetSpeed = getCurrentTargetSpeed();
@@ -26,7 +26,7 @@ public class Car {
 
         currentThrottle = nextThrottle;
 
-        return nextThrottle;
+        return Math.min(nextThrottle, 1.0);
     }
 
     public Position getPosition() {

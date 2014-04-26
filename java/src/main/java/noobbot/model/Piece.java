@@ -2,8 +2,8 @@ package noobbot.model;
 
 public interface Piece {
 
-	Double getDistanceTo(Position position);
-	Double getDistanceFrom(Position position);
+    Double getDistanceTo(Position position);
+    Double getDistanceFrom(Position position);
     boolean contains(Position position);
     int getNumber();
     double getLength(Lane lane);
@@ -12,4 +12,5 @@ public interface Piece {
     boolean hasSwitch();
 
     double getDrivingTime(Lane lane);
+    double getRadius();
 }

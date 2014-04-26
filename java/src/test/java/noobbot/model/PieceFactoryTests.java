@@ -15,10 +15,12 @@ public class PieceFactoryTests {
 
     private PieceFactory pieceFactory;
     private GameInitDescriptor.Data.Race.Track.Piece pieceDescriptor;
+    private TargetAngleSpeed targetAngleSpeed;
 
     @Before
     public void setup() {
-        pieceFactory = new PieceFactory();
+        targetAngleSpeed = mock(TargetAngleSpeed.class);
+        pieceFactory = new PieceFactory(targetAngleSpeed);
         pieceDescriptor = mock(GameInitDescriptor.Data.Race.Track.Piece.class);
     }
 
@@ -29,7 +31,7 @@ public class PieceFactoryTests {
         pieceDescriptor.length = 10;
         pieceDescriptor.radius = 20;
 
-        Piece piece = pieceFactory.create(pieceDescriptor, 1);
+        Piece piece = pieceFactory.create(pieceDescriptor, 0);
 
         assertThat(piece, instanceOf(AnglePiece.class));
     }
@@ -39,7 +41,7 @@ public class PieceFactoryTests {
         pieceDescriptor.hasSwitch = true;
         pieceDescriptor.length = 20;
 
-        Piece piece = pieceFactory.create(pieceDescriptor, 2);
+        Piece piece = pieceFactory.create(pieceDescriptor, 0);
 
         assertThat(piece, instanceOf(StraightPiece.class));
     }

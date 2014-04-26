@@ -1,6 +1,5 @@
 package noobbot.model;
 
-import static java.util.Arrays.stream;
 
 /**
  * Created by jereketonen on 4/16/14.
@@ -19,6 +18,8 @@ public class CarMetrics {
      */
 
     private Track track;
+    private SlipAngle slipAngle;
+    private TargetAngleSpeed targetAngleSpeed;
     private Position currentPosition;
     private Position previousPosition;
     private double previousSpeed = 0;
@@ -26,28 +27,31 @@ public class CarMetrics {
     private double maxAcceleration = 0;
     private double accelerationRatio = 0;
     private double currentThrottle;
-    private double previousThrottle;
     private boolean measuringAcceleration = false;
     private double previousAcceleration;
     private double previousSlipVelocity;
     private double previousSlipAngle;
 
-    public CarMetrics(Track track) {
+    public CarMetrics(Track track, TargetAngleSpeed tas) {
         this.track = track;
+        this.targetAngleSpeed = tas;
+        this.slipAngle = new SlipAngle(track);
     }
 
     public void update(Metric metric) {
         previousAcceleration = getCurrentAcceleration();
         previousSpeed = getCurrentSpeed();
         previousSlipVelocity = getSlipVelocity();
-        previousSlipAngle = getSlipAngle();
-        previousPosition = this.currentPosition;
-        previousThrottle = this.currentThrottle;
+        previousSlipAngle = slipAngle.getValue();
 
+        previousPosition = this.currentPosition;
+        slipAngle.update(metric.getPosition());
 
         this.currentThrottle = metric.getThrottle();
         this.currentPosition = metric.getPosition();
 
+        this.targetAngleSpeed.calibrate(metric.getPosition(), getCurrentPiece(), slipAngle, getCurrentSpeed(), currentThrottle);
+        
         measureTopspeed();
 
         System.out.println(String.format("Metrics - Speed: %s, Slip: %s, S.Velocity %s", getCurrentSpeed(), getSlipAngle(), getSlipVelocity()));
