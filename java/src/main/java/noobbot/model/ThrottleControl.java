@@ -29,7 +29,7 @@ public class ThrottleControl {
         } else {
             printDebug(metrics.getCurrentSpeed(), currentTargetSpeed, diff, "STABILIZING");
 
-            return currentTargetSpeed / metrics.getTopspeed();
+            return Math.min(currentTargetSpeed / metrics.getTopspeed(), 1.0);
         }
     }
 

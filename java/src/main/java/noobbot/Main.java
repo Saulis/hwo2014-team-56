@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import noobbot.descriptor.CarPositionsDescriptor;
@@ -36,25 +37,37 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
+        if(args.length == 7) {
+            String command = args[4];
+            String trackName = args[5];
+            String carCount = args[6];
+            int carCount1 = Integer.getInteger(carCount, 3).intValue();
+            if(command.equals("create")) {
+                new Main(reader, writer, new CreateRace(botName, botKey, trackName, carCount1));//, new JoinRace(botName, botKey, trackName, carCount1));
+            } else if(command.equals("join")) {
+                new Main(reader, writer, new JoinRace(botName, botKey, trackName, carCount1));
+            }
+        } else {
+            new Main(reader, writer, new Join(botName, botKey));
+        }
     }
 
     final Gson gson = new Gson();
     private PrintWriter writer;
 
-    public Main(final BufferedReader reader, final PrintWriter writer, final Join join, CreateRace createRace, JoinRace joinRace) throws IOException {
+    public Main(final BufferedReader reader, final PrintWriter writer, SendMsg... msgs) throws IOException {
         this.writer = writer;
         String line = null;
 
-        //send(join); //keimola
-        send(createRace); //custom
-        send(joinRace); //custom
+        for(SendMsg msg : msgs) {
+            send(msg);
+        }
 
         Car player = null;
 
         while((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
-            //System.out.println(line);
+            System.out.println(line);
             if(msgFromServer.msgType.equals("crash")) {
                 System.out.println(line);
             }
@@ -176,10 +189,12 @@ class CreateRace extends SendMsg {
 
     public BotId botId;
     public String trackName;
-    public int carCount = 1;
+    public String password = "nicenice";
+    public int carCount;
 
-    CreateRace(String name, String key, String trackName) {
+    CreateRace(String name, String key, String trackName, int carCount) {
         this.trackName = trackName;
+        this.carCount = carCount;
         botId = new BotId(name, key);
     }
 
@@ -204,11 +219,14 @@ class JoinRace extends SendMsg {
 
     public BotId botId;
     public String trackName;
-    public int carCount = 1;
+    public String password = "nicenice";
+    public int carCount;
 
-    JoinRace(String name, String key, String trackName) {
+    JoinRace(String name, String key, String trackName, int carCount) {
         this.trackName = trackName;
-        botId = new BotId(name, key);
+        this.carCount = carCount;
+        Random random = new Random();
+        botId = new BotId(name + random.nextInt(10), key);
     }
 
     @Override
