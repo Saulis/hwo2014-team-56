@@ -36,7 +36,7 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "france"), new JoinRace(botName, botKey, "france"));
+        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
     }
 
     final Gson gson = new Gson();
@@ -91,7 +91,7 @@ public class Main {
                 track = new Track(pieces, lanes);
                 navigator = new Navigator(track);
                 CarMetrics carMetrics = new CarMetrics(track);
-                navigator.useCustomFranceRoute();
+                navigator.useHighestRankingRoute();
                 turboCharger = new TurboCharger(navigator);
                 player = new Car(carMetrics, navigator);
 
