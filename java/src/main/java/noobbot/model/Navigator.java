@@ -17,6 +17,8 @@ public class Navigator {
     private TrackRoute selectedRoute;
     private PlayerPosition currentPosition;
     private TrackRouteSegment currentSegment;
+    private boolean switchIsPending = false;
+    private double turboTimeLeft = 0;
 
     public Navigator(Track track) {
 
@@ -173,8 +175,6 @@ public class Navigator {
         return currentLane != nextSegment.getDrivingLane() && !switchIsPending;
     }
 
-    private boolean switchIsPending = false;
-
     private TrackRouteSegment getNextSegment() {
         return selectedRoute.getNextSegment(getCurrentSegment());
     }
@@ -209,7 +209,8 @@ public class Navigator {
     public void setPosition(PlayerPosition position) {
 
         currentPosition = position;
-
+        turboTimeLeft -= 1;
+        
         if(currentSegment != getCurrentSegment()) {
             switchIsPending = false;
             currentSegment = getCurrentSegment();
@@ -253,5 +254,13 @@ public class Navigator {
 
     public double getDistanceToTarget(Piece targetPiece) {
         return selectedRoute.getDistanceBetween(getCurrentPiece(), targetPiece) - currentPosition.getInPieceDistance();
+    }
+
+    public void useTurbo(Turbo turbo) {
+        turboTimeLeft = turbo.getDurationInTicks();
+    }
+
+    public boolean isTurboActive() {
+        return turboTimeLeft > 0;
     }
 }

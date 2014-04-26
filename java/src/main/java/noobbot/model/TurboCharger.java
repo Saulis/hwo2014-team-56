@@ -20,9 +20,20 @@ public class TurboCharger {
     }
 
     public boolean shouldSendTurbo() {
-        Piece nextCorner = navigator.getNextCorner();
+        return noTurboActive() && isTurboAvailable() && isEnoughStraightRoadAhead();
+    }
 
-        return ! availableTurbos.isEmpty() && navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 300.0;
+    private boolean noTurboActive(){
+        return ! navigator.isTurboActive();
+    }
+
+    private boolean isEnoughStraightRoadAhead() {
+        Piece nextCorner = navigator.getNextCorner();
+        return navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 300.0;
+    }
+
+    private boolean isTurboAvailable() {
+        return ! availableTurbos.isEmpty();
     }
 
     public Turbo useTurbo() {

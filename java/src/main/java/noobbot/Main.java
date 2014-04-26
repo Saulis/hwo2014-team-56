@@ -74,13 +74,12 @@ public class Main {
                 if (navigator.shouldSendSwitchLanes()) {
                     send(navigator.setTargetLane());
                  } else if (turboCharger.shouldSendTurbo()) {
-                     turboCharger.useTurbo();
+                     navigator.useTurbo(turboCharger.useTurbo());
                      send(new TurboMsg());
                 } else {
                     double nextThrottle = player.setPosition(position);
                     send(new ThrottleMsg(nextThrottle));
                 }
-
             } else if (msgFromServer.msgType.equals("join")) {
                 System.out.println("Joined");
             } else if (msgFromServer.msgType.equals("gameInit")) {
