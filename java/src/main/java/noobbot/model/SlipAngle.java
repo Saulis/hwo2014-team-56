@@ -42,15 +42,12 @@ public class SlipAngle {
         return acceleration;
     }
 
-    public double getChange() {
-        if (angleHistory.isEmpty()) {
-            return 0;
-        }
-        else if (angleHistory.size() == 1) {
-            return angleHistory.get(0);
-        }
-        
-        return angleHistory.get(angleHistory.size()-1) - angleHistory.get(angleHistory.size()-2);
+    public double getSlipChangeVelocity() {
+        return getChange(0) < 0 ? getChange(0) * -1 : getChange(0);
+    }
+
+    public double getPreviousSlipVelocity() {
+        return getChange(1) < 0 ? getChange(1) * -1 : getChange(1);
     }
 
     public double getValue() {
@@ -62,6 +59,10 @@ public class SlipAngle {
     
     public void setAccelerationWeights(List<Integer> accelerationWeights) {
         this.accelerationWeights = accelerationWeights;
+    }
+    
+    public boolean allowsBoost() {
+        return getValue() == 0 || (getSlipChangeVelocity() < 0 && getSlipChangeVelocity() > -2.5);
     }
     
     /**
@@ -88,7 +89,13 @@ public class SlipAngle {
      * Gets previous slip angle value - 0 == latest, 1 == previous, etc.
      */
     private Double getValue(int i) {
-        return angleHistory.get(angleHistory.size() - (i + 1));
+        int index = angleHistory.size() - (i + 1);
+        
+        if (index < 0) {
+            return 0.0;
+        }
+        
+        return angleHistory.get(index);
     }
 
     private void updateHistory(double slipAngle) {

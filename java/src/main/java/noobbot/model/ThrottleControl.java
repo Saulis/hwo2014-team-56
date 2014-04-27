@@ -20,14 +20,14 @@ public class ThrottleControl {
 
             return 0.0;
         }
-        else if(metrics.getCurrentPiece().getAngle() == 0 || booster.weShouldBoost(metrics.getSlipAngle(), metrics.getSlipVelocity())) { //actual measurement may be a little over the real top speed
+        else if(metrics.getCurrentPiece().getAngle() == 0 || metrics.getSlipAngle().allowsBoost()) { //actual measurement may be a little over the real top speed
             printDebug(metrics.getCurrentSpeed(), targetSpeed.getTargetSpeed(), diff, "ACCELERATING");
 
             return 1.0;
         } else {
             printDebug(metrics.getCurrentSpeed(), currentTargetSpeed, diff, "STABILIZING");
 
-            return booster.addBoost((currentTargetSpeed) / metrics.getTopspeed(), metrics.getSlipAngle(), metrics.getSlipVelocity());
+            return booster.addBoost((currentTargetSpeed) / metrics.getTopspeed(), metrics.getSlipAngle());
         }
     }
 
