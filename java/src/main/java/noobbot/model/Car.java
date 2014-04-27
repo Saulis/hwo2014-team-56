@@ -42,7 +42,7 @@ public class Car {
 
     private TargetSpeed getTargetSpeed(double currentThrottle) {
         TrackRoute selectedRoute = navigator.getSelectedRoute();
-        Piece nextPiece = navigator.getNextCorner();
+        Piece nextPiece = navigator.getNextTargetPiece();
 
         TrackRouteSegment segment = selectedRoute.getSegmentForPiece(nextPiece.getNumber());
         double targetSpeed = nextPiece.getTargetSpeed(segment.getDrivingLane());

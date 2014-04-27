@@ -49,8 +49,6 @@ public class CarMetrics {
     public void update(Metric metric) {
         previousAcceleration = getCurrentAcceleration();
         previousSpeed = getCurrentSpeed();
-
-        slipAngle.update(metric.getPosition());
         previousPosition = this.currentPosition;
 
         this.currentThrottle = metric.getThrottle();

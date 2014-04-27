@@ -28,7 +28,7 @@ public class TurboCharger {
     }
 
     private boolean isEnoughStraightRoadAhead() {
-        Piece nextCorner = navigator.getNextCorner();
+        Piece nextCorner = navigator.getNextTargetPiece();
         return navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 400.0;
     }
 

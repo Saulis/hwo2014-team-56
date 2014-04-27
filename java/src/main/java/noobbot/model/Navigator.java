@@ -158,24 +158,12 @@ public class Navigator {
         return stream(staticRoutes.toArray(new TrackRoute[staticRoutes.size()])).filter(r -> r.getSegments()[0].getDrivingLane() == currentLane).findFirst().get();
     }
 
-    public Piece getNextCorner() {
-        TrackRoute selectedRoute = getSelectedRoute();
+    public Piece getNextTargetPiece() {
         Piece currentPiece = getCurrentPiece();
-        double currentTargetSpeed = currentPiece.getTargetSpeed(getCurrentLane());
-        boolean currentCornerHasEnded = false;
-
         Piece nextPiece = track.getPieceAfter(currentPiece);
-        TrackRouteSegment segment = selectedRoute.getSegmentForPiece(nextPiece.getNumber());
-        double targetSpeed = nextPiece.getTargetSpeed(segment.getDrivingLane());
 
-        while((targetSpeed == currentTargetSpeed && !currentCornerHasEnded) || nextPiece.getAngle() == 0) {
-            if(nextPiece.getAngle() == 0) {
-                currentCornerHasEnded = true;
-            }
-
+        while(currentPiece.getAngle() == nextPiece.getAngle()) {
             nextPiece = track.getPieceAfter(nextPiece);
-            segment = selectedRoute.getSegmentForPiece(nextPiece.getNumber());
-            targetSpeed = nextPiece.getTargetSpeed(segment.getDrivingLane());
         }
 
         return nextPiece;
