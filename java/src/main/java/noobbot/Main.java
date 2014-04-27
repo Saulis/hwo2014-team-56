@@ -41,14 +41,19 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        if(args.length == 7) {
+        if (args.length == 7) {
             String command = args[4];
             String trackName = args[5];
             String carCount = args[6];
             int carCount1 = Integer.getInteger(carCount, 3).intValue();
-            if(command.equals("create")) {
-                new Main(reader, writer, new CreateRace(botName, botKey, trackName, carCount1));//, new JoinRace(botName, botKey, trackName, carCount1));
-            } else if(command.equals("join")) {
+            if (command.equals("create")) {
+                new Main(reader, writer, new CreateRace(botName, botKey, trackName, carCount1));// ,
+                                                                                                // new
+                                                                                                // JoinRace(botName,
+                                                                                                // botKey,
+                                                                                                // trackName,
+                                                                                                // carCount1));
+            } else if (command.equals("join")) {
                 new Main(reader, writer, new JoinRace(botName, botKey, trackName, carCount1));
             }
         } else {
@@ -64,7 +69,7 @@ public class Main {
         this.writer = writer;
         String line = null;
 
-        for(SendMsg msg : msgs) {
+        for (SendMsg msg : msgs) {
             send(msg);
         }
 
@@ -72,8 +77,8 @@ public class Main {
 
         while ((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
-            //System.out.println(line);
-            if(msgFromServer.msgType.equals("crash")) {
+            // System.out.println(line);
+            if (msgFromServer.msgType.equals("crash")) {
                 System.out.println(line);
             }
 
@@ -88,19 +93,15 @@ public class Main {
 
                 navigator.setPosition(position);
                 double nextThrottle = player.setPosition(position);
-                if(navigator.shouldSendSwitchLanes()) {
+                if (navigator.shouldSendSwitchLanes()) {
                     send(navigator.setTargetLane());
-                 } else if (turboCharger.shouldSendTurbo()) {
-                     navigator.useTurbo(turboCharger.useTurbo());
-                     send(new TurboMsg());
+                } else if (turboCharger.shouldSendTurbo()) {
+                    navigator.useTurbo(turboCharger.useTurbo());
+                    send(new TurboMsg());
                 } else {
 
-
-                send(new ThrottleMsg(nextThrottle));
-
-                //System.out.println("");
-            }
-
+                    send(new ThrottleMsg(nextThrottle));
+                }
             } else {
                 if (msgFromServer.msgType.equals("join")) {
                     System.out.println("Joined");
@@ -126,7 +127,7 @@ public class Main {
                     System.out.println("Race end");
                 } else if (msgFromServer.msgType.equals("gameStart")) {
                     System.out.println("Race start");
-                } else if(msgFromServer.msgType.equals("yourCar")) {
+                } else if (msgFromServer.msgType.equals("yourCar")) {
                     YourCarDescriptor yourCarDescriptor = gson.fromJson(line, YourCarDescriptor.class);
 
                     carColor = yourCarDescriptor.data.color;
