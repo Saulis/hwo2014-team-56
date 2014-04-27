@@ -43,7 +43,7 @@ public class PlayerPositionTests {
         final int expectedLane = 3;
         data.piecePosition = data.new PiecePosition();
         data.piecePosition.lane = data.piecePosition.new Lane();
-        data.piecePosition.lane.startLaneIndex = expectedLane;
+        data.piecePosition.lane.endLaneIndex = expectedLane;
 
         int result = sut.getLaneNumber();
 

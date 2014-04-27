@@ -16,17 +16,21 @@ public class ThrottleControlTests {
     private ThrottleControl throttleControl;
     private CarMetrics metrics;
     private TargetSpeed targetSpeed;
+    private SlipAngle slipAngle;
 
     @Before
     public void setup() {
         metrics = mock(CarMetrics.class);
         throttleControl = new ThrottleControl(metrics);
         targetSpeed = mock(TargetSpeed.class);
+        slipAngle = mock(SlipAngle.class);
+        when(metrics.getSlipAngle()).thenReturn(slipAngle);
     }
 
     @Test
     public void throttleAccelerates() {
-        when(targetSpeed.getTargetSpeed()).thenReturn(4.0);
+        when(targetSpeed.getDistanceToTarget()).thenReturn(4.0);
+        currentPieceIsStraight();
 
         assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(1.0));
     }
@@ -41,9 +45,36 @@ public class ThrottleControlTests {
     @Test
     public void throttleStabilizes() {
         when(metrics.getTopspeed()).thenReturn(10.0);
-        when(targetSpeed.getTargetSpeed()).thenReturn(2.5);
-
+        when(targetSpeed.getDistanceToTarget()).thenReturn(2.5);
+        currentPieceIsAngled();
+        
         //2.5 / 10.0 = 0.25 (targetspeed/topspeed)
-        assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(0.25));
+        assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(0.0666));
+    }
+
+    private void currentPieceIsStraight() {
+        Piece straightPiece = mockStraightPiece();
+        currentPieceIs(straightPiece);
+    }
+
+    private void currentPieceIsAngled() {
+        Piece angledPiece = mockAngledPiece();
+        currentPieceIs(angledPiece);
+    }
+    
+    private void currentPieceIs(Piece straightPiece) {
+        when(metrics.getCurrentPiece()).thenReturn(straightPiece);
+    }
+
+    private Piece mockStraightPiece() {
+        Piece straightPiece = mock(Piece.class);
+        when(straightPiece.getAngle()).thenReturn(0.0);
+        return straightPiece;
+    }
+
+    private Piece mockAngledPiece() {
+        Piece angledPiece = mock(Piece.class);
+        when(angledPiece.getAngle()).thenReturn(45.0);
+        return angledPiece;
     }
 }
