@@ -32,7 +32,7 @@ public class CarMetricsTests {
         onlyLane = mock(Lane.class);
         targetAngleSpeed = mock(TargetAngleSpeed.class);
         when(track.getLanes()).thenReturn(Arrays.asList(onlyLane));
-        carMetrics = new CarMetrics(track, targetAngleSpeed);
+        carMetrics = new CarMetrics(track, mock(Navigator.class), targetAngleSpeed);
 
         piece = mock(Piece.class);
         when(piece.getLength(onlyLane)).thenReturn(100.0);
