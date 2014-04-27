@@ -4,13 +4,13 @@ import static java.util.Arrays.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import noobbot.LeftSwitchLane;
 import noobbot.RightSwitchLane;
 import noobbot.SwitchLane;
+import noobbot.model.navigation.RouteStrategy;
 
 /**
  * Created by Saulis on 21/04/14.
@@ -26,7 +26,7 @@ public class Navigator {
     private List<TrackRoute> staticRoutes;
     private boolean followingSelectedRoute = true;
 
-    public Navigator(Track track) {
+    public Navigator(Track track, RouteStrategy routeStrategy) {
 
         this.track = track;
 
@@ -52,103 +52,8 @@ public class Navigator {
         staticRoutes = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> r.getNumberOfSwitchesUsed() == 0).collect(Collectors.toList());
 
         System.out.println(String.format("Navigator: %s possible routes plotted.", routes.size()));
-    }
-
-    public void useShortestRoute() {
-        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).sorted(new Comparator<TrackRoute>() {
-            @Override
-            public int compare(TrackRoute o1, TrackRoute o2) {
-                return Double.compare(o1.getRouteLength(), o2.getRouteLength());
-            }
-        }).findFirst().get();
-
-        printSelectedRoute("shortest");
-    }
-
-    private void printSelectedRoute(String description) {
-        System.out.println(String.format("Navigator: using %s route: %s", description, getSelectedRoute().getRouteLength()));
-        for(int i=0;i < getSelectedRoute().getSegments().length;i++) {
-            TrackRouteSegment trackRouteSegment = getSelectedRoute().getSegments()[i];
-            System.out.println(i + ": " + trackRouteSegment.getDrivingLane().getDistanceFromCenter());
-        }
-    }
-
-    public void useFastestRoute() {
-        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).sorted(new Comparator<TrackRoute>() {
-            @Override
-            public int compare(TrackRoute o1, TrackRoute o2) {
-                return Double.compare(o1.getRouteDrivingTime(), o2.getRouteDrivingTime());
-            }
-        }).findFirst().get();
-
-        printSelectedRoute("fastest");
-    }
-
-    public void useHighestRankingRoute() {
-        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).sorted(new Comparator<TrackRoute>() {
-            @Override
-            public int compare(TrackRoute o1, TrackRoute o2) {
-                return Double.compare(o2.getRanking(), o1.getRanking());
-            }
-        }).findFirst().get();
-
-        printSelectedRoute("highest ranked ");
-        System.out.println("Ranking: " + getSelectedRoute().getRanking());
-        for(int i =0;i < getSelectedRoute().getSegments().length - 1;i++) {
-            System.out.println(getSelectedRoute().rankSegments(getSelectedRoute().getSegments()[i], getSelectedRoute().getSegments()[i + 1]));
-        }
-    }
-
-    public void useCustomKeimolaRoute() {
-        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> {
-            TrackRouteSegment[] segments = r.getSegments();
-
-            return segments[0].getDrivingLane().getIndex() == 0
-                    && segments[1].getDrivingLane().getIndex() == 1
-                    && segments[2].getDrivingLane().getIndex() == 0
-                    && segments[3].getDrivingLane().getIndex() == 0
-                    && segments[4].getDrivingLane().getIndex() == 1
-                    && segments[5].getDrivingLane().getIndex() == 1
-                    && segments[6].getDrivingLane().getIndex() == 0
-                    && segments[7].getDrivingLane().getIndex() == 0;
-        }).findFirst().get();
-
-        printSelectedRoute("custom");
-        System.out.println("Ranking: " + getSelectedRoute().getRanking());
-        for(int i =0;i < getSelectedRoute().getSegments().length - 1;i++) {
-            System.out.println(getSelectedRoute().rankSegments(getSelectedRoute().getSegments()[i], getSelectedRoute().getSegments()[i + 1]));
-        }
-
-    }
-
-    public void useCustomFranceRoute() {
-        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> {
-            TrackRouteSegment[] segments = r.getSegments();
-
-            return segments[0].getDrivingLane().getIndex() == 0
-                    && segments[1].getDrivingLane().getIndex() == 1
-                    && segments[2].getDrivingLane().getIndex() == 0
-                    && segments[3].getDrivingLane().getIndex() == 1
-                    && segments[4].getDrivingLane().getIndex() == 1
-                    && segments[5].getDrivingLane().getIndex() == 0
-                    && segments[6].getDrivingLane().getIndex() == 0;
-        }).findFirst().get();
-
-        printSelectedRoute("custom");
-    }
-
-    public void useCustomUsaRoute() {
-        selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> {
-            TrackRouteSegment[] segments = r.getSegments();
-
-            return segments[0].getDrivingLane().getIndex() == 2
-                    && segments[1].getDrivingLane().getIndex() == 2
-                    && segments[2].getDrivingLane().getIndex() == 2
-                    && segments[3].getDrivingLane().getIndex() == 2
-                    && segments[4].getDrivingLane().getIndex() == 2;
-        }).findFirst().get();
-
-        printSelectedRoute("custom");
+        
+        selectedRoute = routeStrategy.getRoute(routes);
     }
 
     private TrackRouteSegment[] getNewSegments(Track track, TrackSegment t) {

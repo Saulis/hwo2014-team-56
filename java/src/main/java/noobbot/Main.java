@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 
 import noobbot.descriptor.YourCarDescriptor;
 import noobbot.model.*;
+import noobbot.model.navigation.HighestRankingRouteStrategy;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
@@ -114,8 +115,7 @@ public class Main {
                     track = new Track(pieces, lanes);
                     CarMetrics carMetrics = new CarMetrics(track, tas);
 
-                    navigator = new Navigator(track);
-                    navigator.useHighestRankingRoute();
+                    navigator = new Navigator(track, new HighestRankingRouteStrategy());
                     turboCharger = new TurboCharger(navigator);
                     throttleControl = new ThrottleControl(carMetrics);
 
