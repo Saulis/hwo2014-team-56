@@ -19,6 +19,7 @@ public class CarMetrics {
 
     private Track track;
     private SlipAngle slipAngle;
+    private Navigator navigator;
     private TargetAngleSpeed targetAngleSpeed;
     private Position currentPosition;
     private Position previousPosition;
@@ -35,13 +36,14 @@ public class CarMetrics {
     private double previousAngleAcceleration = 0;
     private double maxSlipAngle = 0;
     private double maxAngleAcceleration = 0;
-    private static double targetAngleAcceleration = 0.45;
+    private static double targetAngleAcceleration = 0.465;
     private double targetSlipAngle = 0;
     private int ticksInCorner = 0;
 
 
-    public CarMetrics(Track track, TargetAngleSpeed tas) {
+    public CarMetrics(Track track, Navigator navigator, TargetAngleSpeed tas) {
         this.track = track;
+        this.navigator = navigator;
         this.targetAngleSpeed = tas;
         this.slipAngle = new SlipAngle(track);
     }
@@ -81,7 +83,7 @@ public class CarMetrics {
         maxSlipAngle = Math.max(maxSlipAngle, Math.abs(getSlipAngle()));
 
         if(exitedAnglePiece()) {
-            if(ticksInCorner > 42) {
+            if(ticksInCorner > 40) {
                 /*
                 if(maxSlipAngle > 58 && Math.abs(previousAngleAcceleration - targetAngleAcceleration) < 0.01) {
                   targetAngleAcceleration = previousAngleAcceleration;
@@ -95,7 +97,7 @@ public class CarMetrics {
                 } else if(maxSlipAngle > 50 && maxSlipAngle < 55 && Math.abs(targetAngleAcceleration - maxAngleAcceleration) <= 0.025) {
                     targetAngleAcceleration = maxAngleAcceleration;
                 } else if(maxSlipAngle <= 50) {
-                    targetAngleAcceleration += 0.01;
+                    targetAngleAcceleration += 0.005;
                 }
             }
             maxSlipAngle = 0;
@@ -258,8 +260,8 @@ public class CarMetrics {
             double breakingDistance = currentSpeed;
 
             //Extra braking distance when running with turbo
-            if(currentSpeed > getTopspeed()) {
-                breakingDistance += currentSpeed;
+            if(navigator.isTurboActive()) {
+                breakingDistance += currentSpeed * 0.5;
             }
 
             while(speed > targetSpeed + 0.05) {

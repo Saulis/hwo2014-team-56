@@ -45,7 +45,7 @@ public class Main {
             String command = args[4];
             String trackName = args[5];
             String carCount = args[6];
-            int carCount1 = Integer.getInteger(carCount, 3).intValue();
+            int carCount1 = Integer.parseInt(carCount);
             if(command.equals("create")) {
                 new Main(reader, writer, new CreateRace(botName, botKey, trackName, carCount1));//, new JoinRace(botName, botKey, trackName, carCount1));
             } else if(command.equals("join")) {
@@ -111,11 +111,10 @@ public class Main {
                     List<Piece> pieces = getPieces(gameInit, tas);
                     List<Lane> lanes = getLanes(gameInit);
                     track = new Track(pieces, lanes);
-                    CarMetrics carMetrics = new CarMetrics(track, tas);
-
                     navigator = new Navigator(track);
                     navigator.useHighestRankingRoute();
                     turboCharger = new TurboCharger(navigator);
+                    CarMetrics carMetrics = new CarMetrics(track, navigator, tas);
                     throttleControl = new ThrottleControl(carMetrics);
 
                     player = new Car(carMetrics, navigator, throttleControl);
