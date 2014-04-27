@@ -29,6 +29,7 @@ public class AnglePiece extends GenericPiece {
     @Override
     public double getTargetSpeed(Lane lane)
     {
+        //return Math.sqrt(CarMetrics.getAngleAcceleration() * getEffectiveRadius(lane));
         return getLength(lane) / (Math.abs(angle) / (tas.getValue() + speedModifier));
     }
 

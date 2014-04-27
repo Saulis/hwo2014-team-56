@@ -93,7 +93,7 @@ public class Main {
                 } else {
 
 
-                send(new Throttle(nextThrottle));
+                send(new ThrottleMsg(nextThrottle));
 
                 //System.out.println("");
             }
@@ -110,7 +110,6 @@ public class Main {
                 CarMetrics carMetrics = new CarMetrics(track, tas);
 
                 navigator = new Navigator(track);
-                CarMetrics carMetrics = new CarMetrics(track);
                 navigator.useHighestRankingRoute();
                 turboCharger = new TurboCharger(navigator);
                 throttleControl = new ThrottleControl(carMetrics);

@@ -5,6 +5,7 @@ import noobbot.RightSwitchLane;
 import noobbot.SwitchLane;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
@@ -20,7 +21,7 @@ public class Navigator {
     private TrackRouteSegment currentSegment;
     private boolean switchIsPending = false;
     private double turboTimeLeft = 0;
-    private Stream<TrackRoute> staticRoutes;
+    private List<TrackRoute> staticRoutes;
     private boolean followingSelectedRoute = true;
 
     public Navigator(Track track) {
@@ -46,7 +47,7 @@ public class Navigator {
             routes = newRoutes;
         }
 
-        staticRoutes = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> r.getNumberOfSwitchesUsed() == 0);
+        staticRoutes = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> r.getNumberOfSwitchesUsed() == 0).collect(Collectors.toList());
 
         System.out.println(String.format("Navigator: %s possible routes plotted.", routes.size()));
     }
@@ -247,7 +248,7 @@ public class Navigator {
     }
 
     private TrackRoute getStaticRoute(Lane currentLane) {
-        return staticRoutes.filter(r -> r.getSegments()[0].getDrivingLane() == currentLane).findFirst().get();
+        return stream(staticRoutes.toArray(new TrackRoute[staticRoutes.size()])).filter(r -> r.getSegments()[0].getDrivingLane() == currentLane).findFirst().get();
     }
 
     public Piece getNextCorner() {

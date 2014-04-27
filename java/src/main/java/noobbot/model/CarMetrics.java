@@ -40,7 +40,7 @@ public class CarMetrics {
     private int ticksInCorner = 0;
 
 
-    public CarMetrics(Track track) {
+    public CarMetrics(Track track, TargetAngleSpeed tas) {
         this.track = track;
         this.targetAngleSpeed = tas;
         this.slipAngle = new SlipAngle(track);

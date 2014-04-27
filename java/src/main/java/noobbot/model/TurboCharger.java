@@ -24,12 +24,12 @@ public class TurboCharger {
     }
 
     private boolean noTurboActive(){
-        return ! navigator.isTurboActive();
+        return !navigator.isTurboActive();
     }
 
     private boolean isEnoughStraightRoadAhead() {
         Piece nextCorner = navigator.getNextCorner();
-        return navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 300.0;
+        return navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 400.0;
     }
 
     private boolean isTurboAvailable() {
