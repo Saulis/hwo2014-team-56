@@ -24,7 +24,7 @@ public class ThrottleControlTests {
         throttleControl = new ThrottleControl(metrics);
         targetSpeed = mock(TargetSpeed.class);
         slipAngle = mock(SlipAngle.class);
-        when(metrics.getSlipAngle()).thenReturn(slipAngle);
+        when(metrics.getSlipAngle()).thenReturn(1.0);
     }
 
     @Test
