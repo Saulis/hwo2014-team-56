@@ -16,6 +16,34 @@ public class TrackRouteSegment {
         this.segment = segment;
     }
 
+    private boolean pieceHasSwitch(int i) {
+        return segment.getPieces()[i].hasSwitch();
+    }
+
+    private boolean isPieceRightCorner(int i) {
+        return segment.getPieces()[i].getAngle() > 0;
+    }
+
+    private boolean isPieceLeftCorner(int i) {
+        return segment.getPieces()[i].getAngle() < 0;
+    }
+
+    public boolean hasSwitchWhenTurningIntoARightCorner() {
+        return pieceHasSwitch(0) && isPieceRightCorner(0) && isPieceRightCorner(1);
+    }
+
+    public boolean hasSwitchJustBeforeRightCorner() {
+        return pieceHasSwitch(0) && isPieceRightCorner(1);
+    }
+
+    public boolean hasSwitchWhenTurningIntoALeftCorner() {
+        return pieceHasSwitch(0) && isPieceLeftCorner(0) && isPieceLeftCorner(1);
+    }
+
+    public boolean hasSwitchJustBeforeLeftCorner() {
+        return pieceHasSwitch(0) && isPieceLeftCorner(1);
+    }
+
     public double getSegmentLength() {
         return segment.getSegmentLength(drivingLane, switchIsUsed);
     }
@@ -47,4 +75,13 @@ public class TrackRouteSegment {
     public Piece getFirstPiece() {
         return segment.getFirstPiece();
     }
+
+    public boolean endsInRightCorner() {
+        return segment.getLastPiece().getAngle() > 0;
+    }
+
+    public boolean endsInLeftCorner() {
+        return segment.getLastPiece().getAngle() < 0;
+    }
+
 }

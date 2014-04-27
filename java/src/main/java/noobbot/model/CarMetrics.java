@@ -30,6 +30,13 @@ public class CarMetrics {
     private boolean measuringAcceleration = false;
     private double previousAcceleration;
 
+    private double previousAngleAcceleration = 0;
+    private double maxSlipAngle = 0;
+    private double maxAngleAcceleration = 0;
+    private static double targetAngleAcceleration = 0.45;
+    private int ticksInCorner = 0;
+
+
     public CarMetrics(Track track, TargetAngleSpeed tas) {
         this.track = track;
         this.targetAngleSpeed = tas;
@@ -48,6 +55,67 @@ public class CarMetrics {
         this.targetAngleSpeed.calibrate(metric.getPosition(), getCurrentPiece(), slipAngle, getCurrentSpeed(), currentThrottle);
         
         measureTopspeed();
+        measureAngleAcceleration();
+
+        System.out.println(String.format("Metrics - P: %s, Lane: %s, D: %s (%s)", currentPosition.getPieceNumber(), currentPosition.getLane().getDistanceFromCenter(), currentPosition.getInPieceDistance(), track.getPiece(currentPosition).getLength(currentPosition.getLane())));
+        System.out.println(String.format("Metrics - Speed: %s, Slip: %s, S.Velocity %s", getCurrentSpeed(), getSlipAngle(), slipAngle.getSlipChangeVelocity()));
+        System.out.println(String.format("Metrics - Prev.Angle Acc.: %s, Curr.Angle.Acc %s, Max.Angle Acc. %s, Max.Slip: %s, Ticks: %s", previousAngleAcceleration, targetAngleAcceleration, maxAngleAcceleration, maxSlipAngle, ticksInCorner));
+    }
+
+    private void measureAngleAcceleration() {
+        if(enteredAnglePiece()) {
+            previousAngleAcceleration = slipAngle.getAcceleration();
+            ticksInCorner = 0;
+        }
+
+        if(getCurrentPiece().getAngle() != 0) {
+            ticksInCorner++;
+        }
+
+        maxAngleAcceleration = Math.max(maxAngleAcceleration, slipAngle.getAcceleration());
+        maxSlipAngle = Math.max(maxSlipAngle, Math.abs(getSlipAngle().getValue()));
+
+        if(exitedAnglePiece()) {
+            if(ticksInCorner > 42) {
+                /*
+                if(maxSlipAngle > 58 && Math.abs(previousAngleAcceleration - targetAngleAcceleration) < 0.01) {
+                  targetAngleAcceleration = previousAngleAcceleration;
+                } else if(maxSlipAngle > 50 && Math.abs(previousAngleAcceleration - targetAngleAcceleration) < 0.025) {
+                    targetAngleAcceleration = Math.max(previousAngleAcceleration, targetAngleAcceleration);
+                } else if(maxSlipAngle <= 50 && Math.abs(previousAngleAcceleration - targetAngleAcceleration) < 0.1) {
+                    targetAngleAcceleration += 0.01;
+                }*/
+                if(maxSlipAngle >= 55) {
+                    targetAngleAcceleration -= 0.01;
+                } else if(maxSlipAngle > 50 && maxSlipAngle < 55 && Math.abs(targetAngleAcceleration - maxAngleAcceleration) <= 0.025) {
+                    targetAngleAcceleration = maxAngleAcceleration;
+                } else if(maxSlipAngle <= 50) {
+                    targetAngleAcceleration += 0.01;
+                }
+            }
+            maxSlipAngle = 0;
+            maxAngleAcceleration = 0;
+        }
+    }
+
+    private boolean enteredAnglePiece() {
+        if(previousPosition != null) {
+            return getCurrentPiece().getAngle() != 0 && track.getPiece(previousPosition).getAngle() == 0;
+        }
+
+        return getCurrentPiece().getAngle() != 0;
+    }
+
+    private boolean exitedAnglePiece() {
+        if(previousPosition != null) {
+            return getCurrentPiece().getAngle() == 0 && track.getPiece(previousPosition).getAngle() != 0;
+        }
+
+        return false;
+    }
+
+    public static double getAngleAcceleration() {
+        return targetAngleAcceleration;
     }
 
     public SlipAngle getSlipAngle() {
@@ -58,7 +126,7 @@ public class CarMetrics {
     private void measureTopspeed() {
 
         //start measuringAcceleration if we start hitting full throttle from zero
-        if(getCurrentSpeed() == 0 && this.currentThrottle == 1.0) {
+        if(getCurrentSpeed() == 0 && this.currentThrottle == 1.0 && topspeed == 0) {
             System.out.println("Metrics: Starting to measure acceleration.");
             measuringAcceleration = true;
         }
@@ -150,7 +218,12 @@ public class CarMetrics {
         double speed = getSpeed(currentSpeed, acceleration);
 
         if(targetSpeed < currentSpeed) {
-            double breakingDistance = currentSpeed * 2;
+            double breakingDistance = currentSpeed;
+
+            //Extra braking distance when running with turbo
+            if(currentSpeed > getTopspeed()) {
+                breakingDistance += currentSpeed;
+            }
 
             while(speed > targetSpeed + 0.05) {
                 breakingDistance += speed;

@@ -7,6 +7,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import noobbot.descriptor.CarPositionsDescriptor;
@@ -15,11 +17,13 @@ import noobbot.descriptor.TurboAvailableDescriptor;
 
 import com.google.gson.Gson;
 
+import noobbot.descriptor.YourCarDescriptor;
 import noobbot.model.*;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
 public class Main {
+    private String carColor;
     private TurboCharger turboCharger;
     private Navigator navigator;
     private Track track;
@@ -37,27 +41,39 @@ public class Main {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-        new Main(reader, writer, new Join(botName, botKey), new CreateRace(botName, botKey, "usa"), new JoinRace(botName, botKey, "usa"));
+        if(args.length == 7) {
+            String command = args[4];
+            String trackName = args[5];
+            String carCount = args[6];
+            int carCount1 = Integer.getInteger(carCount, 3).intValue();
+            if(command.equals("create")) {
+                new Main(reader, writer, new CreateRace(botName, botKey, trackName, carCount1));//, new JoinRace(botName, botKey, trackName, carCount1));
+            } else if(command.equals("join")) {
+                new Main(reader, writer, new JoinRace(botName, botKey, trackName, carCount1));
+            }
+        } else {
+            new Main(reader, writer, new Join(botName, botKey));
+        }
     }
 
     final Gson gson = new Gson();
     private PrintWriter writer;
     private ThrottleControl throttleControl;
 
-    public Main(final BufferedReader reader, final PrintWriter writer, final Join join, CreateRace createRace, JoinRace joinRace) throws IOException {
+    public Main(final BufferedReader reader, final PrintWriter writer, SendMsg... msgs) throws IOException {
         this.writer = writer;
         String line = null;
 
-        send(join); //keimola
-        //send(createRace); //custom
-        //send(joinRace); //custom
+        for(SendMsg msg : msgs) {
+            send(msg);
+        }
 
         Car player = null;
 
         while ((line = reader.readLine()) != null) {
             final MsgWrapper msgFromServer = gson.fromJson(line, MsgWrapper.class);
-//            System.out.println(line);
-            if (msgFromServer.msgType.equals("crash")) {
+            //System.out.println(line);
+            if(msgFromServer.msgType.equals("crash")) {
                 System.out.println(line);
             }
 
@@ -68,46 +84,62 @@ public class Main {
 
             if (msgFromServer.msgType.equals("carPositions")) {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
-                PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
+                PlayerPosition position = getPlayerPosition(carPositions);
 
                 navigator.setPosition(position);
-                if (navigator.shouldSendSwitchLanes()) {
+                double nextThrottle = player.setPosition(position);
+                if(navigator.shouldSendSwitchLanes()) {
                     send(navigator.setTargetLane());
                  } else if (turboCharger.shouldSendTurbo()) {
                      navigator.useTurbo(turboCharger.useTurbo());
                      send(new TurboMsg());
                 } else {
-                    double nextThrottle = player.setPosition(position);
-                    send(new ThrottleMsg(nextThrottle));
-                }
-            } else if (msgFromServer.msgType.equals("join")) {
-                System.out.println("Joined");
-            } else if (msgFromServer.msgType.equals("gameInit")) {
-                GameInitDescriptor gameInit = gson.fromJson(line, GameInitDescriptor.class);
-                TargetAngleSpeed tas = new TargetAngleSpeed();
-                
-                List<Piece> pieces = getPieces(gameInit, tas);
-                List<Lane> lanes = getLanes(gameInit);
-                track = new Track(pieces, lanes);
-                CarMetrics carMetrics = new CarMetrics(track, tas);
 
-                navigator = new Navigator(track);
-                navigator.useShortestRoute();
-                turboCharger = new TurboCharger(navigator);
-                throttleControl = new ThrottleControl(carMetrics);
-                
-                player = new Car(carMetrics, navigator, throttleControl);
 
-                System.out.println("Race init");
-                System.out.println(line);
-            } else if (msgFromServer.msgType.equals("gameEnd")) {
-                System.out.println("Race end");
-            } else if (msgFromServer.msgType.equals("gameStart")) {
-                System.out.println("Race start");
+                send(new ThrottleMsg(nextThrottle));
+
+                //System.out.println("");
+            }
+
             } else {
+                if (msgFromServer.msgType.equals("join")) {
+                    System.out.println("Joined");
+                } else if (msgFromServer.msgType.equals("gameInit")) {
+                    GameInitDescriptor gameInit = gson.fromJson(line, GameInitDescriptor.class);
+                    TargetAngleSpeed tas = new TargetAngleSpeed();
+
+                    List<Piece> pieces = getPieces(gameInit, tas);
+                    List<Lane> lanes = getLanes(gameInit);
+                    track = new Track(pieces, lanes);
+                    CarMetrics carMetrics = new CarMetrics(track, tas);
+
+                    navigator = new Navigator(track);
+                    navigator.useHighestRankingRoute();
+                    turboCharger = new TurboCharger(navigator);
+                    throttleControl = new ThrottleControl(carMetrics);
+
+                    player = new Car(carMetrics, navigator, throttleControl);
+
+                    System.out.println("Race init");
+                    System.out.println(line);
+                } else if (msgFromServer.msgType.equals("gameEnd")) {
+                    System.out.println("Race end");
+                } else if (msgFromServer.msgType.equals("gameStart")) {
+                    System.out.println("Race start");
+                } else if(msgFromServer.msgType.equals("yourCar")) {
+                    YourCarDescriptor yourCarDescriptor = gson.fromJson(line, YourCarDescriptor.class);
+
+                    carColor = yourCarDescriptor.data.color;
+                }
+
                 send(new Ping());
             }
         }
+    }
+
+    private PlayerPosition getPlayerPosition(CarPositionsDescriptor carPositions) {
+        Optional<CarPositionsDescriptor.Data> data = stream(carPositions.data).filter(d -> d.id.color.equals(carColor)).findFirst();
+        return new PlayerPosition(track, data.get());
     }
 
     public static List<Lane> getLanes(GameInitDescriptor gameInit) {
@@ -179,10 +211,12 @@ class CreateRace extends SendMsg {
 
     public BotId botId;
     public String trackName;
-    public int carCount = 1;
+    public String password = "nicenice";
+    public int carCount;
 
-    CreateRace(String name, String key, String trackName) {
+    CreateRace(String name, String key, String trackName, int carCount) {
         this.trackName = trackName;
+        this.carCount = carCount;
         botId = new BotId(name, key);
     }
 
@@ -207,11 +241,14 @@ class JoinRace extends SendMsg {
 
     public BotId botId;
     public String trackName;
-    public int carCount = 1;
+    public String password = "nicenice";
+    public int carCount;
 
-    JoinRace(String name, String key, String trackName) {
+    JoinRace(String name, String key, String trackName, int carCount) {
         this.trackName = trackName;
-        botId = new BotId(name, key);
+        this.carCount = carCount;
+        Random random = new Random();
+        botId = new BotId(name + random.nextInt(10), key);
     }
 
     @Override
