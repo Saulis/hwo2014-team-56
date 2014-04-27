@@ -36,7 +36,7 @@ public class CarMetrics {
     private double previousAngleAcceleration = 0;
     private double maxSlipAngle = 0;
     private double maxAngleAcceleration = 0;
-    private static double targetAngleAcceleration = 0.465;
+    private static double targetAngleAcceleration = 0.48;
     private double targetSlipAngle = 0;
     private int ticksInCorner = 0;
 
@@ -49,11 +49,12 @@ public class CarMetrics {
     }
 
     public void update(Metric metric) {
-        slipAngle.update(metric.getPosition());
         previousAcceleration = getCurrentAcceleration();
         previousSpeed = getCurrentSpeed();
         previousSlipVelocity = getSlipVelocity();
         previousSlipAngle = slipAngle.getValue();
+
+        slipAngle.update(metric.getPosition());
         previousPosition = this.currentPosition;
 
         this.currentThrottle = metric.getThrottle();
@@ -261,7 +262,7 @@ public class CarMetrics {
 
             //Extra braking distance when running with turbo
             if(navigator.isTurboActive()) {
-                breakingDistance += currentSpeed * 0.5;
+                breakingDistance += currentSpeed * 1.5;
             }
 
             while(speed > targetSpeed + 0.05) {

@@ -16,6 +16,6 @@ public class AntiLockBrakes {
         double slipVelocity = metrics.getSlipVelocity();
         double timeUntilCrash = (60 - slipAngle) / slipVelocity;
 
-        return targetSpeed.getDistanceToTarget() <= targetSpeed.getBrakingDistance() || (timeUntilCrash >= 0 && timeUntilCrash < 7) || Math.abs(slipVelocity) > 4;
+        return targetSpeed.getDistanceToTarget() <= targetSpeed.getBrakingDistance() || (timeUntilCrash >= 0 && timeUntilCrash < 5) || Math.abs(slipVelocity) > 4;
     }
 }

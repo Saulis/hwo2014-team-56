@@ -112,7 +112,7 @@ public class Main {
                     List<Lane> lanes = getLanes(gameInit);
                     track = new Track(pieces, lanes);
                     navigator = new Navigator(track);
-                    navigator.useHighestRankingRoute();
+                    navigator.useShortestRoute();
                     turboCharger = new TurboCharger(navigator);
                     CarMetrics carMetrics = new CarMetrics(track, navigator, tas);
                     throttleControl = new ThrottleControl(carMetrics);
