@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,11 +17,13 @@ import noobbot.descriptor.TurboAvailableDescriptor;
 
 import com.google.gson.Gson;
 
+import noobbot.descriptor.YourCarDescriptor;
 import noobbot.model.*;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
 public class Main {
+    private String carColor;
     private TurboCharger turboCharger;
     private Navigator navigator;
     private Track track;
@@ -81,7 +84,7 @@ public class Main {
 
             if (msgFromServer.msgType.equals("carPositions")) {
                 CarPositionsDescriptor carPositions = gson.fromJson(line, CarPositionsDescriptor.class);
-                PlayerPosition position = new PlayerPosition(track, carPositions.data[0]);
+                PlayerPosition position = getPlayerPosition(carPositions);
 
                 navigator.setPosition(position);
                 double nextThrottle = player.setPosition(position);
@@ -98,34 +101,45 @@ public class Main {
                 //System.out.println("");
             }
 
-            } else if (msgFromServer.msgType.equals("join")) {
-                System.out.println("Joined");
-            } else if (msgFromServer.msgType.equals("gameInit")) {
-                GameInitDescriptor gameInit = gson.fromJson(line, GameInitDescriptor.class);
-                TargetAngleSpeed tas = new TargetAngleSpeed();
-                
-                List<Piece> pieces = getPieces(gameInit, tas);
-                List<Lane> lanes = getLanes(gameInit);
-                track = new Track(pieces, lanes);
-                CarMetrics carMetrics = new CarMetrics(track, tas);
-
-                navigator = new Navigator(track);
-                navigator.useHighestRankingRoute();
-                turboCharger = new TurboCharger(navigator);
-                throttleControl = new ThrottleControl(carMetrics);
-                
-                player = new Car(carMetrics, navigator, throttleControl);
-
-                System.out.println("Race init");
-                System.out.println(line);
-            } else if (msgFromServer.msgType.equals("gameEnd")) {
-                System.out.println("Race end");
-            } else if (msgFromServer.msgType.equals("gameStart")) {
-                System.out.println("Race start");
             } else {
+                if (msgFromServer.msgType.equals("join")) {
+                    System.out.println("Joined");
+                } else if (msgFromServer.msgType.equals("gameInit")) {
+                    GameInitDescriptor gameInit = gson.fromJson(line, GameInitDescriptor.class);
+                    TargetAngleSpeed tas = new TargetAngleSpeed();
+
+                    List<Piece> pieces = getPieces(gameInit, tas);
+                    List<Lane> lanes = getLanes(gameInit);
+                    track = new Track(pieces, lanes);
+                    CarMetrics carMetrics = new CarMetrics(track, tas);
+
+                    navigator = new Navigator(track);
+                    navigator.useHighestRankingRoute();
+                    turboCharger = new TurboCharger(navigator);
+                    throttleControl = new ThrottleControl(carMetrics);
+
+                    player = new Car(carMetrics, navigator, throttleControl);
+
+                    System.out.println("Race init");
+                    System.out.println(line);
+                } else if (msgFromServer.msgType.equals("gameEnd")) {
+                    System.out.println("Race end");
+                } else if (msgFromServer.msgType.equals("gameStart")) {
+                    System.out.println("Race start");
+                } else if(msgFromServer.msgType.equals("yourCar")) {
+                    YourCarDescriptor yourCarDescriptor = gson.fromJson(line, YourCarDescriptor.class);
+
+                    carColor = yourCarDescriptor.data.color;
+                }
+
                 send(new Ping());
             }
         }
+    }
+
+    private PlayerPosition getPlayerPosition(CarPositionsDescriptor carPositions) {
+        Optional<CarPositionsDescriptor.Data> data = stream(carPositions.data).filter(d -> d.id.color.equals(carColor)).findFirst();
+        return new PlayerPosition(track, data.get());
     }
 
     public static List<Lane> getLanes(GameInitDescriptor gameInit) {

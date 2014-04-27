@@ -92,7 +92,7 @@ public class CarMetrics {
                 }*/
                 if(maxSlipAngle >= 55) {
                     targetAngleAcceleration -= 0.01;
-                } else if(maxSlipAngle > 50 && maxSlipAngle < 55) {
+                } else if(maxSlipAngle > 50 && maxSlipAngle < 55 && Math.abs(targetAngleAcceleration - maxAngleAcceleration) <= 0.025) {
                     targetAngleAcceleration = maxAngleAcceleration;
                 } else if(maxSlipAngle <= 50) {
                     targetAngleAcceleration += 0.01;
