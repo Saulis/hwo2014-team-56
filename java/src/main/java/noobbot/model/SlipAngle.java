@@ -43,11 +43,7 @@ public class SlipAngle {
     }
 
     public double getSlipChangeVelocity() {
-        return getChange(0) < 0 ? getChange(0) * -1 : getChange(0);
-    }
-
-    public double getPreviousSlipVelocity() {
-        return getChange(1) < 0 ? getChange(1) * -1 : getChange(1);
+        return getValue() < 0 ? getChange(0) * -1 : getChange(0);
     }
 
     public double getValue() {

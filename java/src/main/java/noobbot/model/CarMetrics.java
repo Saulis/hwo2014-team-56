@@ -37,6 +37,7 @@ public class CarMetrics {
     private static double targetAngleAcceleration = 0.48;
     private double targetSlipAngle = 0;
     private int ticksInCorner = 0;
+    private int ticksUntilMaxSlipAngle = 40;
 
 
     public CarMetrics(Track track, Navigator navigator, TargetAngleSpeed tas) {
@@ -79,15 +80,7 @@ public class CarMetrics {
         maxSlipAngle = Math.max(maxSlipAngle, Math.abs(getSlipAngle().getValue()));
 
         if(exitedAnglePiece()) {
-            if(ticksInCorner > 40) {
-                /*
-                if(maxSlipAngle > 58 && Math.abs(previousAngleAcceleration - targetAngleAcceleration) < 0.01) {
-                  targetAngleAcceleration = previousAngleAcceleration;
-                } else if(maxSlipAngle > 50 && Math.abs(previousAngleAcceleration - targetAngleAcceleration) < 0.025) {
-                    targetAngleAcceleration = Math.max(previousAngleAcceleration, targetAngleAcceleration);
-                } else if(maxSlipAngle <= 50 && Math.abs(previousAngleAcceleration - targetAngleAcceleration) < 0.1) {
-                    targetAngleAcceleration += 0.01;
-                }*/
+            if(ticksInCorner > ticksUntilMaxSlipAngle) {
                 if(maxSlipAngle >= 55) {
                     targetAngleAcceleration -= 0.01;
                 } else if(maxSlipAngle > 50 && maxSlipAngle < 55 && Math.abs(targetAngleAcceleration - maxAngleAcceleration) <= 0.025) {

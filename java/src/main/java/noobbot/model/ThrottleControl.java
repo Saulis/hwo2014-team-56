@@ -15,7 +15,7 @@ public class ThrottleControl {
 
     public double getThrottle(double currentTargetSpeed, TargetSpeed targetSpeed) {
         double diff = targetSpeed.getTargetSpeed() - metrics.getCurrentSpeed();
-        if(brakes.shouldBrake(targetSpeed)) {
+        if(brakes.shouldBrake(currentTargetSpeed, targetSpeed)) {
             printDebug(metrics.getCurrentSpeed(), targetSpeed.getTargetSpeed(), diff, "BRAKING");
 
             return 0.0;

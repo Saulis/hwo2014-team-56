@@ -11,11 +11,11 @@ public class AntiLockBrakes {
         this.metrics = metrics;
     }
 
-    public boolean shouldBrake(TargetSpeed targetSpeed) {
+    public boolean shouldBrake(double currentTargetSpeed, TargetSpeed targetSpeed) {
         double slipAngle = Math.abs(metrics.getSlipAngle().getValue());
         double slipVelocity = metrics.getSlipAngle().getSlipChangeVelocity();
         double timeUntilCrash = (60 - slipAngle) / slipVelocity;
 
-        return targetSpeed.getDistanceToTarget() <= targetSpeed.getBrakingDistance() || (timeUntilCrash >= 0 && timeUntilCrash < 5) || Math.abs(slipVelocity) > 4;
+        return (slipVelocity >= 0 && metrics.getCurrentSpeed() - currentTargetSpeed > 0.25) || targetSpeed.getDistanceToTarget() <= targetSpeed.getBrakingDistance() || (timeUntilCrash >= 0 && timeUntilCrash < 5) || Math.abs(slipVelocity) > 4;
     }
 }

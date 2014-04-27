@@ -42,15 +42,16 @@ public class Car {
 
     private TargetSpeed getTargetSpeed(double currentThrottle) {
         TrackRoute selectedRoute = navigator.getSelectedRoute();
-        Piece nextPiece = navigator.getNextTargetPiece();
+        Piece nextTargetPiece = navigator.getNextTargetPiece();
 
-        TrackRouteSegment segment = selectedRoute.getSegmentForPiece(nextPiece.getNumber());
-        double targetSpeed = nextPiece.getTargetSpeed(segment.getDrivingLane());
-        double distanceToTarget = navigator.getDistanceToTarget(nextPiece);
+        TrackRouteSegment segment = selectedRoute.getSegmentForPiece(nextTargetPiece.getNumber());
+        double targetSpeed = nextTargetPiece.getTargetSpeed(segment.getDrivingLane());
+        double distanceToTarget = navigator.getDistanceToTarget(nextTargetPiece);
 
-        //System.out.println(String.format("Next TargetSpeed: i: %s, D: %s, S: %s", nextPiece.getNumber(), distanceToTarget, targetSpeed));
+        //System.out.println(String.format("Next TargetSpeed: i: %s, D: %s, S: %s", nextTargetPiece.getNumber(), distanceToTarget, targetSpeed));
 
         double brakingDistance = carMetrics.getBrakingDistance(carMetrics.getCurrentSpeed(), targetSpeed, currentThrottle);
+
 
         return new TargetSpeed(targetSpeed, distanceToTarget, brakingDistance);
     }

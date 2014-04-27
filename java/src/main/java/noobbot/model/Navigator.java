@@ -184,4 +184,8 @@ public class Navigator {
     public boolean isTurboActive() {
         return turboTimeLeft > 0;
     }
+
+    public Piece getPreviousPiece(Piece piece) {
+        return track.getPieceBefore(piece);
+    }
 }

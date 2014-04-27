@@ -29,7 +29,7 @@ public class TurboCharger {
 
     private boolean isEnoughStraightRoadAhead() {
         Piece nextCorner = navigator.getNextTargetPiece();
-        return navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 400.0;
+        return navigator.getCurrentPiece().getAngle() == 0 && navigator.getDistanceToTarget(nextCorner) > 450.0;
     }
 
     private boolean isTurboAvailable() {

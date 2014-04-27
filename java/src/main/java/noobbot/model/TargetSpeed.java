@@ -26,4 +26,5 @@ public class TargetSpeed {
     public double getDistanceToTarget() {
         return distanceToTarget;
     }
+
 }

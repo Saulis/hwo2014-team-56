@@ -38,6 +38,12 @@ public class Track {
         return pieces.get(nextPieceIndex % pieces.size());
     }
 
+    public Piece getPieceBefore(Piece piece) {
+        int index = piece.getNumber() - 1;
+        return pieces.get(index % pieces.size());
+    }
+
+
     public Piece getPiece(Position position) {
         return pieces.get(position.getPieceNumber());
     }
