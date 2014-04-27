@@ -11,7 +11,9 @@ public class ShortestRouteStrategy extends BaseRouteStrategy {
 
     @Override
     public TrackRoute getRoute(List<TrackRoute> routes) {
-        TrackRoute selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()])).sorted(new Comparator<TrackRoute>() {
+        TrackRoute selectedRoute = stream(routes.toArray(new TrackRoute[routes.size()]))
+                .filter(r -> r.isLoop())
+                .sorted(new Comparator<TrackRoute>() {
             @Override
             public int compare(TrackRoute o1, TrackRoute o2) {
                 return Double.compare(o1.getRouteLength(), o2.getRouteLength());

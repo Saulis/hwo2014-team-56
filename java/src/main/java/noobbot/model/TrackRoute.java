@@ -217,6 +217,10 @@ public class TrackRoute {
         return ranking;
     }
 
+    public boolean isLoop() {
+        return segments[0].getDrivingLane() == segments[segments.length - 1].getDrivingLane();
+    }
+
     public int getNumberOfSwitchesUsed() {
         int switchesUsed = 0;
 
