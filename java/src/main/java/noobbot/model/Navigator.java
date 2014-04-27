@@ -5,6 +5,7 @@ import noobbot.RightSwitchLane;
 import noobbot.SwitchLane;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 
@@ -17,6 +18,8 @@ public class Navigator {
     private TrackRoute selectedRoute;
     private PlayerPosition currentPosition;
     private TrackRouteSegment currentSegment;
+    private Stream<TrackRoute> staticRoutes;
+    private boolean followingSelectedRoute = true;
 
     public Navigator(Track track) {
 
@@ -41,6 +44,8 @@ public class Navigator {
             routes = newRoutes;
         }
 
+        staticRoutes = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> r.getNumberOfSwitchesUsed() == 0);
+
         System.out.println(String.format("Navigator: %s possible routes plotted.", routes.size()));
     }
 
@@ -56,9 +61,9 @@ public class Navigator {
     }
 
     private void printSelectedRoute(String description) {
-        System.out.println(String.format("Navigator: using %s route: %s", description, selectedRoute.getRouteLength()));
-        for(int i=0;i < selectedRoute.getSegments().length;i++) {
-            TrackRouteSegment trackRouteSegment = selectedRoute.getSegments()[i];
+        System.out.println(String.format("Navigator: using %s route: %s", description, getSelectedRoute().getRouteLength()));
+        for(int i=0;i < getSelectedRoute().getSegments().length;i++) {
+            TrackRouteSegment trackRouteSegment = getSelectedRoute().getSegments()[i];
             System.out.println(i + ": " + trackRouteSegment.getDrivingLane().getDistanceFromCenter());
         }
     }
@@ -83,9 +88,9 @@ public class Navigator {
         }).findFirst().get();
 
         printSelectedRoute("highest ranked ");
-        System.out.println("Ranking: " + selectedRoute.getRanking());
-        for(int i =0;i < selectedRoute.getSegments().length - 1;i++) {
-            System.out.println(selectedRoute.rankSegments(selectedRoute.getSegments()[i], selectedRoute.getSegments()[i+1]));
+        System.out.println("Ranking: " + getSelectedRoute().getRanking());
+        for(int i =0;i < getSelectedRoute().getSegments().length - 1;i++) {
+            System.out.println(getSelectedRoute().rankSegments(getSelectedRoute().getSegments()[i], getSelectedRoute().getSegments()[i + 1]));
         }
     }
 
@@ -104,9 +109,9 @@ public class Navigator {
         }).findFirst().get();
 
         printSelectedRoute("custom");
-        System.out.println("Ranking: " + selectedRoute.getRanking());
-        for(int i =0;i < selectedRoute.getSegments().length - 1;i++) {
-            System.out.println(selectedRoute.rankSegments(selectedRoute.getSegments()[i], selectedRoute.getSegments()[i+1]));
+        System.out.println("Ranking: " + getSelectedRoute().getRanking());
+        for(int i =0;i < getSelectedRoute().getSegments().length - 1;i++) {
+            System.out.println(getSelectedRoute().rankSegments(getSelectedRoute().getSegments()[i], getSelectedRoute().getSegments()[i + 1]));
         }
 
     }
@@ -186,7 +191,7 @@ public class Navigator {
     private boolean switchIsPending = false;
 
     private TrackRouteSegment getNextSegment() {
-        return selectedRoute.getNextSegment(getCurrentSegment());
+        return getSelectedRoute().getNextSegment(getCurrentSegment());
     }
 
     public SwitchLane setTargetLane() {
@@ -206,12 +211,6 @@ public class Navigator {
         return switchLane;
     }
 
-    public Lane getLane(Piece piece) {
-        TrackRouteSegment segment = selectedRoute.getSegmentForPiece(piece.getNumber());
-
-        return segment.getDrivingLane();
-    }
-
     public Lane getCurrentLane() {
         return currentPosition.getLane();
     }
@@ -223,15 +222,25 @@ public class Navigator {
         if(currentSegment != getCurrentSegment()) {
             switchIsPending = false;
             currentSegment = getCurrentSegment();
+
+            followingSelectedRoute = currentSegment.getDrivingLane() == getCurrentLane();
         }
     }
 
     public TrackRouteSegment getCurrentSegment() {
-        return selectedRoute.getSegmentForPiece(currentPosition.getPieceNumber());
+        return getSelectedRoute().getSegmentForPiece(currentPosition.getPieceNumber());
     }
 
     public TrackRoute getSelectedRoute() {
-        return selectedRoute;
+        if(followingSelectedRoute) {
+            return selectedRoute;
+        }
+
+        return getStaticRoute(getCurrentLane());
+    }
+
+    private TrackRoute getStaticRoute(Lane currentLane) {
+        return staticRoutes.filter(r -> r.getSegments()[0].getDrivingLane() == currentLane).findFirst().get();
     }
 
     public Piece getNextCorner() {
@@ -262,6 +271,6 @@ public class Navigator {
     }
 
     public double getDistanceToTarget(Piece targetPiece) {
-        return selectedRoute.getDistanceBetween(getCurrentPiece(), targetPiece) - currentPosition.getInPieceDistance();
+        return getSelectedRoute().getDistanceBetween(getCurrentPiece(), targetPiece) - currentPosition.getInPieceDistance();
     }
 }
