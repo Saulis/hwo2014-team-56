@@ -20,6 +20,8 @@ import com.google.gson.Gson;
 import noobbot.descriptor.YourCarDescriptor;
 import noobbot.model.*;
 import noobbot.model.navigation.HighestRankingRouteStrategy;
+import noobbot.model.navigation.RouteStrategyFactory;
+import noobbot.model.navigation.ShortestRouteStrategy;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
@@ -46,7 +48,7 @@ public class Main {
             String command = args[4];
             String trackName = args[5];
             String carCount = args[6];
-            int carCount1 = Integer.getInteger(carCount, 3).intValue();
+            int carCount1 = Integer.parseInt(carCount);
             if (command.equals("create")) {
                 new Main(reader, writer, new CreateRace(botName, botKey, trackName, carCount1));// ,
                                                                                                 // new
@@ -113,10 +115,10 @@ public class Main {
                     List<Piece> pieces = getPieces(gameInit, tas);
                     List<Lane> lanes = getLanes(gameInit);
                     track = new Track(pieces, lanes);
-                    CarMetrics carMetrics = new CarMetrics(track, tas);
 
-                    navigator = new Navigator(track, new HighestRankingRouteStrategy());
+                    navigator = new Navigator(track, RouteStrategyFactory.getShortestRoute());
                     turboCharger = new TurboCharger(navigator);
+                    CarMetrics carMetrics = new CarMetrics(track, navigator, tas);
                     throttleControl = new ThrottleControl(carMetrics);
 
                     player = new Car(carMetrics, navigator, throttleControl);

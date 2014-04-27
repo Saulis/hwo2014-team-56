@@ -7,7 +7,7 @@ import java.util.List;
 import noobbot.model.TrackRoute;
 import noobbot.model.TrackRouteSegment;
 
-public class CustomUsaRoute extends BaseRouteStrategy {
+public class CustomUsaRouteStrategy extends BaseRouteStrategy {
 
     @Override
     public TrackRoute getRoute(List<TrackRoute> routes) {
