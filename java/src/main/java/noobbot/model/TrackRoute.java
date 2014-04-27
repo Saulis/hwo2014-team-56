@@ -100,17 +100,6 @@ public class TrackRoute {
         return stream(segments).mapToDouble(s -> s.getSegmentDrivingTime()).sum();
     }
 
-    public Piece getPieceForNextTargetSpeed(Piece piece) {
-        double targetSpeed = getTargetSpeed(piece);
-
-        Piece nextPiece = getNextPiece(piece);
-        while(targetSpeed != getTargetSpeed(nextPiece)) {
-            nextPiece = getNextPiece(nextPiece);
-        }
-
-        return nextPiece;
-    }
-
     public double getDistanceBetween(Piece piece1, Piece piece2) {
         double distance = getDrivingLength(piece1);
         Piece nextPiece = getNextPiece(piece1);
@@ -127,12 +116,6 @@ public class TrackRoute {
         TrackRouteSegment segment = getSegmentForPiece(piece.getNumber());
 
         return piece.getLength(segment.getDrivingLane());
-    }
-
-    private double getTargetSpeed(Piece piece) {
-        TrackRouteSegment segment = getSegmentForPiece(piece.getNumber());
-
-        return piece.getTargetSpeed(segment.getDrivingLane());
     }
 
     private Piece getNextPiece(Piece piece) {
@@ -232,5 +215,17 @@ public class TrackRoute {
 
     public int getRanking() {
         return ranking;
+    }
+
+    public int getNumberOfSwitchesUsed() {
+        int switchesUsed = 0;
+
+        for (int i = 0; i < segments.length - 1; i++) {
+            if(segments[i].getDrivingLane() != segments[i+1].getDrivingLane()) {
+                switchesUsed++;
+            }
+        }
+
+        return switchesUsed;
     }
 }
