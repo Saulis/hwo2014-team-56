@@ -154,6 +154,10 @@ public class Navigator {
         return getStaticRoute(getCurrentLane());
     }
 
+    public Piece getBeginningPieceOfLongestStraight() {
+        return track.getBeginningPieceOfLongestStraight();
+    }
+
     private TrackRoute getStaticRoute(Lane currentLane) {
         return stream(staticRoutes.toArray(new TrackRoute[staticRoutes.size()])).filter(r -> r.getSegments()[0].getDrivingLane() == currentLane).findFirst().get();
     }

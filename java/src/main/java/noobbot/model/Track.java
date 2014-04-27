@@ -3,12 +3,49 @@ package noobbot.model;
 import java.util.List;
 
 public class Track {
-	private List<Piece> pieces;
+    private final Piece longestStraight;
+    private List<Piece> pieces;
     private List<Lane> lanes;
 
     public Track(List<Piece> pieces, List<Lane> lanes) {
         this.pieces = pieces;
         this.lanes = lanes;
+
+        longestStraight = calculateLongestStraight();
+    }
+
+    private Piece calculateLongestStraight() {
+        double longestLength = 0;
+        Piece longest = null;
+
+        for (Piece piece : getPieces()) {
+            double length = getStraightLength(piece);
+            if(longestLength < length) {
+                longest = piece;
+                longestLength = length;
+            }
+        }
+
+        return longest;
+    }
+
+    public Piece getBeginningPieceOfLongestStraight() {
+        return longestStraight;
+    }
+
+    public double getStraightLength(Piece piece) {
+        if(piece.getAngle() != 0) {
+            return 0;
+        }
+
+        double length = piece.getLength(lanes.get(0)); //lanes all have the same length on a straight piece
+        Piece nextPiece = getPieceAfter(piece);
+        while(nextPiece.getAngle() == 0) {
+            length += nextPiece.getLength(lanes.get(0));
+            nextPiece = getPieceAfter(nextPiece);
+        }
+
+        return length;
     }
 
     public Double getDistanceBetween(Position position1, Position position2) {
