@@ -6,6 +6,7 @@ package noobbot.model;
 public class ThrottleControl {
     private final AntiLockBrakes brakes;
     private CarMetrics metrics;
+	private boolean isStabilizing = false;
 
     public ThrottleControl(CarMetrics metrics) {
 
@@ -14,6 +15,7 @@ public class ThrottleControl {
     }
 
     public double getThrottle(double currentTargetSpeed, TargetSpeed targetSpeed) {
+    	isStabilizing = false;
         double diff = targetSpeed.getTargetSpeed() - metrics.getCurrentSpeed();
         if(brakes.shouldBrake(currentTargetSpeed, targetSpeed)) {
             printDebug(metrics.getCurrentSpeed(), targetSpeed.getTargetSpeed(), diff, "BRAKING");
@@ -26,7 +28,7 @@ public class ThrottleControl {
             return 1.0;
         } else {
             printDebug(metrics.getCurrentSpeed(), currentTargetSpeed, diff, "STABILIZING");
-
+            isStabilizing = true;
             return Math.min(currentTargetSpeed / metrics.getTopspeed(), 1.0);
         }
     }
@@ -34,4 +36,8 @@ public class ThrottleControl {
     private void printDebug(double currentSpeed, double targetSpeed, double diff, String status) {
         System.out.println(String.format("Throttle: %s %s->%s (%s)", status, currentSpeed, targetSpeed, diff));
     }
+
+	public boolean isStabilizing() {
+		return isStabilizing;
+	}
 }

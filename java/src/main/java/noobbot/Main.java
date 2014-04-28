@@ -1,5 +1,8 @@
 package noobbot;
 
+import static java.util.Arrays.*;
+import static java.util.stream.Collectors.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,16 +17,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 import noobbot.descriptor.CarPositionsDescriptor;
 import noobbot.descriptor.GameInitDescriptor;
 import noobbot.descriptor.TurboAvailableDescriptor;
+import noobbot.descriptor.YourCarDescriptor;
+import noobbot.model.Car;
+import noobbot.model.CarMetrics;
+import noobbot.model.Lane;
+import noobbot.model.LaneImpl;
+import noobbot.model.Navigator;
+import noobbot.model.Piece;
+import noobbot.model.PieceFactory;
+import noobbot.model.PlayerPosition;
+import noobbot.model.TargetAngleSpeed;
+import noobbot.model.ThrottleControl;
+import noobbot.model.Track;
+import noobbot.model.Turbo;
+import noobbot.model.TurboCharger;
+import noobbot.model.navigation.RouteStrategyFactory;
 
 import com.google.gson.Gson;
-
-import noobbot.descriptor.YourCarDescriptor;
-import noobbot.model.*;
-import noobbot.model.navigation.HighestRankingRouteStrategy;
-import noobbot.model.navigation.RouteStrategyFactory;
-import noobbot.model.navigation.ShortestRouteStrategy;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
 
 public class Main {
     private String carColor;

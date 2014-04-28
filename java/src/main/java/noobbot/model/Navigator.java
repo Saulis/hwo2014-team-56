@@ -139,10 +139,14 @@ public class Navigator {
 
             followingSelectedRoute = currentSegment.getDrivingLane() == getCurrentLane();
         }
-        
-        getCurrentPiece().calibrate(currentPosition.getSlipAngle());
     }
 
+    public void calibrateCurrentPiece() {
+        if (turboTimeLeft <= 0) {
+        	getCurrentPiece().calibrate(currentPosition.getSlipAngle());
+        }
+    }
+    
     public TrackRouteSegment getCurrentSegment() {
         return getSelectedRoute().getSegmentForPiece(currentPosition.getPieceNumber());
     }
