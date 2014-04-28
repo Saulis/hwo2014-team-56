@@ -67,7 +67,7 @@ public class AnglePiece extends GenericPiece {
             return;
         }
         if (maxSlipAngle < 55) {
-            speedModifier += (55-maxSlipAngle)/7/100;
+            speedModifier += (55-maxSlipAngle)/8/100;
         }
     }
 
