@@ -2,4 +2,4 @@
 
 source ../scripts/check_pl_args
 
-java -cp target/noobbot-0.1-SNAPSHOT-jar-with-dependencies.jar noobbot/Main "$@" join france 4
+java -cp target/noobbot-0.1-SNAPSHOT-jar-with-dependencies.jar noobbot/Main "$@" join germany 4

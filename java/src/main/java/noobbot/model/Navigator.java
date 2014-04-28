@@ -52,8 +52,9 @@ public class Navigator {
         staticRoutes = stream(routes.toArray(new TrackRoute[routes.size()])).filter(r -> r.getNumberOfSwitchesUsed() == 0).collect(Collectors.toList());
 
         System.out.println(String.format("Navigator: %s possible routes plotted.", routes.size()));
-        
+
         selectedRoute = routeStrategy.getRoute(routes);
+        System.out.println(String.format("Longest straight: %s", track.getStraightLength(track.getBeginningPieceOfLongestStraight())));
     }
 
     private TrackRouteSegment[] getNewSegments(Track track, TrackSegment t) {
