@@ -66,8 +66,8 @@ public class AnglePiece extends GenericPiece {
         if (tas.isCalibrating()) {
             return;
         }
-        if (maxSlipAngle < 55) {
-            speedModifier += (55-maxSlipAngle)/8/100;
+        if (maxSlipAngle < 50) {
+            speedModifier += (50-maxSlipAngle)/9/100;
         }
     }
 
