@@ -33,7 +33,7 @@ public class AnglePiece extends GenericPiece {
     		System.out.println("Speed modifier: " + speedModifier);
     	}
     	
-        return Math.sqrt(CarMetrics.getAngleAcceleration() * getEffectiveRadius(lane)) * speedModifier;
+        return Math.sqrt(CarMetrics.getAngleAcceleration() * getEffectiveRadius(lane));// * speedModifier;
     }
 
     private double getCornerLength(double offsetFromCenter) {
