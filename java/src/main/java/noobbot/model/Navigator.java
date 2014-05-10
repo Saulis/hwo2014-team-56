@@ -96,7 +96,7 @@ public class Navigator {
 
         //System.out.println(String.format("Lanes: %s -> %s, %s->%s", currentLane.getDistanceFromCenter(), nextSegment.getDrivingLane().getDistanceFromCenter(), getCurrentSegment().getDrivingLane().getDistanceFromCenter(), nextSegment.getDrivingLane().getDistanceFromCenter()));
 
-        return currentLane != nextSegment.getDrivingLane() && !switchIsPending;
+        return currentLane != nextSegment.getDrivingLane() && !switchIsPending && !getCurrentPiece().hasSwitch();
     }
 
     private TrackRouteSegment getNextSegment() {
