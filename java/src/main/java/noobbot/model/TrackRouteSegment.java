@@ -21,11 +21,15 @@ public class TrackRouteSegment {
     }
 
     private boolean isPieceRightCorner(int i) {
-        return segment.getPieces()[i].getAngle() > 0;
+        return hasPiece(i) && segment.getPieces()[i].getAngle() > 0;
     }
 
     private boolean isPieceLeftCorner(int i) {
-        return segment.getPieces()[i].getAngle() < 0;
+        return hasPiece(i) && segment.getPieces()[i].getAngle() < 0;
+    }
+
+    private boolean hasPiece(int i) {
+        return segment.getPieces().length > i;
     }
 
     public boolean hasSwitchWhenTurningIntoARightCorner() {
