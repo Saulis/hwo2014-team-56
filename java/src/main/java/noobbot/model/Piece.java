@@ -15,4 +15,6 @@ public interface Piece {
     double getRadius();
     void complete();
     void calibrate(double slipAngle);
+
+    void modifySpeed(double maxSlipAngle, int ticksInCorner);
 }

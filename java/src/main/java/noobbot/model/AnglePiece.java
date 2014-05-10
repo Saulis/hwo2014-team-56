@@ -29,11 +29,9 @@ public class AnglePiece extends GenericPiece {
     @Override
     public double getTargetSpeed(Lane lane)
     {
-    	if (speedModifier > 1) {
-    		System.out.println("Speed modifier: " + speedModifier);
-    	}
-    	
-        return Math.sqrt(CarMetrics.getAngleAcceleration() * getEffectiveRadius(lane));// * speedModifier;
+        System.out.println("Speed modifier: " + speedModifier);
+
+        return Math.sqrt(CarMetrics.getAngleAcceleration() * speedModifier * getEffectiveRadius(lane));
     }
 
     private double getCornerLength(double offsetFromCenter) {
@@ -63,19 +61,33 @@ public class AnglePiece extends GenericPiece {
 
     @Override
     public void complete() {
-        if (tas.isCalibrating()) {
-            return;
-        }
-        if (maxSlipAngle < 50) {
-            speedModifier += (50-maxSlipAngle)/9/100;
+//        if (tas.isCalibrating()) {
+//            return;
+//        }
+//        System.out.println("COMPLETE");
+        if (maxSlipAngle > 55) {
+//            speedModifier += (45-maxSlipAngle)/9/100;
+//            speedModifier -= 0.01;
+//            System.out.println("MODIFIER:" + speedModifier);
         }
     }
 
     @Override
     public void calibrate(double slipAngle) {
-        if (tas.isCalibrating()) {
-            return;
-        }
+//        if (tas.isCalibrating()) {
+//            return;
+//        }
         maxSlipAngle = Math.max(maxSlipAngle, slipAngle);
+    }
+
+    @Override
+    public void modifySpeed(double maxSlipAngle, int ticksInCorner) {
+//        speedModifier += 0.25;
+        double targetSlipAngle = 50;
+        int ticksUntilMaxSlipAngle = 40 - ticksInCorner;
+        if(ticksUntilMaxSlipAngle > 0) {
+            targetSlipAngle = targetSlipAngle - ticksUntilMaxSlipAngle / 4.0;
+        }
+        speedModifier += (targetSlipAngle-maxSlipAngle)/100;
     }
 }

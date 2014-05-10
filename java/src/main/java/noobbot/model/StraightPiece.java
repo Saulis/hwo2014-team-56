@@ -39,4 +39,9 @@ public class StraightPiece extends GenericPiece {
     @Override
     public void calibrate(double slipAngle) {
     }
+
+    @Override
+    public void modifySpeed(double maxSlipAngle, int ticksInCorner) {
+
+    }
 }

@@ -34,7 +34,7 @@ public class CarMetrics {
     private double previousAngleAcceleration = 0;
     private double maxSlipAngle = 0;
     private double maxAngleAcceleration = 0;
-    private static double targetAngleAcceleration = 0.48;
+    private static double targetAngleAcceleration = 0.45;
     private double targetSlipAngle = 0;
     private int ticksInCorner = 0;
     private int ticksUntilMaxSlipAngle = 40;
@@ -79,19 +79,44 @@ public class CarMetrics {
         maxAngleAcceleration = Math.max(maxAngleAcceleration, slipAngle.getAcceleration());
         maxSlipAngle = Math.max(maxSlipAngle, Math.abs(getSlipAngle().getValue()));
 
+        //drop ratio when crashing.
+        //Should reset speed modifier
+        if(Math.abs(getSlipAngle().getValue()) >= 59) {
+//            targetAngleAcceleration -= 0.01;
+        }
+
         if(exitedAnglePiece()) {
+            modifySpeedOnPreviousCurve(maxSlipAngle, ticksInCorner);
+            if(ticksInCorner >= 13) {
+//                modifySpeedOnPreviousCurve(maxSlipAngle);
+            }
+
+            if(maxSlipAngle < 50) {
+//                modifySpeedOnPreviousCurve(maxSlipAngle);
+                //targetAngleAcceleration += 0.005;
+            }
+
             if(ticksInCorner > ticksUntilMaxSlipAngle) {
-                if(maxSlipAngle >= 55) {
-                    targetAngleAcceleration -= 0.01;
-                } else if(maxSlipAngle > 50 && maxSlipAngle < 55 && Math.abs(targetAngleAcceleration - maxAngleAcceleration) <= 0.025) {
-                    targetAngleAcceleration = maxAngleAcceleration;
+                if(maxSlipAngle > 50 && maxSlipAngle < 55 && Math.abs(targetAngleAcceleration - maxAngleAcceleration) <= 0.025) {
+//                    targetAngleAcceleration = maxAngleAcceleration;
                 } else if(maxSlipAngle <= 50) {
-                    targetAngleAcceleration += 0.005;
+//                    targetAngleAcceleration += 0.01;
                 }
             }
             maxSlipAngle = 0;
             maxAngleAcceleration = 0;
         }
+    }
+
+    private void modifySpeedOnPreviousCurve(double maxSlipAngle, int ticksInCorner) {
+        Turn previousTurn = track.getPreviousTurn(getCurrentPiece());
+        previousTurn.modifySpeed(maxSlipAngle, ticksInCorner);
+//        Piece previousPiece = navigator.getPreviousPiece(getCurrentPiece());
+//        while(navigator.getPreviousPiece(previousPiece).getAngle() != 0) {
+//            previousPiece = navigator.getPreviousPiece(previousPiece);
+//        }
+
+//        previousPiece.modifySpeed(maxSlipAngle);
     }
 
     private boolean enteredAnglePiece() {
