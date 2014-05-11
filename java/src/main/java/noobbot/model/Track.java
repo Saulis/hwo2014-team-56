@@ -15,7 +15,8 @@ public class Track {
 
         longestStraight = calculateLongestStraight();
 
-        turns = getTurns(pieces);
+
+        turns = getTurns(new ArrayList(pieces));
 
         for (Turn turn : turns) {
             System.out.println(String.format("Turn %s: %s", turns.indexOf(turn), turn.toString()));
@@ -23,13 +24,18 @@ public class Track {
 
     }
 
-    private List<Turn> getTurns(List<Piece> pieces) {
+    private List<Turn> getTurns(List<Piece> turnPieces) {
         List<Turn> turns = new ArrayList<>();
         List<Piece> tmp = new ArrayList<>();
 
-        for (Piece piece : pieces) {
+        for (Piece piece : turnPieces) {
             if(piece.getAngle() == 0) {
-                if(tmp.size() > 0) {
+                int index = turnPieces.indexOf(piece) - 1;
+                //Allow one straight between turns
+                if(getPieceBefore(piece).getAngle() != 0 && tmp.size() > 0) {
+//                if(turnPieces.get(index % size).getAngle() != 0) {
+                    tmp.add(piece);
+                } else if(tmp.size() > 0) {
                     turns.add(createTurn(tmp));
 
                     tmp.clear();
@@ -124,6 +130,7 @@ public class Track {
 
     public Piece getPieceBefore(Piece piece) {
         int index = piece.getNumber() - 1;
+        if(index < 0) index += pieces.size();
         return pieces.get(index % pieces.size());
     }
 
