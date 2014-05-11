@@ -30,14 +30,14 @@ public class Track {
         for (Piece piece : pieces) {
             if(piece.getAngle() == 0) {
                 if(tmp.size() > 0) {
-                    turns.add(getTurn(tmp));
+                    turns.add(createTurn(tmp));
 
                     tmp.clear();
                 } else {
                     continue;
                 }
             } else if(tmp.size() > 0 && !haveSameSign(piece.getAngle(), tmp.get(0).getAngle())) {
-                turns.add(getTurn(tmp));
+                turns.add(createTurn(tmp));
 
                 tmp.clear();
             }
@@ -47,13 +47,13 @@ public class Track {
         }
 
         if(tmp.size() > 0) {
-            turns.add(getTurn(tmp));
+            turns.add(createTurn(tmp));
         }
 
         return turns;
     }
 
-    private Turn getTurn(List<Piece> pieces) {
+    private Turn createTurn(List<Piece> pieces) {
         return new Turn(pieces.toArray(new Piece[pieces.size()]));
     }
 
@@ -159,5 +159,14 @@ public class Track {
         int index = turns.indexOf(turn) - 1;
 
         return turns.get(index % turns.size());
+    }
+
+    public Turn getTurn(Piece currentPiece) {
+        for (Turn turn : turns) {
+            if(turn.containsPiece(currentPiece)) {
+                return turn;
+            }
+        }
+        return null;
     }
 }

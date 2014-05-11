@@ -14,10 +14,10 @@ public class ThrottleControl {
         brakes = new AntiLockBrakes(metrics);
     }
 
-    public double getThrottle(double currentTargetSpeed, TargetSpeed targetSpeed) {
+    public double getThrottle(double currentTargetSpeed, TargetSpeed targetSpeed, TargetSpeed nextTargetSpeed) {
     	isStabilizing = false;
         double diff = targetSpeed.getTargetSpeed() - metrics.getCurrentSpeed();
-        if(brakes.shouldBrake(currentTargetSpeed, targetSpeed)) {
+        if(brakes.shouldBrake(currentTargetSpeed, targetSpeed, nextTargetSpeed)) {
             printDebug(metrics.getCurrentSpeed(), targetSpeed.getTargetSpeed(), diff, "BRAKING");
 
             return 0.0;

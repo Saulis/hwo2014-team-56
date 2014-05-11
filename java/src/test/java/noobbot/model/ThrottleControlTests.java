@@ -32,14 +32,14 @@ public class ThrottleControlTests {
         when(targetSpeed.getDistanceToTarget()).thenReturn(4.0);
         currentPieceIsStraight();
 
-        assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(1.0));
+        assertThat(throttleControl.getThrottle(0.666, targetSpeed, targetSpeed), is(1.0));
     }
 
     @Test
     public void throttleBrakes() {
         when(targetSpeed.getTargetSpeed()).thenReturn(2.0);
 
-        assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(0.0));
+        assertThat(throttleControl.getThrottle(0.666, targetSpeed, targetSpeed), is(0.0));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ThrottleControlTests {
         currentPieceIsAngled();
         
         //2.5 / 10.0 = 0.25 (targetspeed/topspeed)
-        assertThat(throttleControl.getThrottle(0.666, targetSpeed), is(0.0666));
+        assertThat(throttleControl.getThrottle(0.666, targetSpeed, targetSpeed), is(0.0666));
     }
 
     private void currentPieceIsStraight() {

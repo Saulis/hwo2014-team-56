@@ -22,8 +22,10 @@ public class Car {
         double currentTargetSpeed = getCurrentTargetSpeed();
 
         TargetSpeed targetSpeed = getTargetSpeed(currentThrottle);
-        double nextThrottle = throttleControl.getThrottle(currentTargetSpeed, targetSpeed);
-        
+        TargetSpeed nextTargetSpeed = getTargetSpeed(currentThrottle, navigator.getNextTargetPiece(navigator.getCurrentPiece()));
+
+        double nextThrottle = throttleControl.getThrottle(currentTargetSpeed, targetSpeed, nextTargetSpeed);
+
         if (throttleControl.isStabilizing()) {
         	navigator.calibrateCurrentPiece();
         }
@@ -44,9 +46,9 @@ public class Car {
         return currentPiece.getTargetSpeed(currentLane);
     }
 
-    private TargetSpeed getTargetSpeed(double currentThrottle) {
+    private TargetSpeed getTargetSpeed(double currentThrottle, Piece currentPiece) {
         TrackRoute selectedRoute = navigator.getSelectedRoute();
-        Piece nextTargetPiece = navigator.getNextTargetPiece();
+        Piece nextTargetPiece = navigator.getNextTargetPiece(currentPiece);
 
         TrackRouteSegment segment = selectedRoute.getSegmentForPiece(nextTargetPiece.getNumber());
         double targetSpeed = nextTargetPiece.getTargetSpeed(segment.getDrivingLane());
@@ -58,5 +60,9 @@ public class Car {
 
 
         return new TargetSpeed(targetSpeed, distanceToTarget, brakingDistance);
+    }
+
+    private TargetSpeed getTargetSpeed(double currentThrottle) {
+        return getTargetSpeed(currentThrottle, navigator.getCurrentPiece());
     }
 }

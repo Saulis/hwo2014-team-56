@@ -88,6 +88,6 @@ public class AnglePiece extends GenericPiece {
         if(ticksUntilMaxSlipAngle > 0) {
             targetSlipAngle = targetSlipAngle - ticksUntilMaxSlipAngle / 4.0;
         }
-        speedModifier += (targetSlipAngle-maxSlipAngle)/100;
+        speedModifier += (45-maxSlipAngle)/100;
     }
 }

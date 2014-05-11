@@ -38,6 +38,9 @@ public class CarMetrics {
     private double targetSlipAngle = 0;
     private int ticksInCorner = 0;
     private int ticksUntilMaxSlipAngle = 40;
+    private double turnEntrySpeed = 0;
+    private double turnTargetSpeed = 0;
+    private Turn currentTurn;
 
 
     public CarMetrics(Track track, Navigator navigator, TargetAngleSpeed tas) {
@@ -70,6 +73,9 @@ public class CarMetrics {
         if(enteredAnglePiece()) {
             previousAngleAcceleration = slipAngle.getAcceleration();
             ticksInCorner = 0;
+            turnEntrySpeed = getCurrentSpeed();
+            turnTargetSpeed = navigator.getCurrentPiece().getTargetSpeed(navigator.getCurrentLane());
+            currentTurn = track.getTurn(navigator.getCurrentPiece());
         }
 
         if(getCurrentPiece().getAngle() != 0) {
@@ -85,8 +91,15 @@ public class CarMetrics {
 //            targetAngleAcceleration -= 0.01;
         }
 
-        if(exitedAnglePiece()) {
-            modifySpeedOnPreviousCurve(maxSlipAngle, ticksInCorner);
+        //TODO: Älä alota uutta mittausta jos kurvi on kesken
+        //TODO: Älä kalibroi jos kurviin tultiin alle target speedin
+
+        if(ticksInCorner > 3 && maxSlipAngle > 0 && slipAngle.getSlipChangeVelocity() == 0.0) {
+            //System.out.println("Modifying: " + maxSlipAngle);
+            //Don't modify speed if we hit the turn under the target speed
+            if(turnTargetSpeed - turnEntrySpeed < 0.1) {
+                modifySpeedOnPreviousCurve(maxSlipAngle, ticksInCorner);
+            }
             if(ticksInCorner >= 13) {
 //                modifySpeedOnPreviousCurve(maxSlipAngle);
             }
@@ -105,6 +118,8 @@ public class CarMetrics {
             }
             maxSlipAngle = 0;
             maxAngleAcceleration = 0;
+            turnEntrySpeed = 0;
+            turnTargetSpeed = 0;
         }
     }
 
@@ -243,7 +258,7 @@ public class CarMetrics {
 
             //Extra braking distance when running with turbo
             if(navigator.isTurboActive()) {
-                breakingDistance += currentSpeed * 1.5;
+                breakingDistance += currentSpeed * 1.75;
             }
 
             while(speed > targetSpeed + 0.05) {

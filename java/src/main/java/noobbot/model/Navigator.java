@@ -168,7 +168,10 @@ public class Navigator {
     }
 
     public Piece getNextTargetPiece() {
-        Piece currentPiece = getCurrentPiece();
+        return getNextTargetPiece(getCurrentPiece());
+    }
+
+    public Piece getNextTargetPiece(Piece currentPiece) {
         Piece nextPiece = track.getPieceAfter(currentPiece);
 
         while(currentPiece.getAngle() == nextPiece.getAngle()) {
