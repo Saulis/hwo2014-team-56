@@ -16,5 +16,5 @@ public interface Piece {
     void complete();
     void calibrate(double slipAngle);
 
-    void modifySpeed(double maxSlipAngle, int ticksInCorner);
+    void modifySpeed(double maxSlipAngle);
 }

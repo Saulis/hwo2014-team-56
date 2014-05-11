@@ -25,9 +25,9 @@ public class Turn {
         return pieces[0].getNumber();
     }
 
-    public void modifySpeed(double maxSlipAngle, int ticksInCorner) {
+    public void modifySpeed(double maxSlipAngle) {
         for (Piece piece : pieces) {
-            piece.modifySpeed(maxSlipAngle, ticksInCorner);
+            piece.modifySpeed(maxSlipAngle);
         }
 
     }

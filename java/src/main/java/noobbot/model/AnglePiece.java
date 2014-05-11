@@ -81,13 +81,7 @@ public class AnglePiece extends GenericPiece {
     }
 
     @Override
-    public void modifySpeed(double maxSlipAngle, int ticksInCorner) {
-//        speedModifier += 0.25;
-        double targetSlipAngle = 50;
-        int ticksUntilMaxSlipAngle = 40 - ticksInCorner;
-        if(ticksUntilMaxSlipAngle > 0) {
-            targetSlipAngle = targetSlipAngle - ticksUntilMaxSlipAngle / 4.0;
-        }
+    public void modifySpeed(double maxSlipAngle) {
         speedModifier += (45-maxSlipAngle)/100;
     }
 }

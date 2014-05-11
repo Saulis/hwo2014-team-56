@@ -30,10 +30,8 @@ public class Track {
 
         for (Piece piece : turnPieces) {
             if(piece.getAngle() == 0) {
-                int index = turnPieces.indexOf(piece) - 1;
                 //Allow one straight between turns
                 if(getPieceBefore(piece).getAngle() != 0 && tmp.size() > 0) {
-//                if(turnPieces.get(index % size).getAngle() != 0) {
                     tmp.add(piece);
                 } else if(tmp.size() > 0) {
                     turns.add(createTurn(tmp));
@@ -137,35 +135,6 @@ public class Track {
 
     public Piece getPiece(Position position) {
         return pieces.get(position.getPieceNumber());
-    }
-
-    public Turn getPreviousTurn(Piece piece) {
-        int number = piece.getNumber();
-
-        for(int i = turns.size() -1;i >= 0;i--) {
-            Turn turn = turns.get(i);
-
-            if(turn.getStartingPieceNumber() < number) {
-                return turn;
-            }
-//            if(!turn.containsPiece(piece) && turn.getStartingPieceNumber() > number) {
-//                return getPreviousTurn(turn);
-//            }
-        }
-
-//        for (Turn turn : turns) {
-//            if(!turn.containsPiece(piece) && turn.getStartingPieceNumber() > number) {
-//                return getPreviousTurn(turn);
-//            }
-//        }
-
-        return null;
-    }
-
-    private Turn getPreviousTurn(Turn turn) {
-        int index = turns.indexOf(turn) - 1;
-
-        return turns.get(index % turns.size());
     }
 
     public Turn getTurn(Piece currentPiece) {

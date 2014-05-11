@@ -27,7 +27,7 @@ public class Car {
         double nextThrottle = throttleControl.getThrottle(currentTargetSpeed, targetSpeed, nextTargetSpeed);
 
         if (throttleControl.isStabilizing()) {
-        	navigator.calibrateCurrentPiece();
+            navigator.calibrateCurrentPiece();
         }
 
         currentThrottle = nextThrottle;
