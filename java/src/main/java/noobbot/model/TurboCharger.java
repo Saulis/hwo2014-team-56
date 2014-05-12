@@ -28,8 +28,6 @@ public class TurboCharger {
     }
 
     private boolean isEnoughStraightRoadAhead() {
-        Piece nextCorner = navigator.getNextTargetPiece();
-
         return navigator.getCurrentPiece() == navigator.getBeginningPieceOfLongestStraight();// && navigator.getDistanceToTarget(nextCorner) > 400.0;
     }
 
@@ -42,8 +40,8 @@ public class TurboCharger {
             return null;
         }
             
-        Turbo turbo = availableTurbos.get(0);
-        availableTurbos.remove(turbo);
+        Turbo turbo = availableTurbos.get(availableTurbos.size() - 1);
+        availableTurbos.clear();
         return turbo;
     }
 }
